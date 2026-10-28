@@ -1,0 +1,67 @@
+{
+  "name": "behnam-shoes-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "build": "NODE_ENV=production nest build",
+    "start": "NODE_ENV=production nest start",
+    "start:prod": "NODE_ENV=production node dist/main",
+    "start:dev": "NODE_ENV=development nest start --watch",
+    "start:debug": "NODE_ENV=development nest start --debug --watch",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest --config test/e2e/jest-e2e.ts",
+    "test:watch": "jest --config test/e2e/jest-e2e.ts --watch",
+    "test:cov": "jest --config test/e2e/jest-e2e.ts --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "NODE_OPTIONS=--experimental-vm-modules jest --config test/e2e/jest-e2e.ts --detectOpenHandles --runInBand",
+    "test:unit": "jest --config test/unit/jest-unit.ts --detectOpenHandles",
+    "migrate:prod": "NODE_ENV=production npx drizzle-kit migrate",
+    "migrate:dev": "NODE_ENV=development npx drizzle-kit migrate",
+    "migration-generate": "npx drizzle-kit generate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Siajey/behnam-shoes-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Siajey/behnam-shoes-backend/issues"
+  },
+  "homepage": "https://github.com/Siajey/behnam-shoes-backend#readme",
+  "dependencies": {
+    "@nestjs/common": "^12.2.0",
+    "@nestjs/config": "^12.0.1",
+    "@nestjs/core": "^12.2.0",
+    "@nestjs/platform-fastify": "^12.2.0",
+    "module-alias": "^2.3.4",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@nestjs/cli": "^12.0.10"
+  },
+  "overrides": {
+    "esbuild": ">=0.25.0",
+    "find-my-way": ">=9.7.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
