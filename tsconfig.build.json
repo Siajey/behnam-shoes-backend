@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@app/*": [
+        "./src"
+      ],
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist",
+    "dev-scripts",
+    "**/*spec.ts"
+  ],
+  "include": [
+    "test/**/*",
+    "src/**/*",
+    "global.d.ts"
+  ]
+}
