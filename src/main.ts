@@ -1,10 +1,11 @@
 import 'module-alias/register'
+
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify'
 import * as process from 'node:process'
-import { NestFactory } from "@nestjs/core"
+import { NestFactory } from '@nestjs/core'
 
 import { AppModule } from './app.module'
 
