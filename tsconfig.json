@@ -20,6 +20,12 @@
     "paths": {
       "@app/*": [
         "./src"
+      ],
+      "api/*": [
+        "./src/api"
+      ],
+      "@common/*": [
+        "./src/common/*"
       ]
     }
   },
