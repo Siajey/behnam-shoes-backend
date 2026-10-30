@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "_moduleAliases": {
+    "@api": "dist/api",
+    "@auth": "dist/auth",
+    "@user": "dist/user",
+    "@session": "dist/session",
+    "@post": "dist/post",
+    "@common": "dist/common"
+  },
   "scripts": {
     "build": "NODE_ENV=production nest build",
     "start": "NODE_ENV=production nest start",
