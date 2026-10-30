@@ -18,7 +18,8 @@ import { ApiResponse } from '@common/api'
 import { ILogger } from '@common/logger'
 import { translateZodMessages } from '@common/validations'
 import { APP_LOGGER_SERVICE } from '@common/di'
-import { handleDatabaseError } from '@common/db'
+// TODO
+// import { handleDatabaseError } from '@common/db'
 
 @Catch()
 @Injectable()
@@ -88,14 +89,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof ZodError) {
       apiRes = this.handleZodExceptions(apiRes, exception, i18nLang)
     } else if (exception instanceof DrizzleQueryError) {
-      apiRes = handleDatabaseError(
-        apiRes,
-        i18nLang,
-        this.i18n,
-        exception,
-        this.logger,
-        ctx.getRequest()?.user?.id || undefined,
-      )
+      // apiRes = handleDatabaseError(
+      //   apiRes,
+      //   i18nLang,
+      //   this.i18n,
+      //   exception,
+      //   this.logger,
+      //   ctx.getRequest()?.user?.id || undefined,
+      // )
     } else {
       if (process.env.NODE_ENV === 'production')
         Sentry.captureException(exception)
