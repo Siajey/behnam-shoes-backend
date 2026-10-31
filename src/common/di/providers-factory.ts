@@ -14,21 +14,16 @@ export const createProvider = <T>(
       try {
         return new classConstructor(...deps)
       } catch (err) {
-        const logger = deps.find(
-          (dep) => dep && typeof dep.error === 'function',
-        ) as ILogger | undefined
-        const tokenToString =
-          typeof token === 'string' ? token : token.toString()
+        const logger = deps.find((dep) => dep && typeof dep.error === 'function') as
+          ILogger | undefined
+        const tokenToString = typeof token === 'string' ? token : token.toString()
         if (logger)
-          logger.error(
-            `Error happened in providers factory ${classConstructor.name}`,
-            {
-              module: tokenToString,
-              err: err,
-              operation: 'create provider',
-              data: { tokens: injectTokens },
-            },
-          )
+          logger.error(`Error happened in providers factory ${classConstructor.name}`, {
+            module: tokenToString,
+            err: err,
+            operation: 'create provider',
+            data: { tokens: injectTokens },
+          })
         throw err
       }
     },

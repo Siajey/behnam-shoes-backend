@@ -24,9 +24,7 @@ export const deserializeCookies = (
   const cookies: Record<string, string> = {}
   if (!setCookieHeader) return cookies
   const setCookies: string[] =
-    typeof setCookieHeader === 'string'
-      ? setCookieHeader.split(',')
-      : setCookieHeader
+    typeof setCookieHeader === 'string' ? setCookieHeader.split(',') : setCookieHeader
 
   for (const cookie of setCookies) {
     const [keyValue] = cookie.split(';') // "key=value"
@@ -55,11 +53,7 @@ export const generateProviderUsername = (
   const separator = '_'
 
   const maxBaseLength =
-    maxLength -
-    separator.length -
-    provider.length -
-    separator.length -
-    suffix.length
+    maxLength - separator.length - provider.length - separator.length - suffix.length
 
   const base = email
     .split('@')[0]

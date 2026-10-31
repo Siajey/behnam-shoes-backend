@@ -1,10 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Inject,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common'
+import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from '@nestjs/common'
 import { Observable, tap } from 'rxjs'
 import { FastifyReply } from 'fastify'
 
@@ -48,10 +42,7 @@ export default class ApiResponseInterceptor implements NestInterceptor {
             }
           }
           response.status(data.status).send({
-            message: this.i18n.t(
-              data.messageObj.message,
-              data.messageObj.options,
-            ),
+            message: this.i18n.t(data.messageObj.message, data.messageObj.options),
             code: data.code,
             timestamp: data.timestamp,
             path: data.path,

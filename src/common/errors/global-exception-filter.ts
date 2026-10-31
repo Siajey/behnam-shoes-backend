@@ -11,15 +11,13 @@ import { ZodError } from 'zod'
 import { I18nContext, I18nService } from 'nestjs-i18n'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { DrizzleQueryError } from 'drizzle-orm'
-import * as Sentry from '@sentry/nestjs'
 
 import { AppError } from './app-error'
 import { ApiResponse } from '@common/api'
 import { ILogger } from '@common/logger'
 import { translateZodMessages } from '@common/validations'
 import { APP_LOGGER_SERVICE } from '@common/di'
-// TODO
-// import { handleDatabaseError } from '@common/db'
+import { handleDatabaseError } from '@common/db'
 
 @Catch()
 @Injectable()
@@ -50,15 +48,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       apiRes.status = exception.getStatus()
       const exceptionResponse = exception.getResponse()
-      if (
-        typeof exceptionResponse === 'object' &&
-        exceptionResponse['message']
-      ) {
+      if (typeof exceptionResponse === 'object' && exceptionResponse['message']) {
         apiRes.code = exceptionResponse['code']
         apiRes.messageObj = {
           message:
-            this.i18n.t(exceptionResponse['message'], { lang: i18nLang }) ||
-            exception.message,
+            this.i18n.t(exceptionResponse['message'], { lang: i18nLang }) || exception.message,
         }
       } else {
         apiRes.messageObj = {
@@ -89,17 +83,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof ZodError) {
       apiRes = this.handleZodExceptions(apiRes, exception, i18nLang)
     } else if (exception instanceof DrizzleQueryError) {
-      // apiRes = handleDatabaseError(
-      //   apiRes,
-      //   i18nLang,
-      //   this.i18n,
-      //   exception,
-      //   this.logger,
-      //   ctx.getRequest()?.user?.id || undefined,
-      // )
+      apiRes = handleDatabaseError(
+        apiRes,
+        i18nLang,
+        this.i18n,
+        exception,
+        this.logger,
+        ctx.getRequest()?.user?.id || undefined,
+      )
     } else {
-      if (process.env.NODE_ENV === 'production')
-        Sentry.captureException(exception)
       if (
         typeof exception === 'object' &&
         'stack' in exception &&
@@ -139,9 +131,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       ...response,
       status: HttpStatus.BAD_REQUEST,
       messageObj: {
-        message: translateZodMessages(this.i18n, exception.issues, lang).join(
-          ', ',
-        ),
+        message: translateZodMessages(this.i18n, exception.issues, lang).join(', '),
       },
       code: 'VALIDATION_ERROR',
     }

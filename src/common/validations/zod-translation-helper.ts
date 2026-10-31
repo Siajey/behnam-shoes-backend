@@ -25,13 +25,8 @@ export const translateZodMessages = (
           lang,
         })
       default: {
-        const message = i18n
-          .t(issue.message, { args: { path: issuePath }, lang })
-          .toString()
-        if (
-          message.includes(issuePath.toString()) ||
-          issuePath.toString().startsWith('fields')
-        )
+        const message = i18n.t(issue.message, { args: { path: issuePath }, lang }).toString()
+        if (message.includes(issuePath.toString()) || issuePath.toString().startsWith('fields'))
           return message
         else return `${issuePath}: ${message}`
       }

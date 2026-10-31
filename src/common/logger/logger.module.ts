@@ -19,8 +19,7 @@ import { AppLoggerService } from './infrastructure'
             : undefined,
         autoLogging: {
           ignore: (req: any) =>
-            req.originalUrl.includes('/health') ||
-            req.originalUrl.includes('/device/telemetry'),
+            req.originalUrl.includes('/health') || req.originalUrl.includes('/device/telemetry'),
         },
         formatters: {
           level(label) {

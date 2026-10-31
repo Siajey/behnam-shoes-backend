@@ -18,11 +18,7 @@ export class JwtTokenService implements ITokenService {
     })
   }
 
-  verify(
-    hash: string,
-    secret: string,
-    algorithm: jwt.Algorithm = 'HS256',
-  ): jwt.JwtPayload {
+  verify(hash: string, secret: string, algorithm: jwt.Algorithm = 'HS256'): jwt.JwtPayload {
     let payload: jwt.JwtPayload | string
 
     try {

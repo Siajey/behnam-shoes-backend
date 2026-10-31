@@ -50,11 +50,7 @@ const DevHelmetConfigs: FastifyHelmetOptions = {
   },
 }
 
-export const applyHelmet = async (
-  app: NestFastifyApplication,
-  nodeEnv: string,
-) => {
-  const HelmetConfigs =
-    nodeEnv === 'production' ? ProdHelmetConfigs : DevHelmetConfigs
+export const applyHelmet = async (app: NestFastifyApplication, nodeEnv: string) => {
+  const HelmetConfigs = nodeEnv === 'production' ? ProdHelmetConfigs : DevHelmetConfigs
   await app.register(fastifyHelmet, HelmetConfigs)
 }
