@@ -33,12 +33,7 @@ export class AppLoggerService implements ILogger {
 
         redact: isProduction
           ? {
-              paths: [
-                'req.headers.authorization',
-                'req.headers.cookie',
-                '*.password',
-                '*.token',
-              ],
+              paths: ['req.headers.authorization', 'req.headers.cookie', '*.password', '*.token'],
               censor: '[REDACTED]',
             }
           : undefined,

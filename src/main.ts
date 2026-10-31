@@ -1,9 +1,6 @@
 import 'module-alias/register'
 import { NestFactory } from '@nestjs/core'
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify'
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
 import fastifySecureSession from '@fastify/secure-session'
 import multipart from '@fastify/multipart'
 import { Logger } from 'nestjs-pino'
@@ -20,11 +17,9 @@ import { ILogger } from '@common/logger'
 async function bootstrap() {
   let logger: ILogger
   try {
-    const app = await NestFactory.create<NestFastifyApplication>(
-      AppModule,
-      new FastifyAdapter(),
-      { bufferLogs: false },
-    )
+    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
+      bufferLogs: false,
+    })
     logger = app.get(APP_LOGGER_SERVICE)
     process.on('uncaughtException', (error) => {
       logger.error('Uncaught exception', {

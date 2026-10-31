@@ -1,56 +1,62 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {dirname} from 'node:path'
+import {fileURLToPath} from 'node:url'
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import tsParser from '@typescript-eslint/parser'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
+import globals from 'globals'
+import prettierPlugin from 'eslint-plugin-prettier'
+import eslintConfigPrettier from 'eslint-config-prettier'
 
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-});
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default [
     {
         ignores: [
-            '**/.eslintrc.js',
             '**/node_modules/**',
             '**/dist/**',
             '**/coverage/**',
-            '**/dist//**',
-            '**/jest.config.js/**',
-            '**/.eslintrc.js/**',
-            '**/.prettierrc/**',
-            '**/node_modules/**',
+            '.eslintrc.js',
         ],
     },
 
-    ...compat.config({
-        parser: '@typescript-eslint/parser',
+    {
+        files: ['**/*.ts'],
 
-        parserOptions: {
-            project: 'tsconfig.json',
-            tsconfigRootDir: __dirname,
-            sourceType: 'module',
+        languageOptions: {
+            parser: tsParser,
+
+            parserOptions: {
+                project: './tsconfig.json',
+                tsconfigRootDir: __dirname,
+                sourceType: 'module',
+            },
+
+            globals: {
+                ...globals.node,
+                ...globals.jest,
+            },
         },
 
-        plugins: ['@typescript-eslint/eslint-plugin'],
-
-        extends: [
-            'plugin:@typescript-eslint/recommended',
-            'plugin:prettier/recommended',
-        ],
-
-        root: true,
-
-        env: {
-            node: true,
-            jest: true,
+        plugins: {
+            '@typescript-eslint': tsPlugin,
         },
 
         rules: {
-            '@typescript-eslint/interface-name-prefix': 'off',
+            ...tsPlugin.configs.recommended.rules,
+
             '@typescript-eslint/explicit-function-return-type': 'off',
             '@typescript-eslint/explicit-module-boundary-types': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
         },
-    }),
-];
+    },
+
+    {
+        plugins: {
+            prettier: prettierPlugin,
+        },
+        rules: {
+            ...eslintConfigPrettier.rules,
+            'prettier/prettier': 'error',
+        },
+    },
+]

@@ -5,10 +5,7 @@ import fastifyCors from '@fastify/cors'
 
 import { ConfigProvider } from '@common/configuration'
 
-export const applyCors = async (
-  app: NestFastifyApplication,
-  configService: ConfigProvider,
-) => {
+export const applyCors = async (app: NestFastifyApplication, configService: ConfigProvider) => {
   const isDev = configService.get('NODE_ENV') !== 'production'
   const allowedOrigins = isDev
     ? [configService.get('FRONTEND_URL_DEV'), configService.get('FRONTEND_URL')]
@@ -20,12 +17,7 @@ export const applyCors = async (
       if (origin && allowedOrigins.includes(origin)) {
         cb(null, true)
       } else {
-        cb(
-          new ForbiddenException(
-            'Your are not allowed to access this resource.',
-          ),
-          false,
-        )
+        cb(new ForbiddenException('Your are not allowed to access this resource.'), false)
       }
     },
     credentials: true,

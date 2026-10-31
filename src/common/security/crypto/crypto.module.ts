@@ -1,11 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { HASH_GENERATOR, JWT_TOKEN_SERVICE, PASSWORD_HASHER } from '@common/di'
-import {
-  BcryptPasswordHasher,
-  CryptoHashGenerator,
-  JwtTokenService,
-} from './impl'
+import { BcryptPasswordHasher, CryptoHashGenerator, JwtTokenService } from './impl'
 
 @Module({
   providers: [

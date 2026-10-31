@@ -8,8 +8,7 @@ import { readSecret, Secrets } from '@common/security'
 export class NestConfigProvider implements ConfigProvider {
   private readonly cache = new Map<string, string>()
 
-  private readonly isProduction =
-    this.configService.get('NODE_ENV') === 'production'
+  private readonly isProduction = this.configService.get('NODE_ENV') === 'production'
 
   constructor(private readonly configService: ConfigService) {}
 

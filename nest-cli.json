@@ -6,10 +6,12 @@
     "assets": [
       {
         "include": "common/i18n/**/*",
+        "outDir": "dist/src",
         "watchAssets": true
       },
       {
         "include": "common/assets/**/*",
+        "outDir": "dist/src",
         "watchAssets": true
       }
     ],

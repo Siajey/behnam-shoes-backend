@@ -15,9 +15,7 @@ const ROOT_DIR = resolve(__dirname, '../../../../')
       validatePredefined: true,
       envFilePath: [
         ROOT_DIR + `/env/${process.env.NODE_ENV}/.env`,
-        process.env.NODE_ENV === 'production'
-          ? '/run/app-secrets/secret-state.env'
-          : '',
+        process.env.NODE_ENV === 'production' ? '/run/app-secrets/secret-state.env' : '',
       ],
     }),
   ],

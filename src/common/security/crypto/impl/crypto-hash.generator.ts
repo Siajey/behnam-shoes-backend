@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import {
-  BinaryToTextEncoding,
-  createHash,
-  createHmac,
-  randomBytes,
-} from 'crypto'
+import { BinaryToTextEncoding, createHash, createHmac, randomBytes } from 'crypto'
 
 import { IHashGenerator } from '@common/security'
 
@@ -18,11 +13,7 @@ export class CryptoHashGenerator implements IHashGenerator {
     return createHash('sha256').update(input).digest(encoding)
   }
 
-  hashMac(
-    input: string,
-    secret: string,
-    encoding: BinaryToTextEncoding = 'hex',
-  ): string {
+  hashMac(input: string, secret: string, encoding: BinaryToTextEncoding = 'hex'): string {
     return createHmac('sha256', secret).update(input).digest(encoding)
   }
 }
