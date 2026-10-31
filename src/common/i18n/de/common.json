@@ -1,0 +1,44 @@
+{
+  "auth": {
+    "resendEmailConfirmationSuccess": "Eine neue Bestätigungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet.",
+    "changePasswordSuccess": "Passwort erfolgreich geändert",
+    "csrfTokenSuccess": "CSRF-Token erfolgreich erstellt",
+    "forgotPasswordSuccess": "Link zum Zurücksetzen des Passworts wurde an Ihre E-Mail gesendet",
+    "loginSuccess": "{email} hat sich erfolgreich angemeldet",
+    "logoutSuccess": "Sie haben sich erfolgreich abgemeldet, vielen Dank für die Nutzung unseres Dienstes",
+    "resetPasswordSuccess": "Passwort erfolgreich zurückgesetzt, bitte melden Sie sich erneut an",
+    "signupSuccess": "{email} hat sich erfolgreich registriert, bitte überprüfen Sie Ihre E-Mail, um Ihr Konto zu aktivieren",
+    "tokensRefreshedSuccess": "Authentifizierungstoken erfolgreich aktualisiert",
+    "verifyUserSuccess": "Benutzer erfolgreich verifiziert"
+  },
+  "cta": {
+    "loginByOtp": "Bitte melden Sie sich mit OTP an"
+  },
+  "user": {
+    "createUserSuccess": "Der Benutzer wurde erfolgreich erstellt",
+    "getUsersSuccess": "Die Benutzer wurden erfolgreich abgerufen",
+    "updateUserSuccess": "Der Benutzer wurde erfolgreich aktualisiert"
+  },
+  "post": {
+    "createPostSuccess": "Der Beitrag wurde erfolgreich erstellt",
+    "createPostPresignedUrlSuccess": "Die vor-signierte URL wurde erfolgreich erstellt.",
+    "deletePostSuccess": "Der Beitrag wurde erfolgreich gelöscht",
+    "getPostsSuccess": "Die Beiträge wurden erfolgreich abgerufen",
+    "updatePostSuccess": "Der Beitrag wurde erfolgreich aktualisiert"
+  },
+  "energyStorage": {
+    "getLiveStatusSuccess": "Der aktuelle Status des Energiespeichers wurde erfolgreich abgerufen",
+    "createEnergyStorageSuccess": "Der Energiespeicher wurde erfolgreich erstellt",
+    "getEnergyStoragesSuccess": "Die Energiespeicher wurden erfolgreich abgerufen",
+    "updateEnergyStorageSuccess": "Der Energiespeicher wurde erfolgreich aktualisiert",
+    "getPreSignedUrlSuccess": "Die vor-signierte URL wurde erfolgreich erstellt"
+  },
+  "deviceAuth": {
+    "provisionDeviceSuccess": "Die Geräteauthentifizierung wurde erfolgreich bereitgestellt.",
+    "revokeDeviceSuccess": "Die Geräteauthentifizierung wurde erfolgreich widerrufen."
+  },
+  "telemetry": {
+    "getTelemetryHistorySuccess": "Der Telemetrie-Verlauf wurde erfolgreich abgerufen.",
+    "getTelemetryOverviewSuccess": "Der Telemetrie-Zusammenfassung wurde erfolgreich abgerufen."
+  }
+}

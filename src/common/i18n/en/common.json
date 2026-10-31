@@ -1,0 +1,44 @@
+{
+  "auth": {
+    "resendEmailConfirmationSuccess": "A new confirmation email has been sent to your email address.",
+    "changePasswordSuccess": "Password changed successfully",
+    "csrfTokenSuccess": "CSRF token created successfully",
+    "forgotPasswordSuccess": "Password reset link has been sent to your email",
+    "loginSuccess": "{email} is logged in successfully",
+    "logoutSuccess": "You have been logged out successfully, thank you for using our service",
+    "resetPasswordSuccess": "Password reset successfully, please login again",
+    "signupSuccess": "{email} is signed up successfully, please check your email to activate your account",
+    "tokensRefreshedSuccess": "Auth tokens refreshed successfully",
+    "verifyUserSuccess": "User verified successfully"
+  },
+  "cta": {
+    "loginByOtp": "Please login using OTP"
+  },
+  "user": {
+    "createUserSuccess": "The user has been created successfully",
+    "getUsersSuccess": "The users have been retrieved successfully",
+    "updateUserSuccess": "The user has been updated successfully"
+  },
+  "post": {
+    "createPostSuccess": "The Post has been created successfully",
+    "createPostPresignedUrlSuccess": "The pre-signed url has been created successfully",
+    "deletePostSuccess": "The post has been deleted successfully",
+    "getPostsSuccess": "The posts has been retrieved successfully",
+    "updatePostSuccess": "The post has been updated successfully"
+  },
+  "energyStorage": {
+    "getLiveStatusSuccess": "The live status has been retrieved successfully",
+    "createEnergyStorageSuccess": "The energy storage has been created successfully",
+    "getEnergyStoragesSuccess": "The energy storages have been retrieved successfully",
+    "updateEnergyStorageSuccess": "The energy storage has been updated successfully",
+    "getPreSignedUrlSuccess": "The pre-signed url has been created successfully"
+  },
+  "deviceAuth": {
+    "provisionDeviceSuccess": "The device authentication has been provisioned successfully",
+    "revokeDeviceSuccess": "The device authentication has been revoked successfully"
+  },
+  "telemetry": {
+    "getTelemetryHistorySuccess": "The telemetry history has been retrieved successfully",
+    "getTelemetryOverviewSuccess": "The telemetry overview has been retrieved successfully"
+  }
+}

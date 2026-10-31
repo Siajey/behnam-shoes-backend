@@ -20,12 +20,15 @@ export const createProvider = <T>(
         const tokenToString =
           typeof token === 'string' ? token : token.toString()
         if (logger)
-          logger.error(err.message, {
-            module: tokenToString,
-            err: err,
-            operation: 'create provider',
-            data: { tokens: injectTokens },
-          })
+          logger.error(
+            `Error happened in providers factory ${classConstructor.name}`,
+            {
+              module: tokenToString,
+              err: err,
+              operation: 'create provider',
+              data: { tokens: injectTokens },
+            },
+          )
         throw err
       }
     },

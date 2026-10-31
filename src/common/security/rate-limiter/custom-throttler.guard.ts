@@ -8,14 +8,14 @@ import { ILogger } from '@common/logger'
 @Injectable()
 export default class CustomThrottlerGuard extends ThrottlerGuard {
   @Inject(APP_LOGGER_SERVICE)
-  private readonly logger: ILogger
+  private readonly appLogger: ILogger
 
   protected throwThrottlingException(
     context: ExecutionContext,
     detail: ThrottlerLimitDetail,
   ): Promise<void> {
     const req = context.switchToHttp().getRequest()
-    this.logger.warn('Rate limit exceeded', {
+    this.appLogger.warn('Rate limit exceeded', {
       module: 'CustomThrottlerGuard',
       event: 'throttle.exceeded',
       operation: 'throttle',
