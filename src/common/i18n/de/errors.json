@@ -3,23 +3,6 @@
   "internalServerError": "Etwas ist schiefgelaufen, bitte versuchen Sie es später noch einmal.",
   "notFound": "Die Ressource wurde nicht gefunden.",
   "circuitBreakerOpen": "Service vorübergehend nicht verfügbar (Schutzschaltung offen)",
-  "deviceAuth": {
-    "notFound": "Geräte nicht gefunden",
-    "invalidCredential": "Die Anmeldeinformation für die Geräteauthentifizierung ist ungültig.",
-    "credentialAlreadyActive": "Die Anmeldeinformationen für das Gerät sind bereits aktiv.",
-    "credentialsMissing": "Anmeldeinformationen für die Geräteauthentifizierung fehlen.",
-    "credentialNotFoundOrRevoked": "Geräteanmeldeinformationen nicht gefunden oder wurden widerrufen.",
-    "secretMismatch": "Geräteauthentifizierung fehlgeschlagen. Ungültiger geheimer Schlüssel."
-  },
-  "energyStorage": {
-    "notFound": "Energie-Speicher nicht gefunden",
-    "performanceNotFound": "Die Leistungsdaten wurden nicht gefunden",
-    "thermalNotFound": "Die Thermaldaten wurden nicht gefunden",
-    "telemetryNotFound": "Die Telemetriedaten wurden nicht gefunden"
-  },
-  "post": {
-    "notFound": "Post nicht gefunden"
-  },
   "user": {
     "notFound": "Benutzer nicht gefunden",
     "userAlreadyConfirmed": "Ihr Konto ist bereits bestätigt."

@@ -21,11 +21,20 @@
       "@app/*": [
         "./src"
       ],
-      "api/*": [
-        "./src/api"
+      "@api/*": [
+        "./src/api/*"
       ],
       "@common/*": [
         "./src/common/*"
+      ],
+      "@users/*": [
+        "./src/api/users/*"
+      ],
+      "@session/*": [
+        "./src/api/session/*"
+      ],
+      "@auth/*": [
+        "./src/api/auth/*"
       ]
     }
   },

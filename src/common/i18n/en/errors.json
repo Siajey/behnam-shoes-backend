@@ -3,23 +3,6 @@
   "internalServerError": "Something went wrong, please try again later.",
   "notFound": "The resource not found",
   "circuitBreakerOpen": "Service temporarily unavailable (circuit open)",
-  "deviceAuth": {
-    "notFound": "The device authentication not found",
-    "invalidCredential": "The device authentication credential is invalid.",
-    "credentialAlreadyActive": "The device authentication credential is already active.",
-    "credentialsMissing": "Device authentication credentials are missing.",
-    "credentialNotFoundOrRevoked": "Device credential not found or has been revoked.",
-    "secretMismatch": "Device authentication failed. Invalid secret key."
-  },
-  "energyStorage": {
-    "notFound": "The energy storage not found",
-    "performanceNotFound": "The performance data was not found",
-    "thermalNotFound": "The thermal data was not found",
-    "telemetryNotFound": "The telemetry data was not found"
-  },
-  "post": {
-    "notFound": "The post not found"
-  },
   "user": {
     "notFound": "The user not found",
     "userAlreadyConfirmed": "Your account is already confirmed."

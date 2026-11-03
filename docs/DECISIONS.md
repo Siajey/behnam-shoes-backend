@@ -82,13 +82,13 @@
 
 ## D-011 — Pagination format
 - Date: 2026-10-28
-- Status: Proposed (cursor-based is Accepted by standards; response shape is open)
+- Status: Superseded by D-021
 - Decision: Cursor-based. Proposed shape: `{ data: [], pageInfo: { nextCursor, hasMore } }`, query `?cursor=&limit=`.
 - Open: opaque cursor encoding, max limit, filters or sorting combined with cursors, and whether the admin lists need offset pagination.
 
 ## D-012 — Error response shape
 - Date: 2026-10-28
-- Status: Open
+- Status: Superseded by D-022
 - Question: Plain custom shape vs RFC 9457 Problem Details; error codes machine-readable and translated via nestjs-i18n. Must be agreed with the frontend.
 
 ## D-013 — API versioning
@@ -132,3 +132,23 @@
 - Date: 2026-10-28
 - Status: Open
 - Question: Which modules are in version one (foundation only, or shop domain too)? See `PROJECT.md` section 4.
+
+## D-021 — Pagination response shape
+- Date: 2026-11-01
+- Status: Accepted
+- Decision: Cursor-based. Response is `{ data, meta: { nextCursor: string | null } }`. `nextCursor: null` marks the last page; there is no `hasMore`.
+- Reason: One field carries all the information; fewer fields to keep consistent.
+- Open: default and max `limit`, sorting and filters with cursors, admin lists needing offset pagination.
+
+## D-022 — Response and error envelopes
+- Date: 2026-11-01
+- Status: Accepted (current implementation); fixes Proposed
+- Decision: Success `{ message, code, timestamp, path, data, meta }` via `ApiResponseInterceptor`; error `{ message, code, timestamp, path }` via `GlobalExceptionFilter`. Business errors use `AppError` subclasses (`ValidationError`, `NotFoundError`, `UnAuthorizedError`, `ForbiddenError`, `ConflictError`, `NonOperationalError`); rate limiting uses `TooManyRequestsException`.
+- Proposed fixes (see `API_CONTRACT.md` section 3): stable uppercase `code` for every `HttpException`, pass `args` to i18n, `NonOperationalError` code to `INTERNAL_SERVER_ERROR`, confirm the throttler throws `TooManyRequestsException`.
+- Open: per-field `errors` for `VALIDATION_ERROR`, registry of feature-specific error codes.
+
+## D-023 — Language resolution
+- Date: 2026-11-01
+- Status: Accepted (current config); cleanup Proposed
+- Decision: Order: query `lang`/`l`, headers `x-custom-lang` and `x-lang`, cookies `NEXT_LOCALE`/`i18n_lang`/`lang`/`locale`, then `Accept-Language`; fallback `en`.
+- Proposed cleanup: remove duplicate resolver entries; keep a single custom header (`x-lang`). Frontend relies on the `NEXT_LOCALE` cookie by default.
