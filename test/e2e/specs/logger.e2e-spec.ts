@@ -1,174 +1,239 @@
 import { NestFastifyApplication } from '@nestjs/platform-fastify'
-import { beforeAll, describe, jest } from '@jest/globals'
+import { beforeAll, describe, expect, it, jest } from '@jest/globals'
+import { HttpStatus } from '@nestjs/common'
 
 import { TestContext, testContextE2e } from './test-context.e2e'
-import {
-  IUserRepository,
-  User,
-  UserRole,
-  UserStatus,
-} from '@api/users/domain'
-import * as bcrypt from 'bcryptjs'
-import { createUniqueUsername } from '../../util/test.util'
-import { deserializeCookies } from '@common/util'
+import { IUserRepository, User, UserRole, UserStatus } from '@api/users/domain'
+import { LogMeta } from '@common/logger'
+import { createUser, loginWithOtp } from '../../util/test.util'
+
+interface CapturedLog extends LogMeta {
+  level: 'info' | 'warn' | 'error' | 'debug' | 'verbose'
+  message?: string
+  req?: {
+    method: string
+    url: string
+  }
+  res?: {
+    statusCode: number
+  }
+}
+
+interface CapturedLogs {
+  getLogs: () => CapturedLog[]
+  restore: () => void
+}
 
 describe('Logger (e2e)', () => {
   let ctx: TestContext
   let app: NestFastifyApplication
-  let admin: User
   let userRepository: IUserRepository
-  let loggedInAdminCookies: any
-  let loggedInAdminCsrf: any
 
   beforeAll(async () => {
     ctx = await testContextE2e()
     app = ctx.app
     userRepository = ctx.userRepository
-    const password = 'Poiuytrewq1'
-    const hashedPass = await bcrypt.hash(password, 10)
-    admin = await userRepository.save({
-      email: 'admin@gmail.com',
-      username: createUniqueUsername(),
-      passwordHash: hashedPass,
-      role: UserRole.ADMIN,
-      status: UserStatus.ACTIVE,
-      createdAt: new Date(),
-    } as User)
-    const loginResult = await app.inject({
-      method: 'POST',
-      url: '/auth/login',
-      payload: {
-        emailOrUsername: 'admin@gmail.com',
-        password: password,
-      },
-    })
-    loggedInAdminCookies = loginResult.headers['set-cookie']
-    loggedInAdminCsrf =
-      loginResult.cookies?.['csrf_token'] ||
-      deserializeCookies(loggedInAdminCookies)['csrf_token']
   })
 
-  function captureLogs(): { getLogs: () => any[]; restore: () => void } {
+  function captureLogs(): CapturedLogs {
     const written: string[] = []
+
     const stdoutSpy = jest
       .spyOn(process.stdout, 'write')
       .mockImplementation((chunk) => {
-        written.push(chunk.toString())
+        written.push(
+          typeof chunk === 'string'
+            ? chunk
+            : Buffer.isBuffer(chunk)
+              ? chunk.toString()
+              : Buffer.from(chunk).toString(),
+        )
+
         return true
       })
 
     return {
       getLogs: () =>
         written
-          .map((line) => {
-            try {
-              return JSON.parse(line)
-            } catch {
-              return null
-            }
-          })
-          .filter(Boolean),
+          .flatMap((line) =>
+            line
+              .split('\n')
+              .filter(Boolean)
+              .map((entry) => {
+                try {
+                  return JSON.parse(entry) as CapturedLog
+                } catch {
+                  return null
+                }
+              }),
+          )
+          .filter((log): log is CapturedLog => log !== null),
+
       restore: () => stdoutSpy.mockRestore(),
     }
   }
 
-  it('should log request completion for an unknown route', async () => {
+  async function withCapturedLogs(
+    callback: (getLogs: CapturedLogs['getLogs']) => Promise<void>,
+  ): Promise<void> {
     const { getLogs, restore } = captureLogs()
 
-    await app.inject({ method: 'GET', url: '/auth/login' })
-
-    const requestLog = getLogs().find((log) => log?.res)
-
-    expect(requestLog).toMatchObject({
-      level: 'info',
-      req: { method: 'GET', url: '/auth/login' },
-      res: { statusCode: 404 },
-    })
-
-    restore()
-  })
-
-  it('should log a session validation failure and request completion', async () => {
-    const { getLogs, restore } = captureLogs()
-
-    await app.inject({
-      method: 'POST',
-      url: '/auth/change-password',
-      headers: {
-        'set-cookie': loggedInAdminCookies.filter((cookie) =>
-          cookie.startsWith('csrf_secret'),
-        ),
-        'x-csrf-token': loggedInAdminCsrf,
-      },
-    })
-
-    const logs = getLogs()
-    const sessionLog = logs.find((log) => log?.module === 'SessionValidator')
-    const requestLog = logs.find((log) => log?.res)
-
-    expect(sessionLog).toMatchObject({
-      level: 'warn',
-      module: 'SessionValidator',
-      event: 'Session.Validate',
-      operation: 'session',
-      req: { method: 'POST', url: '/auth/change-password' },
-      message: 'Session validation failed: access token is missing',
-    })
-
-    expect(requestLog).toMatchObject({
-      level: 'info',
-      req: { method: 'POST', url: '/auth/change-password' },
-      res: { statusCode: 401 },
-    })
-
-    restore()
-  })
-
-  it('should log a csrf activation failure', async () => {
-    const { getLogs, restore } = captureLogs()
-    await app.inject({
-      method: 'POST',
-      url: '/auth/change-password',
-      headers: {
-        'set-cookie': loggedInAdminCookies,
-      },
-    })
-    const csrfLogs = getLogs().find((log) => log?.module === 'CSRFGuard')
-    expect(csrfLogs).toMatchObject({
-      level: 'warn',
-      module: 'CSRFGuard',
-      req: { method: 'POST', url: '/auth/change-password' },
-      message: 'The csrf token is invalid or missing',
-    })
-    restore()
-  })
-
-  it('should log global rate limit exceeded', async () => {
-    const { getLogs, restore } = captureLogs()
-    const makeRequest = () =>
-      app.inject({
-        method: 'GET',
-        url: '/health/live',
-      })
-    const promises: Promise<any>[] = []
-    for (let i = 0; i < 101; i++) {
-      promises.push(makeRequest())
+    try {
+      await callback(getLogs)
+    } finally {
+      restore()
     }
-    await Promise.all(promises)
-    const rateLimitLogs = getLogs().find(
-      (log) => log.module === 'CustomThrottlerGuard',
-    )
-    expect(rateLimitLogs).toMatchObject({
-      level: 'warn',
-      module: 'CustomThrottlerGuard',
-      req: { method: 'GET', url: '/health/live' },
-      message: 'Rate limit exceeded',
-      data: {
-        ttl: 60000,
-        limit: 100,
-        key: expect.any(String),
-      },
+  }
+
+  describe('request completion', () => {
+    it('logs request completion for an unknown route', async () => {
+      await withCapturedLogs(async (getLogs) => {
+        const res = await app.inject({
+          method: 'GET',
+          url: '/auth/login',
+        })
+
+        expect(res.statusCode).toBe(HttpStatus.NOT_FOUND)
+
+        const requestLog = getLogs().find((log) => log.res)
+
+        expect(requestLog).toMatchObject({
+          level: 'info',
+          req: {
+            method: 'GET',
+            url: '/auth/login',
+          },
+          res: {
+            statusCode: HttpStatus.NOT_FOUND,
+          },
+        })
+      })
     })
-    restore()
+  })
+
+  describe('session validation', () => {
+    it('logs a session validation failure and request completion', async () => {
+      await withCapturedLogs(async (getLogs) => {
+        const res = await app.inject({
+          method: 'GET',
+          url: '/users/me',
+        })
+        expect(res.statusCode).toBe(HttpStatus.UNAUTHORIZED)
+
+        const logs = getLogs()
+
+        const sessionLog = logs.find(
+          (log) => log.module === 'SessionValidator',
+        )
+
+        const requestLog = logs.find(
+          (log) =>
+            log.res &&
+            log.req?.url === '/users/me',
+        )
+
+        expect(sessionLog).toMatchObject({
+          level: 'warn',
+          module: 'SessionValidator',
+          event: 'Session.Validate',
+          operation: 'session',
+          req: {
+            method: 'GET',
+            url: '/users/me',
+          },
+          message: 'Session validation failed: access token is missing',
+        })
+
+        expect(requestLog).toMatchObject({
+          level: 'info',
+          req: {
+            method: 'GET',
+            url: '/users/me',
+          },
+          res: {
+            statusCode: HttpStatus.UNAUTHORIZED,
+          },
+        })
+      })
+    })
+  })
+
+  describe('CSRF validation', () => {
+    it('logs a CSRF activation failure', async () => {
+      const user = await createUser(
+        userRepository,
+        UserStatus.ACTIVE,
+        UserRole.ADMIN,
+      )
+
+      const { cookies } = await loginWithOtp(app, user)
+
+      await withCapturedLogs(async (getLogs) => {
+        const res = await app.inject({
+          method: 'PATCH',
+          url: '/users/me',
+          cookies,
+        })
+
+        expect([
+          HttpStatus.FORBIDDEN,
+          HttpStatus.UNAUTHORIZED,
+        ]).toContain(res.statusCode)
+
+        const csrfLog = getLogs().find(
+          (log) => log.module === 'CSRFGuard',
+        )
+
+        expect(csrfLog).toMatchObject({
+          level: 'warn',
+          module: 'CSRFGuard',
+          req: {
+            method: 'PATCH',
+            url: '/users/me',
+          },
+          message: 'The csrf token is invalid or missing',
+        })
+      })
+    })
+  })
+
+  describe('rate limiting', () => {
+    it('logs when the global rate limit is exceeded', async () => {
+      await withCapturedLogs(async (getLogs) => {
+        const responses = await Promise.all(
+          Array.from({ length: 101 }, () =>
+            app.inject({
+              method: 'POST',
+              url: '/auth/login',
+            }),
+          ),
+        )
+
+        expect(
+          responses.some(
+            (res) => res.statusCode === HttpStatus.TOO_MANY_REQUESTS,
+          ),
+        ).toBe(true)
+
+        const rateLimitLog = getLogs().find(
+          (log) => log.module === 'CustomThrottlerGuard',
+        )
+
+        expect(rateLimitLog).toMatchObject({
+          level: 'warn',
+          module: 'CustomThrottlerGuard',
+          req: {
+            method: 'POST',
+            url: '/auth/login',
+          },
+          message: 'Rate limit exceeded',
+          data: {
+            ttl: 30000,
+            limit: 100,
+            key: expect.any(String),
+          },
+        })
+      })
+    })
   })
 })
