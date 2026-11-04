@@ -4,7 +4,7 @@ const config: Config = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   setupFilesAfterEnv: ['<rootDir>/test/e2e/setup/setup.ts'],
   rootDir: '../..',
-  testRegex: 'security.e2e-spec.ts$',
+  testRegex: 'user.e2e-spec.ts$',
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
