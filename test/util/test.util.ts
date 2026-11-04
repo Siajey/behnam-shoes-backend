@@ -12,14 +12,14 @@ export const newPhone = () =>
 
 export const createUser = (
     userRepository: IUserRepository,
-    status: UserStatus = UserStatus.ACTIVE,
-    role: UserRole = UserRole.USER,
+    user?: Partial<User>
 ) =>
     userRepository.save({
         phoneNumber: newPhone(),
-        status,
-        role,
+        status: UserStatus.ACTIVE,
+        role: UserRole.USER,
         createdAt: new Date(),
+        ...user
     } as User)
 
 export const requestOtp = (app: NestFastifyApplication, phoneNumber: string) =>
@@ -41,7 +41,7 @@ export const loginWithOtp = async (app: NestFastifyApplication, user: User) => {
     const res = await verifyOtp(app, user.phoneNumber, OTP)
     const setCookie = res.headers['set-cookie'] as string[]
     return {
-        phoneNumber:user.phoneNumber,
+        phoneNumber: user.phoneNumber,
         res,
         setCookie,
         cookies: deserializeCookies(setCookie),

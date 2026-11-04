@@ -162,8 +162,10 @@ describe('Logger (e2e)', () => {
     it('logs a CSRF activation failure', async () => {
       const user = await createUser(
         userRepository,
-        UserStatus.ACTIVE,
-        UserRole.ADMIN,
+          {
+              status: UserStatus.ACTIVE,
+              role: UserRole.ADMIN,
+          }
       )
 
       const { cookies } = await loginWithOtp(app, user)

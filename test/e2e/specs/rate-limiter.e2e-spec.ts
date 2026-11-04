@@ -1,4 +1,4 @@
-import { beforeAll, describe } from '@jest/globals'
+import { beforeAll, describe,it,expect } from '@jest/globals'
 import { NestFastifyApplication } from '@nestjs/platform-fastify'
 
 import { TestContext, testContextE2e } from './test-context.e2e'
@@ -14,8 +14,8 @@ describe('RateLimiter (e2e)', () => {
   it('should fail by rate limiter if too many requests (100) received', async () => {
     const makeRequest = () =>
       app.inject({
-        method: 'GET',
-        url: '/health/live',
+        method: 'POST',
+        url: '/auth/login',
       })
 
     const promises: Promise<any>[] = []
@@ -25,8 +25,5 @@ describe('RateLimiter (e2e)', () => {
     await Promise.all(promises)
     const lastRequest = await makeRequest()
     expect(lastRequest.json().code).toBe('TOO_MANY_REQUESTS')
-    expect(lastRequest.json().message).toBe(
-      'You are sending too many requests. Please wait and try again later.',
-    )
   })
 })

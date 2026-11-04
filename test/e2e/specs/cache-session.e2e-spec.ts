@@ -56,7 +56,10 @@ describe('Session cache (e2e)', () => {
         it.each([UserRole.USER, UserRole.ADMIN])(
             'caches the %s role and the active status',
             async (role) => {
-                const user = await createUser(userRepository, UserStatus.ACTIVE, role)
+                const user = await createUser(userRepository, {
+                    status: UserStatus.ACTIVE,
+                    role
+                })
 
                 await loginWithOtp(app, user)
 
@@ -132,13 +135,13 @@ describe('Session cache (e2e)', () => {
         })
 
         it('invalidates the cache after an admin changes the user role or status', async () => {
-            const user = await createUser(userRepository, UserStatus.ACTIVE)
+            const user = await createUser(userRepository, {status: UserStatus.ACTIVE})
             await loginWithOtp(app, user)
             expect(await sessionCache.getUserSession(user.id)).toMatchObject(
                 expectedSession(user),
             )
 
-            const admin = await createUser(userRepository, UserStatus.ACTIVE, UserRole.ADMIN)
+            const admin = await createUser(userRepository, {status: UserStatus.ACTIVE, role: UserRole.ADMIN})
             const adminLogin = await loginWithOtp(app, admin)
 
             const res = await app.inject({
@@ -157,13 +160,13 @@ describe('Session cache (e2e)', () => {
         })
 
         it('invalidates the cache after an admin deletes the user', async () => {
-            const user = await createUser(userRepository, UserStatus.ACTIVE)
+            const user = await createUser(userRepository, {status: UserStatus.ACTIVE})
             await loginWithOtp(app, user)
             expect(await sessionCache.getUserSession(user.id)).toMatchObject(
                 expectedSession(user),
             )
 
-            const admin = await createUser(userRepository, UserStatus.ACTIVE, UserRole.ADMIN)
+            const admin = await createUser(userRepository, {status: UserStatus.ACTIVE, role: UserRole.ADMIN})
             const adminLogin = await loginWithOtp(app, admin)
 
             const res = await app.inject({

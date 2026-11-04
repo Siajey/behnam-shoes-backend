@@ -1,495 +1,357 @@
-import { beforeAll, describe, expect, it } from '@jest/globals'
-import { NestFastifyApplication } from '@nestjs/platform-fastify'
-import { HttpStatus } from '@nestjs/common'
+import {HttpStatus} from '@nestjs/common'
+import {NestFastifyApplication} from '@nestjs/platform-fastify'
+import {beforeAll, describe, expect, it} from '@jest/globals'
 
-import { TestContext, testContextE2e } from './test-context.e2e'
-import { IUserRepository, User, UserResponse, UserRole, UserStatus, } from '@user/domain'
-import { USER_REPOSITORY } from '@common/di'
+import {TestContext, testContextE2e} from './test-context.e2e'
+import {IUserRepository, UserRole, UserStatus} from '@api/users/domain'
 
-import { generateRandomUsername, testLogInAdmin } from '../../util/test.util'
-import { DummyUserWithProfile } from '../../util/user-sample'
+import {createUser, loginWithOtp, newPhone} from '../../util/test.util'
 
 describe('Users listing (e2e)', () => {
-  let ctx: TestContext
-  let app: NestFastifyApplication
-  let userRepository: IUserRepository
-  let loggedInAdminCookies: any
-  let loggedInAdminCsrf: any
-  let user: UserResponse
+    let ctx: TestContext
+    let app: NestFastifyApplication
+    let userRepository: IUserRepository
+    let cookies: Record<string, string>
+    let csrfToken: string
 
-  beforeAll(async () => {
-    ctx = await testContextE2e()
-    app = ctx.app
-    userRepository = app.get(USER_REPOSITORY)
-    await testLogInAdmin(userRepository, app).then((authenticated) => {
-      loggedInAdminCookies = authenticated.loggedInCookies
-      loggedInAdminCsrf = authenticated.loggedInCsrf
-      user = authenticated.user
-    })
-  })
-
-  it('should return a sorted first page with a cursor when more results exist', async () => {
-    const seedCount = 30
-    const pageSize = 10
-
-    const saveUserPromises: Promise<UserResponse>[] = []
-    for (let i = 0; i < seedCount; i++) {
-      saveUserPromises.push(
-        userRepository.save({
-          ...DummyUserWithProfile,
-          username: `${String(i).padStart(2, '0')}_${generateRandomUsername()}`,
-          email: `${i}_${DummyUserWithProfile.email}`,
-        } as User),
-      )
-    }
-    await Promise.all(saveUserPromises)
-
-    const res = await app.inject({
-      method: 'GET',
-      url: `/users?pageSize=${pageSize}&sort=username`,
-      headers: {
-        'set-cookie': loggedInAdminCookies,
-        'x-csrf-token': loggedInAdminCsrf,
-      },
-    })
-    expect(res.statusCode).toBe(HttpStatus.OK)
-
-    const json = res.json()
-    expect(json.code).toBe('GET_USERS_SUCCESS')
-    expect(json.data.users.length).toBe(pageSize)
-    expect(json.data.nextCursor).toBeDefined()
-
-    const firstPageUsernames = json.data.users.map((u) => u.username)
-    const sorted = [...firstPageUsernames].sort()
-    expect(firstPageUsernames).toEqual(sorted)
-  })
-
-  it('should return a distinct, continuing second page when following the cursor', async () => {
-    const pageSize = 10
-
-    const firstRes = await app.inject({
-      method: 'GET',
-      url: `/users?pageSize=${pageSize}&sort=username`,
-      headers: {
-        'set-cookie': loggedInAdminCookies,
-        'x-csrf-token': loggedInAdminCsrf,
-      },
-    })
-    const firstPage = firstRes.json().data
-    const firstPageUsernames = firstPage.users.map((u) => u.username)
-    const cursor = firstPage.nextCursor
-    expect(cursor).toBeDefined()
-
-    const secondRes = await app.inject({
-      method: 'GET',
-      url: `/users?pageSize=${pageSize}&sort=username&nextCursor=${encodeURIComponent(cursor)}`,
-      headers: {
-        'set-cookie': loggedInAdminCookies,
-        'x-csrf-token': loggedInAdminCsrf,
-      },
-    })
-    expect(secondRes.statusCode).toBe(HttpStatus.OK)
-
-    const secondPage = secondRes.json().data
-    const secondPageUsernames = secondPage.users.map((u) => u.username)
-
-    expect(secondPageUsernames.length).toBe(pageSize)
-
-    const overlap = secondPageUsernames.filter((u) =>
-      firstPageUsernames.includes(u),
-    )
-    expect(overlap).toHaveLength(0)
-
-    const lastOfFirst = firstPageUsernames[firstPageUsernames.length - 1]
-    const firstOfSecond = secondPageUsernames[0]
-    expect(firstOfSecond > lastOfFirst).toBe(true)
-
-    expect(secondPageUsernames).toEqual([...secondPageUsernames].sort())
-  })
-
-  it('should return no nextCursor on the final page', async () => {
-    let cursor: string | undefined
-    let lastPage: any
-    const pageSize = 15
-
-    do {
-      const url = cursor
-        ? `/users?pageSize=${pageSize}&sort=username&nextCursor=${encodeURIComponent(cursor)}`
-        : `/users?pageSize=${pageSize}&sort=username`
-
-      const res = await app.inject({
-        method: 'GET',
-        url,
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      lastPage = res.json().data
-      cursor = lastPage.nextCursor
-    } while (cursor)
-
-    expect(lastPage.nextCursor).toBeFalsy()
-    expect(lastPage.users.length).toBeGreaterThan(0)
-  })
-
-  describe('sort', () => {
-    it('should default to createdAt descending when no sort is provided', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=25',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
-
-      const users = res.json().data.users
-      const createdAts = users.map((u) => new Date(u.createdAt).getTime())
-      const sortedDesc = [...createdAts].sort((a, b) => b - a)
-      expect(createdAts).toEqual(sortedDesc)
+    const adminHeaders = () => ({
+        'x-csrf-token': csrfToken,
     })
 
-    it('should sort ascending when direction is specified as asc', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=25&sort=username:asc',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+    const listUsers = (query = '') =>
+        app.inject({
+            method: 'GET',
+            url: `/users${query ? `?${query}` : ''}`,
+            cookies,
+            headers: adminHeaders(),
+        })
 
-      const usernames = res.json().data.users.map((u) => u.username)
-      expect(usernames).toEqual([...usernames].sort())
+    beforeAll(async () => {
+        ctx = await testContextE2e()
+        app = ctx.app
+        userRepository = ctx.userRepository
+
+        const admin = await createUser(userRepository, {
+            phoneNumber: newPhone(),
+            role: UserRole.ADMIN,
+            status: UserStatus.ACTIVE,
+        })
+
+        const authenticated = await loginWithOtp(app, admin)
+        cookies = authenticated.cookies
+        csrfToken = authenticated.csrfToken
+
+        await Promise.all(
+            Array.from({length: 30}, () =>
+                createUser(userRepository),
+            ),
+        )
     })
 
-    it('should sort descending when direction is specified as desc', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=25&sort=username:desc',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+    describe('cursor pagination', () => {
+        it('returns a sorted first page with a cursor when more results exist', async () => {
+            const pageSize = 10
+            const res = await listUsers(`pageSize=${pageSize}&sort=phoneNumber`)
 
-      const usernames = res.json().data.users.map((u) => u.username)
-      const sortedDesc = [...usernames].sort().reverse()
-      expect(usernames).toEqual(sortedDesc)
+            expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(res.json()).toMatchObject({
+                code: 'GET_USERS_SUCCESS',
+            })
+            expect(res.json().data.users).toHaveLength(pageSize)
+            expect(res.json().data.nextCursor).toBeDefined()
+
+            const phoneNumbers = res.json().data.users.map((user: any) => user.phoneNumber)
+
+            expect(phoneNumbers).toEqual([...phoneNumbers].sort())
+        })
+
+        it('returns a distinct, continuing second page when following the cursor', async () => {
+            const pageSize = 10
+
+            const firstRes = await listUsers(`pageSize=${pageSize}&sort=phoneNumber`)
+            const firstPage = firstRes.json().data
+            const firstPagePhoneNumbers = firstPage.users.map((user: any) => user.phoneNumber)
+
+            expect(firstPage.nextCursor).toBeDefined()
+
+            const secondRes = await listUsers(
+                `pageSize=${pageSize}&sort=phoneNumber&nextCursor=${encodeURIComponent(firstPage.nextCursor)}`,
+            )
+
+            expect(secondRes.statusCode).toBe(HttpStatus.OK)
+
+            const secondPage = secondRes.json().data
+            const secondPagePhoneNumbers = secondPage.users.map((user: any) => user.phoneNumber)
+
+            expect(secondPagePhoneNumbers).toHaveLength(pageSize)
+            expect(secondPagePhoneNumbers.some((phoneNumber: string) =>
+                firstPagePhoneNumbers.includes(phoneNumber),
+            )).toBe(false)
+
+            expect(secondPagePhoneNumbers[0] > firstPagePhoneNumbers.at(-1)).toBe(true)
+            expect(secondPagePhoneNumbers).toEqual([...secondPagePhoneNumbers].sort())
+        })
+
+        it('returns no nextCursor on the final page', async () => {
+            const pageSize = 15
+            const visitedCursors = new Set<string>()
+            let cursor: string | undefined
+            let lastPage: any
+
+            do {
+                const query = cursor
+                    ? `pageSize=${pageSize}&sort=phoneNumber&nextCursor=${encodeURIComponent(cursor)}`
+                    : `pageSize=${pageSize}&sort=phoneNumber`
+
+                const res = await listUsers(query)
+
+                expect(res.statusCode).toBe(HttpStatus.OK)
+
+                lastPage = res.json().data
+                cursor = lastPage.nextCursor
+
+                if (cursor) {
+                    expect(visitedCursors.has(cursor)).toBe(false)
+                    visitedCursors.add(cursor)
+                }
+            } while (cursor)
+
+            expect(lastPage.nextCursor).toBeFalsy()
+            expect(lastPage.users.length).toBeGreaterThan(0)
+        })
     })
 
-    it('should apply the first field as primary sort when multiple fields are given', async () => {
-      const tag = generateRandomUsername()
-      await Promise.all([
-        userRepository.save({
-          ...DummyUserWithProfile,
-          username: `b_${tag}`,
-          email: `b_${tag}@${DummyUserWithProfile.email.split('@')[1]}`,
-          status: UserStatus.ACTIVE,
-        } as User),
-        userRepository.save({
-          ...DummyUserWithProfile,
-          username: `a_${tag}`,
-          email: `a_${tag}@${DummyUserWithProfile.email.split('@')[1]}`,
-          status: UserStatus.ACTIVE,
-        } as User),
-        userRepository.save({
-          ...DummyUserWithProfile,
-          username: `c_${tag}`,
-          email: `c_${tag}@${DummyUserWithProfile.email.split('@')[1]}`,
-          status: UserStatus.INACTIVE,
-        } as User),
-      ])
+    describe('sorting', () => {
+        it('defaults to createdAt descending when no sort is provided', async () => {
+            const res = await listUsers('pageSize=25')
 
-      const res = await app.inject({
-        method: 'GET',
-        url: `/users?pageSize=100&sort=status:asc,username:asc`,
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(res.statusCode).toBe(HttpStatus.OK)
 
-      const users: { username: string; status: string }[] =
-        res.json().data.users
-      const taggedUsers = users.filter((u) => u.username.includes(tag))
-      expect(taggedUsers.map((u) => u.username)).toEqual([
-        `a_${tag}`,
-        `b_${tag}`,
-        `c_${tag}`,
-      ])
+            const createdAts = res.json().data.users.map(
+                (user: any) => new Date(user.createdAt).getTime(),
+            )
 
-      const statuses = users.map((u) => u.status)
-      const uniqueStatusRunLengths = statuses.filter(
-        (s, i) => i === 0 || s !== statuses[i - 1],
-      )
-      // status column is grouped (not interleaved) across the whole page
-      expect(new Set(uniqueStatusRunLengths).size).toBeLessThanOrEqual(
-        new Set(statuses).size,
-      )
+            expect(createdAts).toEqual(
+                [...createdAts].sort((a, b) => b - a),
+            )
+        })
+
+        it('sorts ascending when direction is specified as asc', async () => {
+            const res = await listUsers('pageSize=25&sort=phoneNumber:asc')
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+
+            const phoneNumbers = res.json().data.users.map((user: any) => user.phoneNumber)
+
+            expect(phoneNumbers).toEqual([...phoneNumbers].sort())
+        })
+
+        it('sorts descending when direction is specified as desc', async () => {
+            const res = await listUsers('pageSize=25&sort=phoneNumber:desc')
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+
+            const phoneNumbers = res.json().data.users.map((user: any) => user.phoneNumber)
+
+            expect(phoneNumbers).toEqual([...phoneNumbers].sort().reverse())
+        })
+
+        it('applies multiple sort fields in the specified order', async () => {
+            const phonePrefix = '099'
+            const user1 = await createUser(userRepository, {
+                phoneNumber: `${phonePrefix}2`,
+                status: UserStatus.ACTIVE,
+            })
+            const user2 = await createUser(userRepository, {
+                phoneNumber: `${phonePrefix}1`,
+                status: UserStatus.ACTIVE,
+            })
+            const user3 = await createUser(userRepository, {
+                phoneNumber: `${phonePrefix}3`,
+                status: UserStatus.INACTIVE,
+            })
+
+            const res = await listUsers(
+                'pageSize=100&sort=status:asc,phoneNumber:asc',
+            )
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+
+            const users: { phoneNumber: string; status: string }[] =
+                res.json().data.users
+
+            const targetUsers = users.filter((user) =>
+                user.phoneNumber.startsWith(phonePrefix),
+            )
+
+            expect(targetUsers.map((user) => user.phoneNumber)).toEqual([
+                user2.phoneNumber,
+                user1.phoneNumber,
+                user3.phoneNumber,
+            ])
+        })
+
+        it('ignores unrecognized sort fields and falls back to the default sort', async () => {
+            const res = await listUsers(
+                'pageSize=25&sort=notARealField:asc',
+            )
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+
+            const createdAts = res.json().data.users.map(
+                (user: any) => new Date(user.createdAt).getTime(),
+            )
+
+            expect(createdAts).toEqual(
+                [...createdAts].sort((a, b) => b - a),
+            )
+        })
     })
 
-    it('should ignore unrecognized sort fields and fall back to default sort', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=25&sort=notARealField:asc',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+    describe('filtering', () => {
+        it('filters users by exact phoneNumber match', async () => {
+            const user = await createUser(userRepository)
 
-      const createdAts = res
-        .json()
-        .data.users.map((u) => new Date(u.createdAt).getTime())
-      const sortedDesc = [...createdAts].sort((a, b) => b - a)
-      expect(createdAts).toEqual(sortedDesc)
-    })
-  })
+            const res = await listUsers(
+                `phoneNumber=${encodeURIComponent(user.phoneNumber)}`,
+            )
 
-  describe('filter', () => {
-    it('should filter users by exact username match', async () => {
-      const username = `filt_${generateRandomUsername()}`
-      await userRepository.save({
-        ...DummyUserWithProfile,
-        username,
-        email: `${username}@${DummyUserWithProfile.email.split('@')[1]}`,
-      } as User)
+            expect(res.statusCode).toBe(HttpStatus.OK)
 
-      const res = await app.inject({
-        method: 'GET',
-        url: `/users?username=${encodeURIComponent(username)}`,
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+            const users = res.json().data.users
 
-      const users = res.json().data.users
-      expect(users.length).toBe(1)
-      expect(users[0].username).toBe(username)
-    })
+            expect(users).toHaveLength(1)
+            expect(users[0].phoneNumber).toBe(user.phoneNumber)
+        })
 
-    it('should filter users by exact email match', async () => {
-      const tag = generateRandomUsername()
-      const email = `${tag}@${DummyUserWithProfile.email.split('@')[1]}`
-      await userRepository.save({
-        ...DummyUserWithProfile,
-        username: tag,
-        email,
-      } as User)
+        it('filters users by role', async () => {
+            const user = await createUser(userRepository, {
+                role: UserRole.ADMIN,
+            })
 
-      const res = await app.inject({
-        method: 'GET',
-        url: `/users?email=${encodeURIComponent(email)}`,
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+            const res = await listUsers('pageSize=100&role=admin')
 
-      const users = res.json().data.users
-      expect(users.length).toBe(1)
-      expect(users[0].email).toBe(email)
-    })
+            expect(res.statusCode).toBe(HttpStatus.OK)
 
-    it('should filter users by role', async () => {
-      const tag = generateRandomUsername()
-      await userRepository.save({
-        ...DummyUserWithProfile,
-        username: tag,
-        email: `${tag}@${DummyUserWithProfile.email.split('@')[1]}`,
-        role: UserRole.ADMIN,
-      } as User)
+            const users = res.json().data.users
 
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=100&role=admin',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(users.every((user: any) => user.role === 'admin')).toBe(true)
+            expect(users.some((u: any) => u.phoneNumber === user.phoneNumber)).toBe(true)
+        })
 
-      const users = res.json().data.users
-      expect(users.every((u) => u.role === 'admin')).toBe(true)
-      expect(users.some((u) => u.username === tag)).toBe(true)
-    })
+        it('filters users by status', async () => {
+            const user = await createUser(userRepository, {
+                status: UserStatus.INACTIVE,
+            })
 
-    it('should filter users by status', async () => {
-      const tag = generateRandomUsername()
-      await userRepository.save({
-        ...DummyUserWithProfile,
-        username: tag,
-        email: `${tag}@${DummyUserWithProfile.email.split('@')[1]}`,
-        status: UserStatus.INACTIVE,
-      } as User)
+            const res = await listUsers('pageSize=100&status=inactive')
 
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=100&status=inactive',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(res.statusCode).toBe(HttpStatus.OK)
 
-      const users = res.json().data.users
-      expect(users.every((u) => u.status === 'inactive')).toBe(true)
-      expect(users.some((u) => u.username === tag)).toBe(true)
+            const users = res.json().data.users
+
+            expect(users.every((user: any) => user.status === 'inactive')).toBe(true)
+            expect(users.some((u: any) => u.phoneNumber === user.phoneNumber)).toBe(true)
+        })
+
+        it('combines multiple filters with AND semantics', async () => {
+            const matchUser = await createUser(userRepository, {
+                role: UserRole.ADMIN,
+                status: UserStatus.INACTIVE,
+            })
+            const nomatchUser = await createUser(userRepository, {
+                role: UserRole.ADMIN,
+                status: UserStatus.ACTIVE,
+            })
+
+            const res = await listUsers(
+                'pageSize=100&role=admin&status=inactive',
+            )
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+
+            const phoneNumbers = res.json().data.users.map((user: any) => user.phoneNumber)
+
+            expect(phoneNumbers).toContain(matchUser.phoneNumber)
+            expect(phoneNumbers).not.toContain(nomatchUser.phoneNumber)
+        })
+
+        it('filters users created before a given createdAt using the lt operator', async () => {
+            const threshold = new Date().toISOString()
+
+            const res = await listUsers(
+                `pageSize=100&sort=createdAt:desc&createdAt=${encodeURIComponent(`[lt]${threshold}`)}`,
+            )
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+
+            const users: { createdAt: string }[] = res.json().data.users
+
+            expect(
+                users.every(
+                    (user) =>
+                        new Date(user.createdAt).getTime() <
+                        new Date(threshold).getTime(),
+                ),
+            ).toBe(true)
+        })
+
+        it('returns an empty result set when no user matches the filter', async () => {
+            const phoneNumber = newPhone()
+
+            const res = await listUsers(
+                `phoneNumber=${encodeURIComponent(phoneNumber)}`,
+            )
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+
+            const data = res.json().data
+
+            expect(data.users).toHaveLength(0)
+            expect(data.nextCursor).toBeFalsy()
+        })
+
+        it('ignores filter fields that are not in the allow-list', async () => {
+            const res = await listUsers('pageSize=5&password=irrelevant')
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(res.json().data.users).toHaveLength(5)
+        })
     })
 
-    it('should combine multiple filters with AND semantics', async () => {
-      const tag = generateRandomUsername()
-      await Promise.all([
-        userRepository.save({
-          ...DummyUserWithProfile,
-          username: `match_${tag}`,
-          email: `match_${tag}@${DummyUserWithProfile.email.split('@')[1]}`,
-          role: UserRole.ADMIN,
-          status: UserStatus.INACTIVE,
-        } as User),
-        userRepository.save({
-          ...DummyUserWithProfile,
-          username: `nomatch_${tag}`,
-          email: `nomatch_${tag}@${DummyUserWithProfile.email.split('@')[1]}`,
-          role: UserRole.ADMIN,
-          status: UserStatus.ACTIVE,
-        } as User),
-      ])
+    describe('pagination parameters', () => {
+        it('defaults to a pageSize of 10 when omitted', async () => {
+            const res = await listUsers()
 
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=100&role=admin&status=inactive',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(res.json().data.users).toHaveLength(10)
+        })
 
-      const usernames = res.json().data.users.map((u) => u.username)
-      expect(usernames).toContain(`match_${tag}`)
-      expect(usernames).not.toContain(`nomatch_${tag}`)
+        it('caps pageSize at the maximum allowed limit', async () => {
+            const res = await listUsers('pageSize=100000')
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(res.json().data.users.length).toBeLessThanOrEqual(100)
+        })
+
+        it('ignores a malformed cursor and returns the first page', async () => {
+            const res = await listUsers(
+                'pageSize=10&sort=phoneNumber&nextCursor=not-a-valid-cursor',
+            )
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(res.json().data.users).toHaveLength(10)
+        })
+
+        it('reports the correct users length alongside the returned page', async () => {
+            const pageSize = 7
+            const res = await listUsers(`pageSize=${pageSize}`)
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+
+            const data = res.json().data
+
+            expect(data.length).toBe(data.users.length)
+        })
     })
-
-    it('should filter users created before a given createdAt using the lt operator', async () => {
-      const threshold = new Date().toISOString()
-
-      const res = await app.inject({
-        method: 'GET',
-        url: `/users?pageSize=100&sort=createdAt:desc&createdAt=${encodeURIComponent(`[lt]${threshold}`)}`,
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
-
-      const users: { createdAt: string }[] = res.json().data.users
-      expect(
-        users.every(
-          (u) =>
-            new Date(u.createdAt).getTime() < new Date(threshold).getTime(),
-        ),
-      ).toBe(true)
-    })
-
-    it('should return an empty result set when no user matches the filter', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: `/users?username=${encodeURIComponent('does_not_exist_' + generateRandomUsername())}`,
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
-
-      const data = res.json().data
-      expect(data.users).toHaveLength(0)
-      expect(data.nextCursor).toBeFalsy()
-    })
-
-    it('should ignore filter fields that are not in the allow-list', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=5&password=irrelevant',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
-      expect(res.json().data.users.length).toBe(5)
-    })
-  })
-
-  describe('pagination', () => {
-    it('should default to a pageSize of 10 when omitted', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
-      expect(res.json().data.users.length).toBe(10)
-    })
-
-    it('should cap pageSize at the maximum allowed limit', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=100000',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
-      expect(res.json().data.users.length).toBeLessThanOrEqual(100)
-    })
-
-    it('should ignore a malformed cursor and return the first page', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/users?pageSize=10&sort=username&nextCursor=not-a-valid-cursor',
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
-      expect(res.json().data.users.length).toBe(10)
-    })
-
-    it('should report the correct users length alongside the returned page', async () => {
-      const pageSize = 7
-
-      const res = await app.inject({
-        method: 'GET',
-        url: `/users?pageSize=${pageSize}`,
-        headers: {
-          'set-cookie': loggedInAdminCookies,
-          'x-csrf-token': loggedInAdminCsrf,
-        },
-      })
-      expect(res.statusCode).toBe(HttpStatus.OK)
-
-      const data = res.json().data
-      expect(data.length).toBe(data.users.length)
-    })
-  })
 })

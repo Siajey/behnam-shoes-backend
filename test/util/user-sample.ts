@@ -1,25 +1,34 @@
-export const DummyUser = {
-  email: 'jane.doe@zalvolt.com',
-  username: 'jane_doe',
-  passwordHash: '$2a$10$examplehashvaluegoeshereforseedingonly',
-  role: 'user',
-  status: 'active',
-}
+import {Address, Profile, User, UserRole, UserStatus} from "@api/users/domain";
 
-export const DummyProfile = {
-  firstName: 'Jane',
-  lastName: 'Doe',
-  bio: 'Renewable energy enthusiast and homeowner monitoring my Powerwall setup.',
-  avatar: 'https://cdn.zalvolt.com/avatars/jane-doe.png',
-  address: {
-    street: '123 Sonnenallee',
+export const DummyAddress = new Address({
+    id: 'addr_1',
+    profileId: 'prof_1',
+    province: 'Bavaria',
     city: 'Nuremberg',
-    state: 'Bavaria',
-    country: 'DE',
+    street: '123 Sonnenallee',
     postalCode: '90402',
-  },
-}
-export const DummyUserWithProfile = {
-  ...DummyUser,
-  profile: DummyProfile,
-}
+    isDefault: true,
+    createdAt: new Date(),
+})
+
+export const DummyProfile = new Profile({
+    id: 'prof_1',
+    userId: 'user_1',
+    firstName: 'Jane',
+    lastName: 'Doe',
+    createdAt: new Date(),
+
+})
+
+export const DummyUser = new User({
+    id: 'user_1',
+    phoneNumber: '+4915123456789',
+    role: UserRole.USER,
+    status: UserStatus.ACTIVE,
+    createdAt: new Date(),
+})
+
+export const DummyUserWithProfile = new User({
+    ...DummyUser,
+    profile: DummyProfile,
+})
