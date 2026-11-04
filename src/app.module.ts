@@ -26,7 +26,7 @@ import {UserModule} from "@api/users";
         I18nModule.forRootAsync({
             imports: [CustomConfigModule],
             useFactory: () => ({
-                fallbackLanguage: 'fa',
+                fallbackLanguage: process.env.NODE_ENV === 'test' ? 'en' : 'fa',
                 loaderOptions: {
                     path: join(__dirname, './common/i18n'),
                     watch: true,
