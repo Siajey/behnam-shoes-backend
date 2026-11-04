@@ -3,11 +3,13 @@ import {IUserRepository, User, UserStatus} from '@api/users/domain'
 import {ILogger} from '@common/logger'
 import {ValidationError} from '@common/errors'
 import {IVerifyOtpUseCase} from "@otp/application";
+import {SessionCacheService} from "@api/session/application";
 
 export class VerifyUserUseCase implements IVerifyUser {
     constructor(
         private readonly userRepository: IUserRepository,
         private readonly verifyOtpUsecase: IVerifyOtpUseCase,
+        private readonly sessionCache: SessionCacheService,
         private readonly logger: ILogger,
     ) {
     }
@@ -21,7 +23,7 @@ export class VerifyUserUseCase implements IVerifyUser {
 
         if (!user) {
             throw new ValidationError({
-                message: 'errors.validation.User_Not_Found',
+                message: 'errors.user.notFound',
                 code: 'User_Not_Found',
             })
         }
@@ -32,7 +34,8 @@ export class VerifyUserUseCase implements IVerifyUser {
             userId: user.id,
         })
 
-        return user
+        await this.sessionCache.setUserSession(user.id, user)
 
+        return user
     }
 }

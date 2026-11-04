@@ -1,14 +1,13 @@
 import { NestFastifyApplication } from '@nestjs/platform-fastify'
-import { beforeAll, describe } from '@jest/globals'
+import { beforeAll, describe, jest } from '@jest/globals'
 
 import { TestContext, testContextE2e } from './test-context.e2e'
 import {
   IUserRepository,
   User,
-  UserResponse,
   UserRole,
   UserStatus,
-} from '@user/domain'
+} from '@api/users/domain'
 import * as bcrypt from 'bcryptjs'
 import { createUniqueUsername } from '../../util/test.util'
 import { deserializeCookies } from '@common/util'
@@ -16,7 +15,7 @@ import { deserializeCookies } from '@common/util'
 describe('Logger (e2e)', () => {
   let ctx: TestContext
   let app: NestFastifyApplication
-  let admin: UserResponse
+  let admin: User
   let userRepository: IUserRepository
   let loggedInAdminCookies: any
   let loggedInAdminCsrf: any

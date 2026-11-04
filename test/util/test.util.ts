@@ -1,122 +1,50 @@
-import axios, { isAxiosError } from 'axios'
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util'
-import { NestFastifyApplication } from '@nestjs/platform-fastify'
-import * as fs from 'node:fs'
-import { createReadStream } from 'node:fs'
-import * as bcrypt from 'bcryptjs'
+import {NestFastifyApplication} from "@nestjs/platform-fastify";
 
-import { FileService, StorageType } from '@common/file'
-import { AVATAR_UPLOADS_PATH } from '@common/constants'
-import { IUserRepository, User, UserRole, UserStatus } from '@user/domain'
-import { deserializeCookies } from '@common/util'
+import {IUserRepository, User, UserRole, UserStatus} from "@api/users/domain";
+import {deserializeCookies} from "@common/util";
 
-export const deleteUploadedAvatarImages = async (fileService: FileService) => {
-  const files = await fileService.listFiles(AVATAR_UPLOADS_PATH, 'local')
-  if (files && files.length > 0)
-    await fileService.deleteFile(
-      files.map((path) => `test${AVATAR_UPLOADS_PATH}/${path}`),
-      'local',
-    )
-}
 
-export const createUniqueUsername = () => {
-  const random = randomStringGenerator()
-  return 'u_' + random.slice(0, 15)
-}
+export const OTP = '12345'
+export const WRONG_OTP = '00000'
 
-export const testUploadFileWithPresignedUrl = async (
-  app: NestFastifyApplication,
-  endpoint: string,
-  filePath: string,
-  loggedInCookie: any,
-  loggedInCsrf: any,
-) => {
-  const response = await app.inject({
-    url: endpoint + `?key=${filePath.split('/').pop()}`,
-    method: 'POST',
-    headers: {
-      'set-cookie': loggedInCookie,
-      'x-csrf-token': loggedInCsrf,
-    },
-  })
-  const presignedUrl = await response.json()
-  const stats = fs.statSync(filePath)
-  const fileStream = createReadStream(filePath)
-  try {
-    return await axios.put(presignedUrl.data, fileStream, {
-      headers: {
-        'Content-Type': 'image/png',
-        'Content-Length': stats.size,
-      },
-      maxBodyLength: Infinity,
+export const newPhone = () =>
+    `09${String(Math.floor(Math.random() * 1e9)).padStart(9, '0')}`
+
+export const createUser = (
+    userRepository: IUserRepository,
+    status: UserStatus = UserStatus.ACTIVE,
+    role: UserRole = UserRole.USER,
+) =>
+    userRepository.save({
+        phoneNumber: newPhone(),
+        status,
+        role,
+        createdAt: new Date(),
+    } as User)
+
+export const requestOtp = (app: NestFastifyApplication, phoneNumber: string) =>
+    app.inject({
+        method: 'POST',
+        url: '/auth/login',
+        payload: {loginMethod: 'otp', credentials: {phoneNumber}},
     })
-  } catch (e) {
-    if (isAxiosError(e)) {
-      console.log(e.response.data)
-    } else console.log(e)
-  }
-}
 
-export const deleteUploadedImagesToCloud = async (
-  fileService: FileService,
-  storageType: StorageType,
-  path: string,
-) => {
-  const files = await fileService.listFiles(path, storageType)
-  if (files && files.length > 0)
-    await fileService.deleteFile(
-      files.map((key) => key),
-      storageType,
-    )
-}
+export const verifyOtp = (app: NestFastifyApplication, phoneNumber: string, otp: string) =>
+    app.inject({
+        method: 'POST',
+        url: '/auth/verify-login-otp',
+        payload: {phoneNumber, otp},
+    })
 
-export const testLogInAdmin = async (
-  userRepository: IUserRepository,
-  app: NestFastifyApplication,
-) => {
-  const password = 'Poiuytrewq1'
-  const hashedPass = await bcrypt.hash(password, 10)
-  const user = await userRepository.save({
-    email: 'user@gmail.com',
-    username: createUniqueUsername(),
-    passwordHash: hashedPass,
-    role: UserRole.ADMIN,
-    status: UserStatus.ACTIVE,
-    createdAt: new Date(),
-  } as User)
-  const loginResult = await app.inject({
-    method: 'POST',
-    url: '/auth/login',
-    payload: {
-      emailOrUsername: 'user@gmail.com',
-      password: password,
-    },
-  })
-  const loggedInCookies = loginResult.headers['set-cookie']
-  const loggedInCsrf =
-    loginResult.cookies?.['csrf_token'] ||
-    deserializeCookies(loggedInCookies)['csrf_token']
-  return {
-    user,
-    loggedInCookies,
-    loggedInCsrf,
-    password,
-  }
-}
-
-export const testGetFileByUrl = async (path: string) => {
-  return await axios.get(path, {
-    responseType: 'arraybuffer',
-  })
-}
-
-export const delay = (delay = 1000) =>
-  new Promise((resolve) => {
-    return setTimeout(() => {
-      resolve(delay)
-    }, delay)
-  })
-
-export const generateRandomUsername = () => {
-  return 'user' + Math.random().toString(36).slice(2, 8)
+export const loginWithOtp = async (app: NestFastifyApplication, user: User) => {
+    await requestOtp(app, user.phoneNumber)
+    const res = await verifyOtp(app, user.phoneNumber, OTP)
+    const setCookie = res.headers['set-cookie'] as string[]
+    return {
+        phoneNumber:user.phoneNumber,
+        res,
+        setCookie,
+        cookies: deserializeCookies(setCookie),
+        csrfToken: res.json().data.csrfToken as string
+    }
 }

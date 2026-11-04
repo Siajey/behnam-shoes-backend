@@ -37,7 +37,7 @@ import {
     LOGOUT,
     REFRESH_TOKEN,
     SEND_LOGIN_OTP,
-    VERIFY_OTP,
+    VERIFY_USER_OTP,
 } from '@common/di'
 import {RefreshToken, ReqUser} from '@common/decorator'
 import {ISessionService} from '@api/session/application'
@@ -48,7 +48,7 @@ export default class AuthController {
     constructor(
         @Inject(AUTH_TOKEN_SERVICE)
         private readonly authTokenService: ISessionService,
-        @Inject(VERIFY_OTP)
+        @Inject(VERIFY_USER_OTP)
         private readonly verifyUser: IVerifyUser,
         @Inject(LOGIN)
         private readonly loginUseCase: ILogin,

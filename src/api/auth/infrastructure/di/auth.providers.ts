@@ -12,7 +12,7 @@ import {
     SEND_LOGIN_OTP,
     SESSION_CACHE_SERVICE, SMS_SERVICE,
     USER_REPOSITORY, VERIFY_OTP_USE_CASE,
-    VERIFY_OTP,
+    VERIFY_USER_OTP,
 } from '@common/di'
 import {
     CsrfTokenUsecase,
@@ -25,9 +25,10 @@ import {
 } from '@api/auth/application'
 
 export const AuthProviders = [
-    createProvider<VerifyUserUseCase>(VERIFY_OTP, VerifyUserUseCase, [
+    createProvider<VerifyUserUseCase>(VERIFY_USER_OTP, VerifyUserUseCase, [
         USER_REPOSITORY,
-        VERIFY_OTP_USE_CASE
+        VERIFY_OTP_USE_CASE,
+        SESSION_CACHE_SERVICE
     ]),
     createProvider<RefreshTokenUsecase>(REFRESH_TOKEN, RefreshTokenUsecase, [
         JWT_TOKEN_SERVICE,

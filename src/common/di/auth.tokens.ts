@@ -1,6 +1,6 @@
 export const LOGIN = Symbol('LOGIN')
 export const OTP_LOGIN = Symbol('OTP_LOGIN')
-export const VERIFY_OTP = Symbol('VERIFY_OTP')
+export const VERIFY_USER_OTP = Symbol('VERIFY_USER_OTP')
 export const REFRESH_TOKEN = Symbol('REFRESH_TOKEN')
 export const CSRF_TOKEN_USE_CASE = Symbol('CSRF_TOKEN_USE_CASE')
 export const SEND_LOGIN_OTP = Symbol('SEND_LOGIN_OTP')

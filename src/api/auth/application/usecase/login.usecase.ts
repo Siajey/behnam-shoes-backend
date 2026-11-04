@@ -11,7 +11,8 @@ export class LoginUsecase implements ILogin {
 
     async execute(loginBody: LoginBody): Promise<User> {
         const user = await this.otpStrategy.handleLogin(loginBody)
-        await this.sessionCache.setUserSession(user.id, user)
+        if (loginBody.loginMethod !== 'otp')
+            await this.sessionCache.setUserSession(user.id, user)
         return {
             id: user.id,
             phoneNumber: user.phoneNumber,

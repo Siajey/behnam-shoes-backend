@@ -1,160 +1,179 @@
-import { beforeAll, describe, expect } from '@jest/globals'
-import { TestContext, testContextE2e } from './test-context.e2e'
-import { NestFastifyApplication } from '@nestjs/platform-fastify'
-import { SESSION_CACHE_SERVICE } from '@common/di'
-import * as bcrypt from 'bcryptjs'
+import {NestFastifyApplication} from '@nestjs/platform-fastify'
+import {beforeAll, describe, expect, it} from '@jest/globals'
+import {HttpStatus} from '@nestjs/common'
 
-import { User, UserResponse, UserRole, UserStatus } from '@user/domain'
-import { createUniqueUsername, delay } from '../../util/test.util'
-import { SessionCacheService } from '@session/application'
-import { deserializeCookies } from '@common/util'
-import { HttpStatus } from '@nestjs/common'
+import {TestContext, testContextE2e} from './test-context.e2e'
+import {SESSION_CACHE_SERVICE} from '@common/di'
+import {SessionCacheService} from '@api/session/application'
+import {IUserRepository, User, UserRole, UserStatus} from '@api/users/domain'
+import {createUser, loginWithOtp, requestOtp, verifyOtp, WRONG_OTP} from "../../util/test.util";
 
-describe('Session (e2e)', () => {
-  let ctx: TestContext
-  let app: NestFastifyApplication
-  let sessionCacheService: SessionCacheService
-  let user: UserResponse
-  let password = 'Poiuytrewq1'
-  beforeAll(async () => {
-    ctx = await testContextE2e()
-    app = ctx.app
-    sessionCacheService = ctx.app.get(SESSION_CACHE_SERVICE)
-    const hashedPass = await bcrypt.hash(password, 10)
-    user = await ctx.userRepository.save({
-      email: 'user@gmail.com',
-      username: createUniqueUsername(),
-      passwordHash: hashedPass,
-      role: UserRole.ADMIN,
-      status: UserStatus.ACTIVE,
-      createdAt: new Date(),
-    } as User)
-  })
+describe('Session cache (e2e)', () => {
+    let ctx: TestContext
+    let app: NestFastifyApplication
+    let userRepository: IUserRepository
+    let sessionCache: SessionCacheService
 
-  it('Should cache user session after login', async () => {
-    await app.inject({
-      method: 'POST',
-      url: '/auth/login',
-      payload: {
-        emailOrUsername: 'user@gmail.com',
-        password: password,
-      },
-    })
-    const cachedObj = await sessionCacheService.getUserSession(user.id)
-    expect(cachedObj).toMatchObject({
-      updatedAt: expect.any(String),
-      status: 'active',
-      role: 'admin',
-    })
-  })
-
-  it('Should invalidate cache after change password', async () => {
-    const loginRes = await app.inject({
-      method: 'POST',
-      url: '/auth/login',
-      payload: {
-        emailOrUsername: user.email,
-        password: password,
-      },
+    const expectedSession = (user: User) => ({
+        updatedAt: expect.any(String),
+        status: user.status,
+        role: user.role,
     })
 
-    const cookies = loginRes.headers['set-cookie']
-    const csrfToken =
-      loginRes.cookies?.['csrf_token'] ||
-      deserializeCookies(cookies)['csrf_token']
-    expect(cookies).toBeDefined()
-    const newPass = 'POiuytrewq1'
-    const changeRes = await app.inject({
-      method: 'POST',
-      url: '/auth/change-password',
-      payload: {
-        currentPassword: password,
-        newPassword: newPass,
-        confirmPassword: newPass,
-      },
-      headers: {
-        'x-csrf-token': csrfToken,
-        'set-cookie': cookies,
-      },
-    })
-    expect(changeRes.statusCode).toBe(200)
-    password = newPass
-    const cachedObj = await sessionCacheService.getUserSession(user.id)
-    expect(cachedObj).toBeUndefined()
-  })
-
-  it('Should invalidate cache after logout', async () => {
-    await delay(1000)
-    const loginRes = await app.inject({
-      method: 'POST',
-      url: '/auth/login',
-      payload: {
-        emailOrUsername: user.email,
-        password: password,
-      },
+    beforeAll(async () => {
+        ctx = await testContextE2e()
+        app = ctx.app
+        userRepository = ctx.userRepository
+        sessionCache = ctx.app.get(SESSION_CACHE_SERVICE)
     })
 
-    let cachedObj = await sessionCacheService.getUserSession(user.id)
+    describe('caching on login', () => {
+        it('has no cached session before the user logs in', async () => {
+            const user = await createUser(userRepository)
 
-    expect(cachedObj).toMatchObject({
-      updatedAt: expect.any(String),
-      status: 'active',
-      role: 'admin',
+            expect(await sessionCache.getUserSession(user.id)).toBeUndefined()
+        })
+
+        it('does not cache a session when only an OTP is requested', async () => {
+            const user = await createUser(userRepository)
+
+            await requestOtp(app, user.phoneNumber)
+
+            expect(await sessionCache.getUserSession(user.id)).toBeUndefined()
+        })
+
+        it('caches the session after a successful OTP login', async () => {
+            const user = await createUser(userRepository)
+
+            const {res} = await loginWithOtp(app, user)
+
+            expect(res.statusCode).toBe(200)
+            expect(await sessionCache.getUserSession(user.id)).toMatchObject(
+                expectedSession(user),
+            )
+        })
+
+        it.each([UserRole.USER, UserRole.ADMIN])(
+            'caches the %s role and the active status',
+            async (role) => {
+                const user = await createUser(userRepository, UserStatus.ACTIVE, role)
+
+                await loginWithOtp(app, user)
+
+                expect(await sessionCache.getUserSession(user.id)).toMatchObject({
+                    role,
+                    status: UserStatus.ACTIVE,
+                    updatedAt: expect.any(String),
+                })
+            },
+        )
+
+        it('does not cache a session after a wrong OTP', async () => {
+            const user = await createUser(userRepository)
+            await requestOtp(app, user.phoneNumber)
+
+            const res = await verifyOtp(app, user.phoneNumber, WRONG_OTP)
+
+            expect([400, 401]).toContain(res.statusCode)
+            expect(await sessionCache.getUserSession(user.id)).toBeUndefined()
+        })
     })
-    const cookies = loginRes.headers['set-cookie']
-    const csrfToken =
-      loginRes.cookies?.['csrf_token'] ||
-      deserializeCookies(cookies)['csrf_token']
-    expect(cookies).toBeDefined()
 
-    const changeRes = await app.inject({
-      method: 'POST',
-      url: '/auth/logout',
-      headers: {
-        'x-csrf-token': csrfToken,
-        'set-cookie': cookies,
-      },
+    describe('invalidation', () => {
+        it('invalidates the cache after logout', async () => {
+            const user = await createUser(userRepository)
+            const {cookies, csrfToken} = await loginWithOtp(app, user)
+            expect(await sessionCache.getUserSession(user.id)).toMatchObject(
+                expectedSession(user),
+            )
+
+            const res = await app.inject({
+                method: 'POST',
+                url: '/auth/logout',
+                cookies,
+                headers: {'x-csrf-token': csrfToken},
+            })
+
+            expect(res.statusCode).toBe(200)
+            expect(await sessionCache.getUserSession(user.id)).toBeUndefined()
+
+            const after = await app.inject({method: 'GET', url: '/users/me', cookies})
+            expect([401, 403]).toContain(after.statusCode)
+        })
+
+        it('does not invalidate the cache when logout is rejected', async () => {
+            const user = await createUser(userRepository)
+            const {cookies} = await loginWithOtp(app, user)
+
+            const res = await app.inject({method: 'POST', url: '/auth/logout', cookies})
+
+            expect([401, 403]).toContain(res.statusCode)
+            expect(await sessionCache.getUserSession(user.id)).toMatchObject(
+                expectedSession(user),
+            )
+        })
+
+        it('invalidates the cache after the user deletes their account', async () => {
+            const user = await createUser(userRepository)
+            const {cookies, csrfToken} = await loginWithOtp(app, user)
+            expect(await sessionCache.getUserSession(user.id)).toMatchObject(
+                expectedSession(user),
+            )
+
+            const res = await app.inject({
+                method: 'DELETE',
+                url: '/users/me',
+                cookies,
+                headers: {'x-csrf-token': csrfToken},
+            })
+
+            expect(res.statusCode).toBe(HttpStatus.NO_CONTENT)
+            expect(await sessionCache.getUserSession(user.id)).toBeUndefined()
+        })
+
+        it('invalidates the cache after an admin changes the user role or status', async () => {
+            const user = await createUser(userRepository, UserStatus.ACTIVE)
+            await loginWithOtp(app, user)
+            expect(await sessionCache.getUserSession(user.id)).toMatchObject(
+                expectedSession(user),
+            )
+
+            const admin = await createUser(userRepository, UserStatus.ACTIVE, UserRole.ADMIN)
+            const adminLogin = await loginWithOtp(app, admin)
+
+            const res = await app.inject({
+                method: 'PATCH',
+                url: `/users/${user.id}`,
+                cookies: adminLogin.cookies,
+                headers: {'x-csrf-token': adminLogin.csrfToken},
+                body: {
+                    status: 'inactive'
+                }
+            })
+            console.log(res.json())
+
+            expect(res.statusCode).toBe(HttpStatus.OK)
+            expect(await sessionCache.getUserSession(user.id)).toBeUndefined()
+        })
+
+        it('invalidates the cache after an admin deletes the user', async () => {
+            const user = await createUser(userRepository, UserStatus.ACTIVE)
+            await loginWithOtp(app, user)
+            expect(await sessionCache.getUserSession(user.id)).toMatchObject(
+                expectedSession(user),
+            )
+
+            const admin = await createUser(userRepository, UserStatus.ACTIVE, UserRole.ADMIN)
+            const adminLogin = await loginWithOtp(app, admin)
+
+            const res = await app.inject({
+                method: 'DELETE',
+                url: `/users/${user.id}`,
+                cookies: adminLogin.cookies,
+                headers: {'x-csrf-token': adminLogin.csrfToken},
+            })
+            expect(res.statusCode).toBe(HttpStatus.NO_CONTENT)
+            expect(await sessionCache.getUserSession(user.id)).toBeUndefined()
+        })
     })
-    expect(changeRes.statusCode).toBe(200)
-
-    cachedObj = await sessionCacheService.getUserSession(user.id)
-    expect(cachedObj).toBeUndefined()
-  })
-
-  it('Should invalidate cache after delete me', async () => {
-    const loginRes = await app.inject({
-      method: 'POST',
-      url: '/auth/login',
-      payload: {
-        emailOrUsername: user.email,
-        password: password,
-      },
-    })
-    await delay(1000)
-    let cachedObj = await sessionCacheService.getUserSession(user.id)
-    expect(cachedObj).toMatchObject({
-      updatedAt: expect.any(String),
-      status: 'active',
-      role: 'admin',
-    })
-
-    const cookies = loginRes.headers['set-cookie']
-    const csrfToken =
-      loginRes.cookies?.['csrf_token'] ||
-      deserializeCookies(cookies)['csrf_token']
-    expect(cookies).toBeDefined()
-
-    const res = await app.inject({
-      url: '/users/me',
-      method: 'DELETE',
-      headers: {
-        'set-cookie': cookies,
-        'x-csrf-token': csrfToken,
-      },
-    })
-    expect(res.statusCode).toBe(HttpStatus.NO_CONTENT)
-
-    cachedObj = await sessionCacheService.getUserSession(user.id)
-    expect(cachedObj).toBeUndefined()
-  })
 })

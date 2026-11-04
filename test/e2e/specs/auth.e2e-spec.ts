@@ -2,8 +2,9 @@ import {NestFastifyApplication} from '@nestjs/platform-fastify'
 import {beforeAll, describe, expect, it} from '@jest/globals'
 
 import {TestContext, testContextE2e} from './test-context.e2e'
-import {IUserRepository, User, UserRole, UserStatus} from '@api/users/domain'
+import {IUserRepository} from '@api/users/domain'
 import {deserializeCookies} from '@common/util'
+import {createUser, loginWithOtp, newPhone, requestOtp, verifyOtp} from "../../util/test.util"
 
 const OTP = '12345'
 const WRONG_OTP = '00000'
@@ -14,48 +15,6 @@ describe('AuthController (e2e)', () => {
     let app: NestFastifyApplication
     let userRepository: IUserRepository
 
-    const newPhone = () =>
-        `09${String(Math.floor(Math.random() * 1e9)).padStart(9, '0')}`
-
-    const createUser = async (status = UserStatus.ACTIVE) => {
-        const phoneNumber = newPhone()
-        await userRepository.save({
-            phoneNumber,
-            status,
-            role: UserRole.USER,
-            createdAt: new Date(),
-        } as User)
-        return phoneNumber
-    }
-
-    const requestOtp = (phoneNumber: string) =>
-        app.inject({
-            method: 'POST',
-            url: '/auth/login',
-            payload: {loginMethod: 'otp', credentials: {phoneNumber}},
-        })
-
-    const verifyOtp = (phoneNumber: string, otp: string) =>
-        app.inject({
-            method: 'POST',
-            url: '/auth/verify-login-otp',
-            payload: {phoneNumber, otp},
-        })
-
-    const loginWithOtp = async () => {
-        const phoneNumber = await createUser()
-        await requestOtp(phoneNumber)
-        const res = await verifyOtp(phoneNumber, OTP)
-        const setCookie = res.headers['set-cookie'] as string[]
-        return {
-            phoneNumber,
-            res,
-            setCookie,
-            cookies: deserializeCookies(setCookie),
-            csrfToken: res.json().data.csrfToken as string,
-        }
-    }
-
     beforeAll(async () => {
         ctx = await testContextE2e()
         app = ctx.app
@@ -64,7 +23,8 @@ describe('AuthController (e2e)', () => {
 
     describe('POST /auth/login (otp)', () => {
         it('sends an OTP to an existing user', async () => {
-            const res = await requestOtp(await createUser())
+            const user = await createUser(userRepository)
+            const res = await requestOtp(app,user.phoneNumber)
 
             expect(res.statusCode).toBe(200)
             expect(res.json()).toMatchObject({
@@ -75,7 +35,7 @@ describe('AuthController (e2e)', () => {
         })
 
         it('rejects an invalid phone number', async () => {
-            const res = await requestOtp('12345')
+            const res = await requestOtp(app,'12345')
 
             expect(res.statusCode).toBe(400)
             expect(res.json().code).toBe('VALIDATION_ERROR')
@@ -97,16 +57,16 @@ describe('AuthController (e2e)', () => {
 
     describe('GET /auth/send-login-otp/:phoneNumber', () => {
         it('re-sends an OTP', async () => {
-            const phoneNumber = await createUser()
+            const user = await createUser(userRepository)
             const res = await app.inject({
                 method: 'GET',
-                url: `/auth/send-login-otp/${phoneNumber}`,
+                url: `/auth/send-login-otp/${user.phoneNumber}`,
             })
 
             expect(res.statusCode).toBe(200)
             expect(res.json()).toMatchObject({
                 code: 'RESEND_LOGIN_OTP_SUCCESS',
-                path: `/auth/send-login-otp/${phoneNumber}`,
+                path: `/auth/send-login-otp/${user.phoneNumber}`,
                 data: null,
             })
         })
@@ -122,7 +82,8 @@ describe('AuthController (e2e)', () => {
 
     describe('POST /auth/verify-login-otp', () => {
         it('logs in with the correct OTP and sets the session cookies', async () => {
-            const {res, setCookie, cookies, csrfToken} = await loginWithOtp()
+            const user = await createUser(userRepository)
+            const {res, setCookie, cookies, csrfToken} = await loginWithOtp(app,user)
 
             expect(res.statusCode).toBe(200)
             expect(res.json()).toMatchObject({
@@ -142,7 +103,8 @@ describe('AuthController (e2e)', () => {
         })
 
         it('the session cookies give access to a protected route', async () => {
-            const {phoneNumber, cookies} = await loginWithOtp()
+            const user = await createUser(userRepository)
+            const {phoneNumber, cookies} = await loginWithOtp(app,user)
 
             const me = await app.inject({method: 'GET', url: '/users/me', cookies})
 
@@ -151,10 +113,10 @@ describe('AuthController (e2e)', () => {
         })
 
         it('rejects a wrong OTP and sets no session cookies', async () => {
-            const phoneNumber = await createUser()
-            await requestOtp(phoneNumber)
+            const user = await createUser(userRepository)
+            await requestOtp(app,user.phoneNumber)
 
-            const res = await verifyOtp(phoneNumber, WRONG_OTP)
+            const res = await verifyOtp(app,user.phoneNumber, WRONG_OTP)
 
             expect([400, 401]).toContain(res.statusCode)
             expect(
@@ -163,7 +125,8 @@ describe('AuthController (e2e)', () => {
         })
 
         it('rejects an OTP that was never requested for this phone number', async () => {
-            const res = await verifyOtp(await createUser(), OTP)
+            const user = await createUser(userRepository)
+            const res = await verifyOtp(app,user.phoneNumber, OTP)
 
             expect([400, 401]).toContain(res.statusCode)
         })
@@ -198,9 +161,9 @@ describe('AuthController (e2e)', () => {
 
     describe('POST /auth/refresh-token', () => {
         it('issues new access and refresh tokens', async () => {
-            const phoneNumber = await createUser()
-            await requestOtp(phoneNumber)
-            const res = await verifyOtp(phoneNumber, OTP)
+            const user = await createUser(userRepository)
+            await requestOtp(app,user.phoneNumber)
+            const res = await verifyOtp(app,user.phoneNumber, OTP)
             const setCookie = res.headers['set-cookie'] as string[]
             const cookies = deserializeCookies(setCookie)
             await sleep(1100)
@@ -237,7 +200,8 @@ describe('AuthController (e2e)', () => {
 
     describe('POST /auth/logout', () => {
         it('logs out, clears the cookies and invalidates the session', async () => {
-            const {cookies, csrfToken} = await loginWithOtp()
+            const user = await createUser(userRepository)
+            const {cookies, csrfToken} = await loginWithOtp(app,user)
 
             const before = await app.inject({method: 'GET', url: '/users/me', cookies})
             expect(before.statusCode).toBe(200)
@@ -265,7 +229,8 @@ describe('AuthController (e2e)', () => {
         })
 
         it('rejects logout without the CSRF header', async () => {
-            const {cookies} = await loginWithOtp()
+            const user = await createUser(userRepository)
+            const {cookies} = await loginWithOtp(app,user)
 
             const res = await app.inject({method: 'POST', url: '/auth/logout', cookies})
 
