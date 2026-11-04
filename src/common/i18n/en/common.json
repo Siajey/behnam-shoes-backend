@@ -6,7 +6,9 @@
     "logoutSuccess": "You have been logged out successfully, thank you for using our service",
     "signupSuccess": "{email} is signed up successfully, please check your email to activate your account",
     "tokensRefreshedSuccess": "Auth tokens refreshed successfully",
-    "verifyUserSuccess": "User verified successfully"
+    "verifyUserSuccess": "User verified successfully",
+    "otpVerifiedSuccess": "OTP verified successfully",
+    "otpSentSuccess": "OTP sent successfully"
   },
   "cta": {
     "loginByOtp": "Please login using OTP"

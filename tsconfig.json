@@ -27,14 +27,8 @@
       "@common/*": [
         "./src/common/*"
       ],
-      "@users/*": [
-        "./src/api/users/*"
-      ],
-      "@session/*": [
-        "./src/api/session/*"
-      ],
-      "@auth/*": [
-        "./src/api/auth/*"
+      "@otp/*": [
+        "./src/otp/*"
       ]
     }
   },

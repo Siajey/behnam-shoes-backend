@@ -28,7 +28,7 @@ export class SessionTokensService implements ISessionService {
         )
         const csrfCookie = this.generateCsrfCookie(isProd, csrfSecret)
         return {
-            cookies: [authCookies.accessCookie, authCookies.refreshCookie, ...csrfCookie],
+            cookies: [authCookies.accessCookie, authCookies.refreshCookie, csrfCookie],
             csrfToken: csrfToken
         }
     }
@@ -114,17 +114,16 @@ export class SessionTokensService implements ISessionService {
     generateCsrfCookie(
         isProd: boolean,
         csrfSecret: string,
-    ): CookieModel[] {
-        return [
-            {
-                key: 'csrf_secret',
-                value: csrfSecret,
-                httpOnly: true,
-                secure: isProd,
-                sameSite: 'strict',
-                path: '/',
-                maxAge: 3600,
-            }
-        ]
+    ): CookieModel {
+        return {
+            key: 'csrf_secret',
+            value: csrfSecret,
+            httpOnly: true,
+            secure: isProd,
+            sameSite: 'strict',
+            path: '/',
+            maxAge: 3600,
+        }
+
     }
 }

@@ -15,6 +15,8 @@ import {GlobalExceptionFilter} from '@common/errors'
 import {ApiResponseInterceptor} from '@common/api'
 import {CustomThrottlerModule} from '@common/security'
 import {DatabaseModule} from '@common/db'
+import {AuthModule} from "@api/auth";
+import {UserModule} from "@api/users";
 
 @Module({
     imports: [
@@ -42,6 +44,8 @@ import {DatabaseModule} from '@common/db'
             inject: [ConfigService],
         }),
         DatabaseModule,
+        AuthModule,
+        UserModule
     ],
     providers: [GlobalExceptionFilter, ApiResponseInterceptor],
 })

@@ -1,44 +1,38 @@
-import { IVerifyUser } from '@api/auth/application'
-import {
-  getVerificationSecrets,
-  ITokenService,
-  SecretType,
-} from '@common/security'
-import { ConfigProvider } from '@common/configuration'
-import { IUserRepository, UserStatus } from '@api/users/domain'
-import { ILogger } from '@common/logger'
-import { ValidationError } from '@common/errors'
+import {IVerifyUser, VerifyUserBody} from '@api/auth/application'
+import {IUserRepository, User, UserStatus} from '@api/users/domain'
+import {ILogger} from '@common/logger'
+import {ValidationError} from '@common/errors'
+import {IVerifyOtpUseCase} from "@otp/application";
 
 export class VerifyUserUseCase implements IVerifyUser {
-  constructor(
-    private readonly jwtTokenService: ITokenService,
-    private readonly userRepository: IUserRepository,
-    private readonly configProvider: ConfigProvider,
-    private readonly logger: ILogger,
-  ) {}
-
-  async execute(token: string): Promise<void> {
-    const secrets = getVerificationSecrets(
-      this.configProvider,
-      SecretType.CONFIRM_EMAIL,
-    )
-    let payload
-    try {
-      payload = this.jwtTokenService.verifyAny(token, secrets)
-    } catch {
-      throw new ValidationError({
-        message: 'errors.validation.invalidToken',
-        code: 'INVALID_TOKEN',
-      })
+    constructor(
+        private readonly userRepository: IUserRepository,
+        private readonly verifyOtpUsecase: IVerifyOtpUseCase,
+        private readonly logger: ILogger,
+    ) {
     }
-    await this.userRepository.update(payload.identifier, {
-      status: UserStatus.ACTIVE,
-    })
-    this.logger.info('User verified successfully.', {
-      module: 'VerifyUserUseCase',
-      event: 'auth.verifyUser',
-      operation: 'verifyUser',
-      userId: payload.identifier,
-    })
-  }
+
+    async execute(verifyOtpBody: VerifyUserBody): Promise<User> {
+        await this.verifyOtpUsecase.execute(verifyOtpBody)
+
+        await this.userRepository.updateByPhoneNumber(verifyOtpBody.phoneNumber, {status: UserStatus.ACTIVE})
+
+        const user = await this.userRepository.findByPhoneNumber(verifyOtpBody.phoneNumber)
+
+        if (!user) {
+            throw new ValidationError({
+                message: 'errors.validation.User_Not_Found',
+                code: 'User_Not_Found',
+            })
+        }
+        this.logger.info('User verified successfully.', {
+            module: 'VerifyUserUseCase',
+            event: 'auth.verifyUser',
+            operation: 'verifyUser',
+            userId: user.id,
+        })
+
+        return user
+
+    }
 }

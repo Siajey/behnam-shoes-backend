@@ -1,4 +1,4 @@
-import { User, UserResponse } from '@api/users/domain'
+import { User } from '@api/users/domain'
 import { ListQuery } from '@common/dto'
 
 export const USER_FILTER_FIELDS = [
@@ -29,38 +29,17 @@ export interface IUserRepository {
 
   count(getItemsDto: ListUsersQuery): Promise<number>
 
-  save(user: User): Promise<UserResponse>
+  save(user: User): Promise<User>
 
   delete(userId: string): Promise<object>
 
-  findById(userId: string): Promise<UserResponse>
+  findById(userId: string): Promise<User>
 
-  findByEmail(email: string): Promise<UserResponse>
+  findByPhoneNumber(phoneNumber: string): Promise<User>
 
-  findContactByEmail(email: string): Promise<{ id: string; email: string }>
+  update(id: string, user: Partial<User>): Promise<User>
 
-  findForLogin(emailOrUsername: string): Promise<{
-    id: string
-    passwordHash: string
-    status: string
-    role: string
-    updatedAt: Date
-    passwordChangedAt: Date
-  }>
-
-  findForChangePassword(id: string): Promise<{
-    id: string
-    passwordHash: string
-  }>
-
-  findForResetPassword(token: string): Promise<{
-    id: string
-    email: string
-    passwordTokenExpires: Date
-    passwordResetToken: string
-  }>
-
-  update(id: string, user: Partial<User>): Promise<UserResponse>
+  updateByPhoneNumber(phoneNumber: string, user: Partial<User>): Promise<User>
 
   findSessionState(userId: string): Promise<{
     status: string
@@ -68,5 +47,5 @@ export interface IUserRepository {
     role: string
   }>
 
-  findByIdWithProfile(id: string): Promise<UserResponse>
+  findByIdWithProfile(id: string): Promise<User>
 }

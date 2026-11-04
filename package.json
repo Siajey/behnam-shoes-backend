@@ -5,10 +5,8 @@
   "main": "main.js",
   "_moduleAliases": {
     "@api": "dist/src/api",
-    "@auth": "dist/src/api/auth",
-    "@users": "dist/src/api/users",
-    "@session": "dist/src/api/session",
-    "@common": "dist/src/api/common"
+    "@common": "dist/src/common",
+    "@otp": "dist/src/otp"
   },
   "scripts": {
     "build": "NODE_ENV=production nest build",
@@ -67,6 +65,7 @@
     "@types/node": "^26.6.5",
     "@typescript-eslint/eslint-plugin": "^8.72.1",
     "@typescript-eslint/parser": "^8.72.1",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",

@@ -1,15 +1,15 @@
-import { ListUsersQuery, User, UserResponse } from '@api/users/domain'
+import { ListUsersQuery, User } from '@api/users/domain'
 
 export interface ICreateUser {
-  execute(user: User): Promise<UserResponse>
+  execute(user: User): Promise<User>
 }
 
 export interface IGetUserById {
-  execute(userId: string): Promise<UserResponse>
+  execute(userId: string): Promise<User>
 }
 
 export interface IUpdateUser {
-  execute(updateDTO: Partial<User>): Promise<UserResponse>
+  execute(updateDTO: Partial<User>): Promise<User>
 }
 
 export interface IGetUsers {

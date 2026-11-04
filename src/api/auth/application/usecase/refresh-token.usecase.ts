@@ -6,7 +6,7 @@ import {
   SecretType,
 } from '@common/security'
 import { CookieModel } from '@common/api'
-import { ISessionService } from '@session/application'
+import { ISessionService } from '@api/session/application'
 import { UnAuthorizedError } from '@common/errors'
 
 export class RefreshTokenUsecase implements IRefreshToken {

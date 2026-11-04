@@ -17,7 +17,7 @@ export const users = pgTable(
   'users',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    phoneNumber: varchar('phoneNumber', { length: 255 }).notNull().unique(),
+    phoneNumber: varchar('phone_number', { length: 20 }).notNull().unique(),
     role: userRoleEnum('role').notNull(),
     status: userStatusEnum('status').notNull(),
     ...commonTimestamps,

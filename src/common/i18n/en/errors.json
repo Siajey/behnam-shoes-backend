@@ -35,13 +35,12 @@
     "userInactive": "The user is not verified, please activate your account"
   },
   "validation": {
+    "invalidPhoneNumber": "Please provide a valid phone number",
     "invalidToken": "The provided token is invalid or has expired.",
     "atLeastOneFile": "At least one file must be provided.",
-    "invalidCredentials": "The credentials you provided are invalid",
     "invalidEmail": "Please provide a valid email",
     "invalidUuid": "Please provide a valid UUID",
     "invalidFieldValue": "One of the provided values is not valid",
-    "invalidEmailOrUsername": "Email or username is invalid",
     "invalidFileExtension": "File extension is not allowed. Allowed: png, pdf, jpg, jpeg, mp3, mp4.",
     "invalidResetToken": "Reset token is invalid or has expired",
     "loginMethodInvalid": "Login method is invalid, use local, otp or openid",
@@ -55,56 +54,21 @@
     "requiredRequestBody": "Please provide a valid request body",
     "tooManyRequests": "You are sending too many requests. Please wait and try again later.",
     "validationError": "Validation error",
-    "telemetry": {
-      "voltageRequired": "Voltage is required.",
-      "voltageOutOfRange": "Voltage must be between 0 and 1000.",
-      "currentRequired": "Current is required.",
-      "currentOutOfRange": "Current must be between -500 and 500.",
-      "socRequired": "State of Charge (SoC) is required.",
-      "socInvalidPercentage": "SoC must be a percentage between 0 and 100.",
-      "powerInvalidNumber": "Power must be a valid number.",
-      "powerOutOfRange": "Power must be between -100000 and 100000.",
-      "sohInvalidPercentage": "State of Health (SoH) must be a valid percentage between 0 and 100.",
-      "temperatureInvalidNumber": "Temperature must be a valid number.",
-      "temperatureOutOfRange": "Temperature must be between -40 and 150.",
-      "cycleCountRequired": "Cycle count is required.",
-      "cycleCountMustBePositive": "Cycle count must be a positive integer.",
-      "timestampRequired": "Timestamp is required.",
-      "deviceIdRequired": "Device ID is required.",
-      "samplesEmpty": "At least one telemetry sample is required.",
-      "samplesTooMany": "Cannot send more than 500 samples at once."
-    },
-    "deviceAuth": {
-      "deviceIdRequired": "Device ID is required."
-    },
     "enum": {
       "role": "User role must be one of the following: admin, user.",
       "status": "User status must be one of the following: active, registered, inactive.",
       "type": "Post type must be one of the following: news, blog."
     },
-    "username": {
-      "startsWithLetter": "The username must begin with a letter (a-z or A-Z).",
-      "notAllowedCharacters": "The username can only contain letters, numbers, dots (.), and underscores (_).",
-      "invalidCharacters": "The username cannot contain consecutive dots (e.g., '..')."
+    "otp": {
+      "expired": "OTP has expired",
+      "invalid": "OTP is invalid",
+      "notFound": "OTP not found"
     },
     "address": {
+      "notFound": "Address not found.",
+      "limitReached": "You can save a maximum of 2 addresses.",
       "mustBeValidCountryCode": "Please provide a valid two-letter country code.",
       "addressAllFieldsRequired": "All address fields (street, city, postal code, and country) are required."
-    },
-    "password": {
-      "newPasswordNotMatch": "New password must be different from the current password",
-      "currentPasswordNotMatch": "The current password you entered is incorrect.",
-      "passwordLessThan8Characters": "Password must be at least 8 characters long.",
-      "passwordMissingLowercase": "Password must contain at least one lowercase letter.",
-      "passwordMissingNumber": "Password must contain at least one number.",
-      "passwordMissingSpecialChar": "Password must contain at least one special character.",
-      "passwordMissingUppercase": "Password must contain at least one uppercase letter.",
-      "passwordTooLong": "Password must not exceed 64 characters.",
-      "passwordsNotMatch": "Passwords do not match",
-      "invalidCurrencyCode": "Currency must be a valid 3-letter ISO code (e.g., USD, EUR).",
-      "invalidPercentage": "Value must be a percentage between 0 and 100.",
-      "invalidDate": "Please provide a valid date.",
-      "invalidNumber": "Please provide a valid number."
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Cache } from 'cache-manager'
 
 import { User } from '@api/users/domain'
-import { ISessionCacheRepository } from '@session/domain'
+import { ISessionCacheRepository } from '@api/session/domain'
 
 export class UserSessionCacheRepository implements ISessionCacheRepository {
   constructor(private readonly cache: Cache) {}
@@ -16,7 +16,6 @@ export class UserSessionCacheRepository implements ISessionCacheRepository {
       {
         updatedAt: data.updatedAt,
         status: data.status,
-        passwordChangedAt: data.passwordChangedAt,
         role: data.role,
       } as User,
       60 * 60 * 1000,

@@ -1,14 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { count, eq, or } from 'drizzle-orm'
+import { count, eq } from 'drizzle-orm'
 
 import {
   IUserRepository,
   ListUsersQuery,
-  Profile,
-  User,
   USER_FILTER_FIELDS,
   USER_SORT_FIELDS,
-  UserResponse,
+  User,
 } from '@api/users/domain'
 import { Database, DrizzleGetItemsQueryBuilder } from '@common/db'
 import { NotFoundError } from '@common/errors'
@@ -18,7 +16,16 @@ import { DATABASE } from '@common/di'
 import * as schema from '../models/user.model'
 import { ProfileMapper, UserMapper } from '../mappers'
 import { profiles } from '../models/profile.model'
-import { USER_SELECT } from './user.repository.constants'
+
+
+const USER_SELECT = {
+    id: schema.users.id,
+    phoneNumber: schema.users.phoneNumber,
+    status: schema.users.status,
+    role: schema.users.role,
+    updatedAt: schema.users.updatedAt,
+    createdAt: schema.users.createdAt,
+}
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -80,81 +87,11 @@ export class UserRepository implements IUserRepository {
     return total
   }
 
-  async findForLogin(value: string) {
-    const [userRow] = await this.db
-      .select({
-        id: schema.users.id,
-        passwordHash: schema.users.passwordHash,
-        status: schema.users.status,
-        updatedAt: schema.users.updatedAt,
-        passwordChangedAt: schema.users.passwordChangedAt,
-        role: schema.users.role,
-      })
-      .from(schema.users)
-      .where(
-        or(eq(schema.users.email, value), eq(schema.users.username, value)),
-      )
-      .limit(1)
-
-    if (!userRow)
-      throw new NotFoundError({
-        message: 'errors.user.notFound',
-      })
-    return userRow
-  }
-
-  async findForResetPassword(value: string) {
-    const [userRow] = await this.db
-      .select({
-        id: schema.users.id,
-        email: schema.users.email,
-        passwordTokenExpires: schema.users.passwordTokenExpires,
-        passwordResetToken: schema.users.passwordResetToken,
-      })
-      .from(schema.users)
-      .where(eq(schema.users.passwordResetToken, value))
-      .limit(1)
-
-    if (!userRow)
-      throw new NotFoundError({
-        message: 'errors.user.notFound',
-      })
-    return userRow
-  }
-
-  async findForChangePassword(userId: string) {
-    const [userRow] = await this.db
-      .select({
-        id: schema.users.id,
-        passwordHash: schema.users.passwordHash,
-      })
-      .from(schema.users)
-      .where(eq(schema.users.id, userId))
-      .limit(1)
-
-    if (!userRow)
-      throw new NotFoundError({
-        message: 'errors.user.notFound',
-      })
-    return userRow
-  }
-
-  async findContactByEmail(email: string) {
-    const [userRow] = await this.db
-      .select({ id: schema.users.id, email: schema.users.email })
-      .from(schema.users)
-      .where(eq(schema.users.email, email))
-      .limit(1)
-
-    return userRow ?? null
-  }
-
   async findSessionState(userId: string) {
     const [userRow] = await this.db
       .select({
         status: schema.users.status,
         role: schema.users.role,
-        passwordChangedAt: schema.users.passwordChangedAt,
         updatedAt: schema.users.updatedAt,
       })
       .from(schema.users)
@@ -166,7 +103,7 @@ export class UserRepository implements IUserRepository {
     return userRow
   }
 
-  async findById(userId: string): Promise<UserResponse> {
+  async findById(userId: string): Promise<User> {
     const [userRow] = await this.db
       .select(USER_SELECT)
       .from(schema.users)
@@ -175,10 +112,10 @@ export class UserRepository implements IUserRepository {
       throw new NotFoundError({
         message: 'errors.user.notFound',
       })
-    return userRow
+    return UserMapper.toDomain(userRow)
   }
 
-  async findByIdWithProfile(userId: string): Promise<UserResponse> {
+  async findByIdWithProfile(userId: string): Promise<User> {
     const [userRow] = await this.db
       .select({ ...USER_SELECT, profile: profiles })
       .from(schema.users)
@@ -190,26 +127,26 @@ export class UserRepository implements IUserRepository {
         message: 'errors.user.notFound',
       })
     return {
-      ...userRow,
+      ...UserMapper.toDomain(userRow),
       profile: userRow?.profile
         ? ProfileMapper.toDomain(userRow.profile)
         : undefined,
     }
   }
 
-  async findByEmail(email: string): Promise<UserResponse> {
+  async findByPhoneNumber(phoneNumber: string): Promise<User> {
     const [userRow] = await this.db
       .select(USER_SELECT)
       .from(schema.users)
-      .where(eq(schema.users.email, email))
+      .where(eq(schema.users.phoneNumber, phoneNumber))
     if (!userRow)
       throw new NotFoundError({
         message: 'errors.user.notFound',
       })
-    return userRow
+    return UserMapper.toDomain(userRow)
   }
 
-  async save(user: User): Promise<UserResponse> {
+  async save(user: User): Promise<User> {
     const [userRow] = await this.db
       .insert(schema.users)
       .values(UserMapper.toPersistence(user))
@@ -223,52 +160,84 @@ export class UserRepository implements IUserRepository {
       throw new NotFoundError({
         message: 'errors.user.notFound',
       })
-    return userRow
+    return UserMapper.toDomain(userRow)
   }
 
-  async update(id: string, user: Partial<User>): Promise<UserResponse> {
+    async update(id: string, user: Partial<User>): Promise<User> {
+        const now = new Date()
+        const { profile, ...userData } = user
+
+        const userRow = await this.db.transaction(async (tx) => {
+            const [updatedUser] = await tx
+                .update(schema.users)
+                .set({
+                    ...stripUndefined(userData),
+                    updatedAt: now,
+                })
+                .where(eq(schema.users.id, id))
+                .returning(USER_SELECT)
+
+            if (!updatedUser) {
+                throw new NotFoundError({
+                    message: 'errors.user.notFound',
+                })
+            }
+
+            let profileRow: typeof profiles.$inferSelect | null
+
+            if (profile !== undefined) {
+                const [savedProfile] = await tx
+                    .insert(profiles)
+                    .values({
+                        userId: id,
+                        ...stripUndefined(profile),
+                        updatedAt: now,
+                    })
+                    .onConflictDoUpdate({
+                        target: profiles.userId,
+                        set: {
+                            ...stripUndefined(profile),
+                            updatedAt: now,
+                        },
+                    })
+                    .returning()
+
+                profileRow = savedProfile
+            } else {
+                const [existingProfile] = await tx
+                    .select()
+                    .from(profiles)
+                    .where(eq(profiles.userId, id))
+                    .limit(1)
+
+                profileRow = existingProfile ?? null
+            }
+
+            return {
+                ...updatedUser,
+                profile: profileRow,
+            }
+        })
+
+        return UserMapper.toDomainWithProfile(userRow,userRow.profile)
+    }
+  async updateByPhoneNumber(phoneNumber: string, user: Partial<User>): Promise<User> {
     const now = new Date()
-    const { profile, ...userData } = user
-    const userRow = await this.db.transaction(async (tx) => {
-      const [updatedUser] = await tx
+      const [updatedUser] = await this.db
         .update(schema.users)
         .set({
-          ...stripUndefined(userData),
+          ...stripUndefined(user),
           updatedAt: now,
         })
-        .where(eq(schema.users.id, id))
+        .where(eq(schema.users.phoneNumber, phoneNumber))
         .returning(USER_SELECT)
 
       if (!updatedUser)
         throw new NotFoundError({
           message: 'errors.user.notFound',
         })
-      let savedProfile: Profile | undefined
-      if (user.profile) {
-        ;[savedProfile] = await tx
-          .insert(profiles)
-          .values({
-            userId: id,
-            ...stripUndefined(profile),
-            updatedAt: now,
-          })
-          .onConflictDoUpdate({
-            target: profiles.userId,
-            set: {
-              ...stripUndefined(profile),
-              updatedAt: now,
-            },
-          })
-          .returning()
-      }
 
-      return { ...updatedUser, profile: savedProfile } as UserResponse
-    })
+      return UserMapper.toDomain(updatedUser)
+    }
 
-    if (!userRow)
-      throw new NotFoundError({
-        message: 'errors.user.notFound',
-      })
-    return userRow
-  }
 }

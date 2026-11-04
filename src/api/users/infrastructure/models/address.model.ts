@@ -3,13 +3,13 @@ import {
     boolean,
     index,
     pgTable,
-    timestamp,
     uniqueIndex,
     uuid,
     varchar,
 } from 'drizzle-orm/pg-core'
 
 import { profiles } from './profile.model'
+import {commonTimestamps} from "@common/db";
 
 export const addresses = pgTable(
     'addresses',
@@ -18,18 +18,12 @@ export const addresses = pgTable(
         profileId: uuid('profile_id')
             .notNull()
             .references(() => profiles.id, { onDelete: 'cascade' }),
-        recipientName: varchar('recipient_name', { length: 100 }).notNull(),
-        recipientPhone: varchar('recipient_phone', { length: 20 }).notNull(),
         province: varchar('province', { length: 100 }).notNull(),
         city: varchar('city', { length: 100 }).notNull(),
+        street: varchar('street', { length: 50 }).notNull(),
         postalCode: varchar('postal_code', { length: 10 }).notNull(),
-        addressLine: varchar('address_line', { length: 500 }).notNull(),
         isDefault: boolean('is_default').notNull().default(false),
-        createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-        updatedAt: timestamp('updated_at', { withTimezone: true })
-            .notNull()
-            .defaultNow()
-            .$onUpdate(() => new Date()),
+        ...commonTimestamps,
     },
     (table) => [
         index('addresses_profile_id_idx').on(table.profileId),

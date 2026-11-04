@@ -1,14 +1,6 @@
 import { z } from 'zod'
 
-import { EmailSchema, PasswordSchema, UsernameSchema } from '@common/dto'
-
-export const AllowedUserFieldsToOrder = [
-  'emailOrPhoneNumber',
-  'role',
-  'status',
-  'createdAt',
-  'modifiedAt',
-]
+import {PhoneNumberSchema} from "@common/dto";
 
 export const ProfileAddressSchema = z.object(
   {
@@ -73,7 +65,7 @@ export const UserProfileSchema = z.object({
 })
 export const CreateUserSchema = z.object(
   {
-    email: EmailSchema,
+    phoneNumber: PhoneNumberSchema,
     role: z.enum(['admin', 'user'], {
       error: (iss) =>
         !iss.input
@@ -93,7 +85,7 @@ export const CreateUserSchema = z.object(
 )
 
 export const UpdateUserSchema = z.object({
-  email: EmailSchema.optional(),
+  phoneNumber: PhoneNumberSchema.optional(),
   role: z
     .enum(['admin', 'user'], {
       error: (iss) =>

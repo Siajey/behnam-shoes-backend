@@ -38,7 +38,6 @@ export const UserUseCaseProviders = [
   createProvider<DeleteUserUseCase>(DELETE_USER, DeleteUserUseCase, [
     USER_REPOSITORY,
     SESSION_CACHE_SERVICE,
-    FILE_SERVICE,
   ]),
   createProvider<DeleteMeUseCase>(DELETE_ME, DeleteMeUseCase, [DELETE_USER]),
 ]

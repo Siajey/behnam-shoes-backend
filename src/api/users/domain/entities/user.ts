@@ -1,4 +1,4 @@
-import { Profile } from './profile.vo'
+import { Profile } from './profile'
 import { UserStatus } from './user-status'
 import { UserRole } from './user-role'
 
@@ -14,14 +14,4 @@ export class User {
   constructor(obj: User) {
     Object.assign(this, obj)
   }
-}
-
-export interface UserResponse {
-  id: string
-  phoneNumber: string
-  status: string
-  role: string
-  profile?: Profile
-  updatedAt?: Date
-  createdAt: Date
 }

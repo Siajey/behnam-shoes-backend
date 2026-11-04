@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common'
 
 import { deserializeCookies } from '../util'
-import { UserRole } from '@user/domain'
+import { UserRole } from '@api/users/domain'
 
 export const ReqUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
@@ -29,13 +29,3 @@ export const RefreshToken = createParamDecorator<string>(
 )
 
 export const Roles = (...roles: UserRole[]) => SetMetadata('roles', roles)
-
-export const Files = createParamDecorator(
-  (
-    _data: unknown,
-    ctx: ExecutionContext,
-  ): null | Record<string, FileStorage.MultipartFile[]> => {
-    const req = ctx.switchToHttp().getRequest()
-    return req.storedFiles
-  },
-)

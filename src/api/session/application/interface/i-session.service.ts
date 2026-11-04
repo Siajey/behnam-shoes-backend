@@ -31,7 +31,7 @@ export interface ISessionService {
     isProd: boolean,
     csrfToken: string,
     csrfSecret: string,
-  ): CookieModel[]
+  ): CookieModel
 
   clearCookies(): CookieModel[]
 }

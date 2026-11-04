@@ -1,2 +1,1 @@
-export { default as LocalStrategy } from './local-strategy'
-// export { default as GoogleStrategy } from './google-infrastructure'
+export { default as OtpStrategy } from './otp-strategy'

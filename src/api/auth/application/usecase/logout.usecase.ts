@@ -1,4 +1,4 @@
-import { SessionCacheService } from '@session/application'
+import { SessionCacheService } from '@api/session/application'
 import { ILogout } from '@api/auth/application'
 import { IUserRepository, UserStatus } from '@api/users/domain'
 import { ILogger } from '@common/logger'

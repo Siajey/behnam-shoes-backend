@@ -1,3 +1,1 @@
-export * from './application'
-export * from './infrastructure'
-export * from './presentation'
+export {default as SessionModule} from './session.module'
