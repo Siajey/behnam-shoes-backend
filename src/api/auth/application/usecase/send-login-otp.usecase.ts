@@ -11,8 +11,8 @@ export class SendLoginOtpUsecase implements ISendLoginOTP {
     constructor(
         private readonly userRepository: IUserRepository,
         private readonly createOtpUsecase: ICreateOtpUseCase,
-        private readonly configProvider: ConfigProvider,
         private readonly smsService: SMSService,
+        private readonly configProvider: ConfigProvider,
         private readonly logger: ILogger,
     ) {
     }

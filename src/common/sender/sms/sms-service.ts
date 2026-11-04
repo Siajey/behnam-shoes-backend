@@ -14,6 +14,5 @@ export default class SMSService implements IMessageSender {
     path: string,
     replacements: { [p: string]: string },
   ): Promise<void> {
-    console.log(subject, to, path, replacements)
   }
 }

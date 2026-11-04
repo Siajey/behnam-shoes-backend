@@ -5,7 +5,7 @@ import { resolve } from 'path'
 import { CONFIG_PROVIDER } from '@common/di'
 import { NestConfigProvider } from './nest-config.service'
 
-const ROOT_DIR = resolve(__dirname, '../../../../')
+const ROOT_DIR = process.cwd()
 
 @Global()
 @Module({

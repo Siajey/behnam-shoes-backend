@@ -66,7 +66,7 @@ export default class AuthController {
     @Throttle({
         default: {
             ttl: 30000,
-            limit: 5,
+            limit: process.env.NODE_ENV === 'production' ? 5 : 100,
         },
     })
     @Post('login')
@@ -97,7 +97,7 @@ export default class AuthController {
     @Throttle({
         default: {
             ttl: 60000,
-            limit: 5,
+            limit: process.env.NODE_ENV === 'production' ? 5 : 100,
         },
     })
     @Post('verify-login-otp')
@@ -113,7 +113,7 @@ export default class AuthController {
                 csrfToken: session.csrfToken
             },
             timestamp: new Date(),
-            path: '/auth/verify-user',
+            path: '/auth/verify-login-otp',
             status: HttpStatus.OK,
             cookies: session.cookies
         })
@@ -152,7 +152,7 @@ export default class AuthController {
     @Throttle({
         default: {
             ttl: 120000,
-            limit: 1,
+            limit: process.env.NODE_ENV === 'production' ? 1 : 100,
         },
     })
     @Get('send-login-otp/:phoneNumber')
@@ -171,7 +171,7 @@ export default class AuthController {
     @Throttle({
         default: {
             ttl: 120000,
-            limit: 1,
+            limit: process.env.NODE_ENV === 'production' ? 1 : 100,
         },
     })
     @UseGuards(CSRFGuard, JwtSessionGuard)
