@@ -57,7 +57,6 @@ describe('Secret Rotation (e2e)', () => {
         })
     })
     it('should fail session with expired old secret', async () => {
-        // Expire the previous secret
 
         const userResponse = await app.inject({
             url: '/users/me',
@@ -66,7 +65,6 @@ describe('Secret Rotation (e2e)', () => {
         })
         expect(userResponse.statusCode).toBe(200)
 
-        // Expiration process
         const newAccessSecret = 'xwZlqWfoJR+bYCGGv4JTTXIINnDQU4k59E/APRaRwmg='
         process.env.ACCESS_TOKEN_SECRET_PREVIOUS = null
         process.env.ACCESS_TOKEN_SECRET_CURRENT = newAccessSecret
