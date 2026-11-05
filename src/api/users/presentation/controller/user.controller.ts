@@ -100,8 +100,7 @@ export default class UserController {
       nextCursor: params[0].nextCursor,
       sort: params[0].sort,
       filterFields: {
-        username: params[0]['username'],
-        email: params[0]['email'],
+        phoneNumber: params[0]['phoneNumber'],
         role: params[0]['role'],
         status: params[0]['status'],
       },
@@ -121,8 +120,7 @@ export default class UserController {
   async count(@Query() ...params: any) {
     const users = await this.countUsers.execute({
       pageSize: params[0].pageSize,
-      username: params[0]['username'],
-      email: params[0]['email'],
+      phoneNumber: params[0]['phoneNumber'],
       role: params[0]['role'],
       status: params[0]['status'],
     })

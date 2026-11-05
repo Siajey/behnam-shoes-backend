@@ -157,7 +157,7 @@ describe('Users listing (e2e)', () => {
         })
 
         it('applies multiple sort fields in the specified order', async () => {
-            const phonePrefix = '099'
+            const phonePrefix = '0988'
             const user1 = await createUser(userRepository, {
                 phoneNumber: `${phonePrefix}2`,
                 status: UserStatus.ACTIVE,
@@ -180,8 +180,9 @@ describe('Users listing (e2e)', () => {
             const users: { phoneNumber: string; status: string }[] =
                 res.json().data.users
 
+            const expectedPhoneNumbers = [user1.phoneNumber, user2.phoneNumber, user3.phoneNumber]
             const targetUsers = users.filter((user) =>
-                user.phoneNumber.startsWith(phonePrefix),
+                expectedPhoneNumbers.includes(user.phoneNumber),
             )
 
             expect(targetUsers.map((user) => user.phoneNumber)).toEqual([

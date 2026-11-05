@@ -2,19 +2,17 @@ import { User } from '@api/users/domain'
 import { ListQuery } from '@common/dto'
 
 export const USER_FILTER_FIELDS = [
-  'username',
-  'email',
+  'phoneNumber',
   'status',
   'role',
   'createdAt',
   'updatedAt',
 ] as const
-export const USER_SORT_FIELDS = ['createdAt', 'updatedAt', 'username'] as const
+export const USER_SORT_FIELDS = ['createdAt', 'updatedAt', 'phoneNumber'] as const
 export type UserFilterField = (typeof USER_FILTER_FIELDS)[number]
 
 export interface ListUsersQuery extends ListQuery<UserFilterField> {
-  username?: string
-  email?: string
+  phoneNumber?: string
   role?: string
   status?: string
   createdAt?: string

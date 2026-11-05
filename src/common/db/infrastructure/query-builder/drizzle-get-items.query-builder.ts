@@ -76,7 +76,6 @@ export class DrizzleGetItemsQueryBuilder<
 
   filter(): this {
     if (!this.dto.filterFields) return this
-
     for (const [key, value] of Object.entries(this.dto.filterFields)) {
       if (value === undefined || value === null) continue
       if (!this.allowedFilterFields.includes(key as AllowedFilterField)) continue
