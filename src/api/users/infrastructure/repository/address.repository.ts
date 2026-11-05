@@ -56,7 +56,7 @@ export class AddressRepository implements IAddressRepository {
 
       const [row] = await tx
         .insert(addresses)
-        .values(AddressMapper.toInsert(profileId, input, isDefault))
+        .values(AddressMapper.toPersistence(profileId, input, isDefault))
         .returning()
       return AddressMapper.toDomain(row)
     })

@@ -22,7 +22,7 @@ export class AddressMapper {
     })
   }
 
-  static toInsert(
+  static toPersistence(
     profileId: string,
     input: CreateAddressInput,
     isDefault: boolean,

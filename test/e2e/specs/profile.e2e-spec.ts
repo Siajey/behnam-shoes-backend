@@ -4,12 +4,14 @@ import {HttpStatus} from '@nestjs/common'
 
 import {TestContext, testContextE2e} from './test-context.e2e'
 import {
+    IProfileRepository,
     IUserRepository,
     User,
     UserRole,
     UserStatus,
 } from '@api/users/domain'
 import {createUser, loginWithOtp, newPhone} from '../../util/test.util'
+import {PROFILE_REPOSITORY} from '@common/di'
 
 describe('ProfileController (e2e)', () => {
     let ctx: TestContext
@@ -17,6 +19,7 @@ describe('ProfileController (e2e)', () => {
     let admin: User
 
     let userRepository: IUserRepository
+    let profileRepository: IProfileRepository
     let loggedInAdminCookies: any
     let loggedInAdminCsrf: any
 
@@ -24,6 +27,7 @@ describe('ProfileController (e2e)', () => {
         ctx = await testContextE2e()
         app = ctx.app
         userRepository = ctx.userRepository
+        profileRepository = app.get(PROFILE_REPOSITORY)
 
         const adminUser = await createUser(userRepository, {
             phoneNumber: newPhone(),
@@ -85,7 +89,6 @@ describe('ProfileController (e2e)', () => {
                 'x-csrf-token': loggedInAdminCsrf,
             },
         })
-
         expect(res.statusCode).toBe(200)
         const json = res.json()
         expect(json.code).toBe('UPDATE_USER_SUCCESS')
@@ -106,7 +109,6 @@ describe('ProfileController (e2e)', () => {
                     street: '123 Main St',
                     city: 'Nuremberg',
                     province: 'Bavaria',
-                    country: 'DE',
                     postalCode: '90402',
                 },
             },
@@ -115,17 +117,23 @@ describe('ProfileController (e2e)', () => {
                 'x-csrf-token': loggedInAdminCsrf,
             },
         })
+
         expect(res.statusCode).toBe(200)
         const json = res.json()
-        expect(json.data.address).toMatchObject({
+        expect(json.data.addresses[0]).toMatchObject({
             street: '123 Main St',
             city: 'Nuremberg',
             province: 'Bavaria',
-            country: 'DE',
             postalCode: '90402',
         })
-
-        const updated = await userRepository.findByIdWithProfile(admin.id)
+        const updated = await profileRepository.findByIdWithAddress(admin.id)
+        expect(updated.profile.addresses).toBeDefined()
+        expect(updated.profile.addresses[0]).toMatchObject({
+            street: '123 Main St',
+            city: 'Nuremberg',
+            province: 'Bavaria',
+            postalCode: '90402',
+        })
     })
 
     it('/users/me (GET) should get logged-in user as me', async () => {
@@ -139,11 +147,10 @@ describe('ProfileController (e2e)', () => {
         })
         expect(res.statusCode).toBe(200)
         const json = res.json()
-        expect(json.data.profile.address).toMatchObject({
+        expect(json.data.profile.addresses[0]).toMatchObject({
             street: '123 Main St',
             city: 'Nuremberg',
             province: 'Bavaria',
-            country: 'DE',
             postalCode: '90402',
         })
     })
@@ -155,7 +162,6 @@ describe('ProfileController (e2e)', () => {
             payload: {
                 address: {
                     city: 'Nuremberg',
-                    country: 'DE',
                 },
             },
             cookies: loggedInAdminCookies,
@@ -165,10 +171,5 @@ describe('ProfileController (e2e)', () => {
         })
 
         expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST)
-        const json = res.json()
-        expect(json.message).toContain(
-            'All address fields (street, city, postal code, and country) are required.',
-        )
     })
-
 })

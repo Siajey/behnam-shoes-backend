@@ -5,6 +5,6 @@ export class GetMeUseCase implements IGetMe {
   constructor(private profileRepository: IProfileRepository) {}
 
   execute(userId: string): Promise<User> {
-    return this.profileRepository.findById(userId)
+    return this.profileRepository.findByIdWithAddress(userId)
   }
 }

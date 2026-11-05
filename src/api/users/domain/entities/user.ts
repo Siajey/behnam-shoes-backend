@@ -15,3 +15,4 @@ export class User {
     Object.assign(this, obj)
   }
 }
+

@@ -1,7 +1,9 @@
-import { Profile, User } from '@api/users/domain'
+import {Address, Profile, User} from '@api/users/domain'
 
 export interface IProfileRepository {
-  update(id: string, user: Partial<Profile>): Promise<Profile>
+    updateMe(id: string, user: Partial< Partial<Profile> & { address?: Address }>): Promise< Partial<Profile> & { address?: Address }>
 
-  findById(userId: string): Promise<User>
+    findById(userId: string): Promise<User>
+
+    findByIdWithAddress(profileId: string): Promise<User>
 }

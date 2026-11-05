@@ -36,13 +36,6 @@ export const UserProfileSchema = z.object({
             message: 'errors.validation.maxLengthString',
         })
         .optional(),
-    avatar: z.string({}).optional(),
-    bio: z
-        .string({})
-        .max(200, {
-            message: 'errors.validation.maxLengthString',
-        })
-        .optional(),
     address: ProfileAddressSchema.partial()
         .optional()
         .refine(
@@ -52,6 +45,8 @@ export const UserProfileSchema = z.object({
                 const requiredFields = Object.keys(ProfileAddressSchema.shape)
 
                 return requiredFields.every((field) => {
+                    if (field === 'isDefault')
+                        return true
                     const value = data[field]
                     return value !== undefined && value !== null && value !== ''
                 })
@@ -100,7 +95,7 @@ export const UpdateUserSchema = z.object({
                     : 'errors.validation.enum.status',
         })
         .optional(),
-    profile: UserProfileSchema.optional(),
+    profile: UserProfileSchema.optional()
 })
 
 export type CreateUserDto = z.infer<typeof CreateUserSchema>

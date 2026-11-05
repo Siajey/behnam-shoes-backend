@@ -1,9 +1,11 @@
-import { Profile, User } from '@api/users/domain'
+import {Address, Profile, User} from '@api/users/domain'
 
 export interface IUpdateMe {
-  execute(userId: string, updateDto: Partial<Profile>): Promise<Profile>
+    execute(userId: string, updateDto: Partial<Partial<Profile> & { address?: Address }>): Promise<Partial<Profile> & {
+        address?: Address
+    }>
 }
 
 export interface IGetMe {
-  execute(userId: string): Promise<User>
+    execute(userId: string): Promise<User>
 }
