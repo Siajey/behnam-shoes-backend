@@ -2,3 +2,8 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-
 
 export const isUuid = (value: unknown): value is string =>
   typeof value === 'string' && UUID_REGEX.test(value)
+
+export const isIranianMobile = (val: string): boolean => {
+    const cleaned = val.replace(/\D/g, '')
+    return /^09\d{9}$/.test(cleaned) || /^9\d{9}$/.test(cleaned)
+}

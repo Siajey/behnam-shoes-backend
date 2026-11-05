@@ -4,12 +4,9 @@
   "description": "",
   "main": "main.js",
   "_moduleAliases": {
-    "@api": "dist/api",
-    "@auth": "dist/auth",
-    "@user": "dist/user",
-    "@session": "dist/session",
-    "@post": "dist/post",
-    "@common": "dist/common"
+    "@api": "dist/src/api",
+    "@common": "dist/src/common",
+    "@otp": "dist/src/otp"
   },
   "scripts": {
     "build": "NODE_ENV=production nest build",
@@ -63,16 +60,24 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@jest/globals": "^30.5.2",
     "@nestjs/cli": "^11.0.24",
+    "@nestjs/testing": "^12.3.3",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.5",
     "@typescript-eslint/eslint-plugin": "^8.72.1",
     "@typescript-eslint/parser": "^8.72.1",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
     "globals": "^17.13.0",
-    "prettier": "^3.9.10"
+    "jest": "^30.5.2",
+    "prettier": "^3.9.10",
+    "ts-jest": "^29.4.15",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
   },
   "overrides": {
     "esbuild": ">=0.25.0",

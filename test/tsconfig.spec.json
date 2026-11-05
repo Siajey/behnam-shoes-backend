@@ -1,0 +1,30 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../",
+    "outDir": "./dist",
+    "types": [
+      "jest",
+      "node"
+    ],
+    "paths": {
+      "@app/*": [
+        "src/*"
+      ],
+      "@api/*": [
+        "src/api/*"
+      ],
+      "@common/*": [
+        "src/common/*"
+      ],
+      "@otp/*": [
+        "src/otp/*"
+      ]
+    }
+  },
+  "include": [
+    "../src/**/*.ts",
+    "**/*.ts",
+    "../global.d.ts"
+  ]
+}

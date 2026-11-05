@@ -1,0 +1,27 @@
+{
+  "auth": {
+    "csrfTokenSuccess": "توکن CSRF با موفقیت ایجاد شد.",
+    "loginSuccess": "{email} با موفقیت وارد حساب کاربری خود شد.",
+    "logoutSuccess": "با موفقیت از حساب کاربری خود خارج شدید. از استفاده شما از خدمات ما سپاسگزاریم.",
+    "signupSuccess": "{email} با موفقیت ثبت‌نام کرد. لطفاً برای فعال‌سازی حساب کاربری خود ایمیلتان را بررسی کنید.",
+    "tokensRefreshedSuccess": "توکن‌های احراز هویت با موفقیت به‌روزرسانی شدند.",
+    "verifyUserSuccess": "حساب کاربری با موفقیت تأیید شد.",
+    "otpVerifiedSuccess": "کد یک‌بارمصرف با موفقیت تأیید شد.",
+    "otpSentSuccess": "کد یک‌بارمصرف با موفقیت ارسال شد."
+  },
+  "cta": {
+    "loginByOtp": "لطفاً با استفاده از کد یک‌بارمصرف وارد شوید."
+  },
+  "user": {
+    "createUserSuccess": "کاربر با موفقیت ایجاد شد.",
+    "getUsersSuccess": "اطلاعات کاربران با موفقیت دریافت شد.",
+    "updateUserSuccess": "اطلاعات کاربر با موفقیت به‌روزرسانی شد."
+  },
+  "address": {
+    "getAddressesSuccess": "آدرس‌ها با موفقیت دریافت شدند.",
+    "createAddressSuccess": "آدرس با موفقیت ایجاد شد.",
+    "updateAddressSuccess": "آدرس با موفقیت به‌روزرسانی شد.",
+    "setDefaultAddressSuccess": "آدرس پیش‌فرض با موفقیت تنظیم شد.",
+    "deleteAddressSuccess": "آدرس با موفقیت حذف شد."
+  }
+}

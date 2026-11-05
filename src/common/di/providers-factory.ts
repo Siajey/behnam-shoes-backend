@@ -18,7 +18,7 @@ export const createProvider = <T>(
           ILogger | undefined
         const tokenToString = typeof token === 'string' ? token : token.toString()
         if (logger)
-          logger.error(`Error happened in providers factory ${classConstructor.name}`, {
+          logger.error(`Error happened in providers factory ${classConstructor?.name}`, {
             module: tokenToString,
             err: err,
             operation: 'create provider',

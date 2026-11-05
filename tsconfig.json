@@ -21,11 +21,14 @@
       "@app/*": [
         "./src"
       ],
-      "api/*": [
-        "./src/api"
+      "@api/*": [
+        "./src/api/*"
       ],
       "@common/*": [
         "./src/common/*"
+      ],
+      "@otp/*": [
+        "./src/otp/*"
       ]
     }
   },
