@@ -17,6 +17,7 @@ import {CustomThrottlerModule} from '@common/security'
 import {DatabaseModule} from '@common/db'
 import {AuthModule} from "@api/auth";
 import {UserModule} from "@api/users";
+import {HealthModule} from "@api/health/health.module";
 
 @Module({
     imports: [
@@ -44,6 +45,7 @@ import {UserModule} from "@api/users";
             inject: [ConfigService],
         }),
         DatabaseModule,
+        HealthModule,
         AuthModule,
         UserModule
     ],
