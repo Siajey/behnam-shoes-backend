@@ -8,13 +8,13 @@ import {
     UserUseCaseProviders,
 } from '@api/users/infrastructure'
 import {ADDRESS_REPOSITORY, PROFILE_REPOSITORY, USER_REPOSITORY} from '@common/di'
-import {ProfileController, UserController} from '@api/users/presentation'
+import {ProfileController, UserController, AddressController} from '@api/users/presentation'
 import SessionModule from '@api/session/session.module'
 import {DatabaseModule} from '@common/db'
 
 @Module({
     imports: [SessionModule, DatabaseModule],
-    controllers: [UserController, ProfileController],
+    controllers: [UserController, ProfileController, AddressController],
     providers: [
         {provide: USER_REPOSITORY, useClass: UserRepository},
         {provide: PROFILE_REPOSITORY, useClass: ProfileRepository},

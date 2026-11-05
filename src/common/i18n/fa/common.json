@@ -16,5 +16,12 @@
     "createUserSuccess": "کاربر با موفقیت ایجاد شد.",
     "getUsersSuccess": "اطلاعات کاربران با موفقیت دریافت شد.",
     "updateUserSuccess": "اطلاعات کاربر با موفقیت به‌روزرسانی شد."
+  },
+  "address": {
+    "getAddressesSuccess": "آدرس‌ها با موفقیت دریافت شدند.",
+    "createAddressSuccess": "آدرس با موفقیت ایجاد شد.",
+    "updateAddressSuccess": "آدرس با موفقیت به‌روزرسانی شد.",
+    "setDefaultAddressSuccess": "آدرس پیش‌فرض با موفقیت تنظیم شد.",
+    "deleteAddressSuccess": "آدرس با موفقیت حذف شد."
   }
 }

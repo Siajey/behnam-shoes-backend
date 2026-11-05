@@ -17,5 +17,12 @@
     "createUserSuccess": "The user has been created successfully",
     "getUsersSuccess": "The users have been retrieved successfully",
     "updateUserSuccess": "The user has been updated successfully"
+  },
+  "address": {
+    "getAddressesSuccess": "The addresses have been retrieved successfully.",
+    "createAddressSuccess": "The address has been created successfully.",
+    "updateAddressSuccess": "The address has been updated successfully.",
+    "setDefaultAddressSuccess": "The default has been address set successfully.",
+    "deleteAddressSuccess": "The address has been deleted successfully."
   }
 }
