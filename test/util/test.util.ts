@@ -4,7 +4,7 @@ import {IUserRepository, User, UserRole, UserStatus} from "@api/users/domain";
 import {deserializeCookies} from "@common/util";
 
 
-export const OTP = '12345'
+export const OTP = '123456'
 export const WRONG_OTP = '00000'
 
 export const newPhone = () =>

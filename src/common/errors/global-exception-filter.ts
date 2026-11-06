@@ -66,7 +66,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         } else if (exception instanceof AppError) {
             apiRes.status = exception.status || HttpStatus.BAD_REQUEST
             apiRes.messageObj = {
-                message: this.i18n.t(exception.message, {lang: i18nLang}),
+                message: this.i18n.t(exception.message, {lang: i18nLang, ...exception.details}),
             }
             apiRes.code = exception.code
             if (

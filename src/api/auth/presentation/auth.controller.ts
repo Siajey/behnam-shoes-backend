@@ -156,7 +156,7 @@ export default class AuthController {
         },
     })
     @Get('send-login-otp/:phoneNumber')
-    async sendConfirmEmailController(@Param('phoneNumber') phoneNumber: string) {
+    async sendLoginOtpController(@Param('phoneNumber') phoneNumber: string) {
         await this.sendLoginOtp.execute(phoneNumber)
         return new SuccessResponse({
             messageObj: {message: 'common.auth.otpSentSuccess'},

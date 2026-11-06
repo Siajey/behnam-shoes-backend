@@ -1,8 +1,7 @@
 import { join } from 'path'
 import { CookieModel } from '../api'
 import { IHashGenerator } from '@common/security'
-
-export const isEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+import {VariantAttribute} from "@api/product/domain/entities";
 
 export function resolveAssetPath(...segments: string[]) {
   return join(__dirname, '..', '..', 'common', 'assets', ...segments)
@@ -61,4 +60,22 @@ export const generateProviderUsername = (
     .slice(0, maxBaseLength)
 
   return `${base}_${provider}_${suffix}`
+}
+
+
+export const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹'
+export const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩'
+
+export function normalizeValue(value: string): string {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/[۰-۹]/g, (d) => String(PERSIAN_DIGITS.indexOf(d)))
+        .replace(/[٠-٩]/g, (d) => String(ARABIC_DIGITS.indexOf(d)))
+}
+
+export function normalizeAttributes(attrs: VariantAttribute[]): VariantAttribute[] {
+    const byName = new Map<string, string>()
+    for (const a of attrs) byName.set(normalizeValue(a.name), normalizeValue(a.value))
+    return [...byName].map(([name, value]) => ({ name, value }))
 }

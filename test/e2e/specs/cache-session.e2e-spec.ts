@@ -153,8 +153,6 @@ describe('Session cache (e2e)', () => {
                     status: 'inactive'
                 }
             })
-            console.log(res.json())
-
             expect(res.statusCode).toBe(HttpStatus.OK)
             expect(await sessionCache.getUserSession(user.id)).toBeUndefined()
         })
