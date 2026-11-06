@@ -1,8 +1,7 @@
 import {randomUUID} from 'node:crypto'
 
-import {normalizeAttributes} from "@common/util";
-
 import {InvalidVariantPriceError, InvalidVariantStockError} from '../errors'
+import {normalizeAttributes} from "@common/util";
 
 export interface VariantAttribute {
     name: string
@@ -10,7 +9,6 @@ export interface VariantAttribute {
 }
 
 export interface ExternalVariantSnapshot {
-    title: string
     sku: string
     price: number
     stock: number
@@ -40,7 +38,7 @@ export class Variant {
         if (!Number.isInteger(s.stock) || s.stock < 0) throw new InvalidVariantStockError()
     }
 
-    static createFromExternal(source: string, externalId: string, snapshot: ExternalVariantSnapshot) {
+    static createFromExternal(source: string, externalId: string, snapshot: VariantProps) {
         Variant.assertSnapshot(snapshot)
         const now = new Date()
         return new Variant({
@@ -132,24 +130,5 @@ export class Variant {
     unassign(): void {
         this.props.productId = null
         this.props.updatedAt = new Date()
-    }
-
-    get title() { return this.props.title }
-
-    isUpToDate(snapshot: ExternalVariantSnapshot): boolean {
-        const incoming = normalizeAttributes(snapshot.attributes)
-        const current = this.props.attributes
-        const sameAttributes =
-            incoming.length === current.length &&
-            incoming.every((a) => current.some((c) => c.name === a.name && c.value === a.value))
-
-        return (
-            sameAttributes &&
-            this.props.sku === snapshot.sku &&
-            this.props.title === snapshot.title &&
-            this.props.price === snapshot.price &&
-            this.props.stock === snapshot.stock &&
-            this.props.isActive === snapshot.isActive
-        )
     }
 }
