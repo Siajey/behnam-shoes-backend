@@ -6,7 +6,7 @@ import {
 } from '@api/product/domain'
 import { ILogger } from '@common/logger'
 
-import { CreateCategoryInput, ICreateCategory } from '../../interfaces'
+import { CreateCategoryInput, ICreateCategory } from '../../../interfaces'
 
 export default class CreateCategoryUseCase implements ICreateCategory {
     constructor(

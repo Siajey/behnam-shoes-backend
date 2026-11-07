@@ -1,7 +1,7 @@
 import { BrandHasProductsError, BrandNotFoundError, IBrandRepository } from '@api/product/domain'
 import { ILogger } from '@common/logger'
 
-import { IDeleteBrand } from '../../interfaces'
+import { IDeleteBrand } from '../../../interfaces'
 
 export default class DeleteBrandUseCase implements IDeleteBrand {
     constructor(

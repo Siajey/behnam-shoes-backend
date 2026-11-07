@@ -1,7 +1,7 @@
 import { Brand, BrandSlugAlreadyExistsError, IBrandRepository } from '@api/product/domain'
 import { ILogger } from '@common/logger'
 
-import { CreateBrandInput, ICreateBrand } from '../../interfaces'
+import { CreateBrandInput, ICreateBrand } from '../../../interfaces'
 
 export default class CreateBrandUseCase implements ICreateBrand {
     constructor(

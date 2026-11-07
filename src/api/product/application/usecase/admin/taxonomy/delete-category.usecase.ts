@@ -6,7 +6,7 @@ import {
 } from '@api/product/domain'
 import { ILogger } from '@common/logger'
 
-import { IDeleteCategory } from '../../interfaces'
+import { IDeleteCategory } from '../../../interfaces'
 
 export default class DeleteCategoryUseCase implements IDeleteCategory {
     constructor(

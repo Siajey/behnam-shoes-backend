@@ -6,7 +6,7 @@ import {
 } from '@api/product/domain'
 import { ILogger } from '@common/logger'
 
-import { EditCategoryInput, IEditCategory } from '../../interfaces'
+import { EditCategoryInput, IEditCategory } from '../../../interfaces'
 
 export default class EditCategoryUseCase implements IEditCategory {
     constructor(

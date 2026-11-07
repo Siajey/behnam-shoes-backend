@@ -6,7 +6,7 @@ import {
 } from '@api/product/domain'
 import { ILogger } from '@common/logger'
 
-import { EditBrandInput, IEditBrand } from '../../interfaces'
+import { EditBrandInput, IEditBrand } from '../../../interfaces'
 
 export default class EditBrandUseCase implements IEditBrand {
     constructor(
