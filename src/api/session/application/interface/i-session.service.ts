@@ -29,7 +29,6 @@ export interface ISessionService {
 
   generateCsrfCookie(
     isProd: boolean,
-    csrfToken: string,
     csrfSecret: string,
   ): CookieModel
 
