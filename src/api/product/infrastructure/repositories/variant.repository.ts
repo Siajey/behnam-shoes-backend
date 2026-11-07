@@ -7,12 +7,9 @@ import {
     IVariantRepository, UnassignedVariantsCriteria,Variant
 } from '@api/product/domain'
 
-import { VariantMapper } from '../mappers/variant.mapper'
 import { Executor, hydrateVariants } from './product-hydration'
-
 import * as schema from '../models'
-
-type Tx = Parameters<Parameters<Database<typeof schema>['transaction']>[0]>[0]
+import { persistVariant } from "./product-persistence"
 
 @Injectable()
 export class VariantRepository implements IVariantRepository {
@@ -74,31 +71,29 @@ export class VariantRepository implements IVariantRepository {
         }
     }
 
-    save(variant: Variant): Promise<void> {
-        return this.db.transaction((tx) => this.persist(tx, variant))
-    }
-
-    saveMany(variants: Variant[]): Promise<void> {
-        return this.db.transaction(async (tx) => {
-            for (const v of variants) await this.persist(tx, v)
-        })
-    }
-
     private async findMany(condition: ReturnType<typeof eq> | ReturnType<typeof and>): Promise<Variant[]> {
         const rows = await this.db.select().from(schema.variants).where(condition)
         return hydrateVariants(this.db as Executor, rows)
     }
 
-    private async persist(tx: Tx, variant: Variant): Promise<void> {
-        const { variant: row, attributes } = VariantMapper.toPersistence(variant)
-        const { id, ...rest } = row
+    save(variant: Variant): Promise<void> {
+        return this.db.transaction((tx) => persistVariant(tx, variant))
+    }
 
-        await tx
-            .insert(schema.variants)
-            .values(row)
-            .onConflictDoUpdate({ target: schema.variants.id, set: rest })
+    saveMany(variants: Variant[]): Promise<void> {
+        return this.db.transaction(async (tx) => {
+            for (const v of variants) await persistVariant(tx, v)
+        })
+    }
 
-        await tx.delete(schema.variantAttributes).where(eq(schema.variantAttributes.variantId, id as string))
-        if (attributes.length) await tx.insert(schema.variantAttributes).values(attributes)
+    findByExternalIds(source: string, externalIds: string[]): Promise<Variant[]> {
+        if (externalIds.length === 0) return Promise.resolve([])
+        return this.findMany(
+            and(eq(schema.variants.source, source), inArray(schema.variants.externalId, externalIds)),
+        )
+    }
+
+    findActiveBySource(source: string): Promise<Variant[]> {
+        return this.findMany(and(eq(schema.variants.source, source), eq(schema.variants.isActive, true)))
     }
 }

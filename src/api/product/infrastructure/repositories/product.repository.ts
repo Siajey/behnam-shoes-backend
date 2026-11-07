@@ -3,11 +3,11 @@ import { and, eq, ne } from 'drizzle-orm'
 
 import {  Database } from '@common/db'
 import {DATABASE} from "@common/di";
-import { Product,IProductRepository } from '@api/product/domain'
-import * as schema from '../models/product.model'
+import {Product, IProductRepository, ProductChangeSet} from '@api/product/domain'
+import * as schema from '../models'
 
-import { ProductMapper } from '../mappers/product.mapper'
 import { hydrateProducts } from './product-hydration'
+import {persistProduct,persistVariant} from "./product-persistence";
 
 @Injectable()
 export class ProductRepository implements IProductRepository {
@@ -32,28 +32,14 @@ export class ProductRepository implements IProductRepository {
         return !!row
     }
 
-    async save(product: Product): Promise<void> {
-        const { product: row, images, shoe } = ProductMapper.toPersistence(product)
-        const { id, ...rest } = row
+    save(product: Product): Promise<void> {
+        return this.db.transaction((tx) => persistProduct(tx, product))
+    }
 
-        await this.db.transaction(async (tx) => {
-            await tx
-                .insert(schema.products)
-                .values(row)
-                .onConflictDoUpdate({ target: schema.products.id, set: rest })
-
-            await tx.delete(schema.productImages).where(eq(schema.productImages.productId, id as string))
-            if (images.length) await tx.insert(schema.productImages).values(images)
-
-            if (shoe) {
-                await tx
-                    .insert(schema.shoeProductDetails)
-                    .values(shoe)
-                    .onConflictDoUpdate({
-                        target: schema.shoeProductDetails.productId,
-                        set: { gender: shoe.gender, material: shoe.material },
-                    })
-            }
+    saveChanges(changes: ProductChangeSet): Promise<void> {
+        return this.db.transaction(async (tx) => {
+            for (const p of changes.products ?? []) await persistProduct(tx, p)
+            for (const v of changes.variants ?? []) await persistVariant(tx, v)
         })
     }
 }

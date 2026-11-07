@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto'
+import {randomUUID} from 'node:crypto'
 
 import {
     ALLOWED_STATUS_TRANSITIONS, AttributeRule,
@@ -6,12 +6,12 @@ import {
     ProductType,
 } from '../value-objects'
 import {
-    InvalidProductStatusTransitionError,
+    InvalidProductStatusTransitionError, ProductArchivedError,
     ProductNotPublishableError,
     ProductSlugLockedError,
     TooManyProductImagesError, VariantAttributesInvalidError,
 } from '../errors'
-import { Variant } from './variant'
+import {Variant} from './variant'
 
 export const MAX_PRODUCT_IMAGES = 12
 
@@ -53,7 +53,8 @@ export abstract class Product {
     abstract readonly type: ProductType
     abstract readonly attributeRules: readonly AttributeRule[]
 
-    protected constructor(protected props: ProductProps) {}
+    protected constructor(protected props: ProductProps) {
+    }
 
     protected static buildProps(input: CreateProductInput): ProductProps {
         const now = new Date()
@@ -72,17 +73,49 @@ export abstract class Product {
         }
     }
 
-    get id() { return this.props.id }
-    get name() { return this.props.name }
-    get slug() { return this.props.slug }
-    get description() { return this.props.description }
-    get status() { return this.props.status }
-    get categoryId() { return this.props.categoryId }
-    get brandId() { return this.props.brandId }
-    get images(): readonly ProductImage[] { return this.props.images }
-    get publishedAt() { return this.props.publishedAt }
-    get createdAt() { return this.props.createdAt }
-    get updatedAt() { return this.props.updatedAt }
+    get id() {
+        return this.props.id
+    }
+
+    get name() {
+        return this.props.name
+    }
+
+    get slug() {
+        return this.props.slug
+    }
+
+    get description() {
+        return this.props.description
+    }
+
+    get status() {
+        return this.props.status
+    }
+
+    get categoryId() {
+        return this.props.categoryId
+    }
+
+    get brandId() {
+        return this.props.brandId
+    }
+
+    get images(): readonly ProductImage[] {
+        return this.props.images
+    }
+
+    get publishedAt() {
+        return this.props.publishedAt
+    }
+
+    get createdAt() {
+        return this.props.createdAt
+    }
+
+    get updatedAt() {
+        return this.props.updatedAt
+    }
 
     get primaryImage(): ProductImage | null {
         return this.props.images[0] ?? null
@@ -94,6 +127,9 @@ export abstract class Product {
         categoryId?: string | null
         brandId?: string | null
     }): void {
+        if (input.categoryId === null && this.props.status === 'published') {
+            throw new ProductNotPublishableError(['category'])
+        }
         if (input.name !== undefined) this.props.name = input.name
         if (input.description !== undefined) this.props.description = input.description
         if (input.categoryId !== undefined) this.props.categoryId = input.categoryId
@@ -156,7 +192,9 @@ export abstract class Product {
     private touch(): void {
         this.props.updatedAt = new Date()
     }
+
     assertAcceptsVariants(variants: readonly Variant[]): void {
+        if (this.props.status === 'archived') throw new ProductArchivedError()
         const problems = variants
             .map((v) => {
                 const missing: string[] = []
@@ -169,7 +207,7 @@ export abstract class Product {
                         invalid.push(rule.name)
                     }
                 }
-                return { variantId: v.id, missing, invalid }
+                return {variantId: v.id, missing, invalid}
             })
             .filter((p) => p.missing.length || p.invalid.length)
 

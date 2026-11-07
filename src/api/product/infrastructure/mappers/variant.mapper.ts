@@ -10,6 +10,7 @@ export class VariantMapper {
         return Variant.restore({
             id: row.id,
             source: row.source,
+            title: row.title,
             externalId: row.externalId,
             sku: row.sku,
             price: row.price,
@@ -29,6 +30,7 @@ export class VariantMapper {
         return {
             variant: {
                 id: v.id,
+                title: v.title,
                 source: v.source,
                 externalId: v.externalId,
                 sku: v.sku,

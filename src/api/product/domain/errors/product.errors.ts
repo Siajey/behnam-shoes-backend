@@ -126,3 +126,35 @@ export class VariantAttributesInvalidError extends ValidationError {
         })
     }
 }
+
+export class ProductTypeMismatchError extends ValidationError {
+    constructor(type: string) {
+        super({
+            message: 'errors.product.typeMismatch',
+            code: 'PRODUCT_TYPE_MISMATCH',
+            details: { type },
+        })
+    }
+}
+
+export class VariantAlreadyAssignedError extends ConflictError {
+    constructor(variantIds: string[]) {
+        super({
+            message: 'errors.variant.alreadyAssigned',
+            code: 'VARIANT_ALREADY_ASSIGNED',
+            details: { variantIds },
+        })
+    }
+}
+
+export class ProductArchivedError extends ConflictError {
+    constructor() {
+        super({ message: 'errors.product.archived', code: 'PRODUCT_ARCHIVED' })
+    }
+}
+
+export class ProductMergeSameProductError extends ValidationError {
+    constructor() {
+        super({ message: 'errors.product.mergeSameProduct', code: 'PRODUCT_MERGE_SAME_PRODUCT' })
+    }
+}

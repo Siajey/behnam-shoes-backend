@@ -11,6 +11,7 @@ export const variants = pgTable(
     'variants',
     {
         id: uuid('id').primaryKey().defaultRandom(),
+        title: varchar('title', { length: 255 }).notNull(),
         source: varchar('source', { length: 50 }).notNull(),
         externalId: varchar('external_id', { length: 100 }).notNull(),
         sku: varchar('sku', { length: 100 }).notNull(),

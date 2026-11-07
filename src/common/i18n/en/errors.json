@@ -72,6 +72,9 @@
     }
   },
   "product": {
+    "archived": "This product is archived and cannot be modified.",
+    "mergeSameProduct": "A product cannot be merged with itself.",
+    "typeMismatch": "This operation is not supported for products of type \"{type}\".",
     "notFound": "Product not found.",
     "slugAlreadyExists": "A product with the slug \"{slug}\" already exists.",
     "slugLocked": "The product slug cannot be changed.",
@@ -80,6 +83,7 @@
     "tooManyImages": "The product cannot have more than {max} images."
   },
   "variant": {
+    "alreadyAssigned": "The following variants are already assigned to another product: {variantIds}.",
     "invalidAttributes": "The product variant attributes are invalid.",
     "notFound": "Product variant not found.",
     "invalidPrice": "The variant price is invalid.",
