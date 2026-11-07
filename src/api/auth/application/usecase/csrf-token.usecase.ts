@@ -16,7 +16,6 @@ export class CsrfTokenUsecase implements ICSRFToken {
         )
         const csrfSecretCookie = this.sessionService.generateCsrfCookie(
             this.configProvider.get('NODE_ENV') === 'production',
-            csrfToken,
             csrfSecret,
         )
         return {

@@ -24,7 +24,7 @@ export class SessionTokensService implements ISessionService {
             newRefreshToken.toString(),
         )
         const {csrfSecret, csrfToken} = this.generateCsrfTokens(
-            this.configService.get('CSRF_TOKEN_SECRET'),
+            this.configService.get('CSRF_TOKEN_SECRET') || 'csrf',
         )
         const csrfCookie = this.generateCsrfCookie(isProd, csrfSecret)
         return {
