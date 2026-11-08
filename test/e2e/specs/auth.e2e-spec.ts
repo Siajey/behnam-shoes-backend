@@ -6,7 +6,7 @@ import {IUserRepository} from '@api/users/domain'
 import {deserializeCookies} from '@common/util'
 import {createUser, loginWithOtp, newPhone, requestOtp, verifyOtp} from "../../util/test.util"
 
-const OTP = '12345'
+const OTP = '123456'
 const WRONG_OTP = '00000'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -167,6 +167,7 @@ describe('AuthController (e2e)', () => {
             const setCookie = res.headers['set-cookie'] as string[]
             const cookies = deserializeCookies(setCookie)
             await sleep(1100)
+
 
             const refreshRes = await app.inject({
                 method: 'POST',
