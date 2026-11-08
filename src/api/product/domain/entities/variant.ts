@@ -9,6 +9,7 @@ export interface VariantAttribute {
 }
 
 export interface ExternalVariantSnapshot {
+    title: string
     sku: string
     price: number
     stock: number
@@ -38,7 +39,7 @@ export class Variant {
         if (!Number.isInteger(s.stock) || s.stock < 0) throw new InvalidVariantStockError()
     }
 
-    static createFromExternal(source: string, externalId: string, snapshot: VariantProps) {
+    static createFromExternal(source: string, externalId: string, snapshot: ExternalVariantSnapshot) {
         Variant.assertSnapshot(snapshot)
         const now = new Date()
         return new Variant({
@@ -61,6 +62,23 @@ export class Variant {
         })
     }
 
+    isUpToDate(snapshot: ExternalVariantSnapshot): boolean {
+        const incoming = normalizeAttributes(snapshot.attributes)
+        const current = this.props.attributes
+        const sameAttributes =
+            incoming.length === current.length &&
+            incoming.every((a) => current.some((c) => c.name === a.name && c.value === a.value))
+
+        return (
+            sameAttributes &&
+            this.props.sku === snapshot.sku &&
+            this.props.title === snapshot.title &&
+            this.props.price === snapshot.price &&
+            this.props.stock === snapshot.stock &&
+            this.props.isActive === snapshot.isActive
+        )
+    }
+
     attribute(name: string): string | undefined {
         return this.props.attributes.find((a) => a.name === name)?.value
     }
@@ -68,6 +86,8 @@ export class Variant {
     get id() {
         return this.props.id
     }
+
+    get title() { return this.props.title }
 
     get source() {
         return this.props.source
@@ -131,4 +151,5 @@ export class Variant {
         this.props.productId = null
         this.props.updatedAt = new Date()
     }
+
 }

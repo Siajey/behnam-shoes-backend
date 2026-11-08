@@ -14,4 +14,6 @@ export interface IVariantRepository {
     ): Promise<{ variants: Variant[]; nextCursor: string | null }>
     save(variant: Variant): Promise<void>
     saveMany(variants: Variant[]): Promise<void>
+    findByExternalIds(source: string, externalIds: string[]): Promise<Variant[]>
+    findActiveBySource(source: string): Promise<Variant[]>
 }
