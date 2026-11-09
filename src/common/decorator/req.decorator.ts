@@ -1,12 +1,18 @@
 import {
-  createParamDecorator,
-  ExecutionContext,
-  SetMetadata,
-  UnauthorizedException,
+    applyDecorators,
+    createParamDecorator,
+    ExecutionContext,
+    SetMetadata,
+    UnauthorizedException,
+    UseGuards,
 } from '@nestjs/common'
+import {Throttle} from '@nestjs/throttler'
 
-import { deserializeCookies } from '../util'
-import { UserRole } from '@api/users/domain'
+import {deserializeCookies} from '../util'
+import {UserRole} from '@api/users/domain'
+
+import {CSRFGuard, JwtSessionGuard, RolesGuard} from "@api/session/presentation";
+import {ADMIN_THROTTLE} from "@common/security";
 
 export const ReqUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
@@ -29,3 +35,10 @@ export const RefreshToken = createParamDecorator<string>(
 )
 
 export const Roles = (...roles: UserRole[]) => SetMetadata('roles', roles)
+
+export const AdminOnly = () =>
+    applyDecorators(
+        UseGuards(CSRFGuard, JwtSessionGuard, RolesGuard),
+        Roles(UserRole.ADMIN),
+        Throttle(ADMIN_THROTTLE),
+    )

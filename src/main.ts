@@ -15,14 +15,14 @@ import { NestConfigProvider } from '@common/configuration'
 import { ILogger } from '@common/logger'
 
 async function bootstrap() {
-  let logger: ILogger
+  let logger: ILogger | undefined
   try {
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
       bufferLogs: false,
     })
     logger = app.get(APP_LOGGER_SERVICE)
     process.on('uncaughtException', (error) => {
-      logger.error('Uncaught exception', {
+      logger?.error('Uncaught exception', {
         module: 'Bootstrap',
         event: 'app.exception',
         operation: 'process',
@@ -32,7 +32,7 @@ async function bootstrap() {
     })
 
     process.on('unhandledRejection', (reason) => {
-      logger.error('Unhandled promise rejection', {
+      logger?.error('Unhandled promise rejection', {
         module: 'Bootstrap',
         event: 'app.exception',
         operation: 'process',
@@ -65,7 +65,7 @@ async function bootstrap() {
     const port = configService.get('PORT') || 3000
     const host = isProd ? '0.0.0.0' : '127.0.0.1'
     await app.listen(port, host)
-    logger.info('Application started successfully', {
+    logger?.info('Application started successfully', {
       module: 'Bootstrap',
       event: 'app.start',
       operation: 'start',
@@ -73,7 +73,7 @@ async function bootstrap() {
     })
   } catch (error) {
     if (logger) {
-      logger.error(
+      logger?.error(
         `Application failed to started${error && typeof error === 'object' && 'message' in error && error.message ? ' : ' + error.message : ''}`,
         {
           module: 'Bootstrap',

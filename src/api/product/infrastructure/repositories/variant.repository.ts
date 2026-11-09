@@ -41,7 +41,7 @@ export class VariantRepository implements IVariantRepository {
         const builder = new DrizzleGetItemsQueryBuilder<never, 'createdAt'>(
             criteria,
             schema.variants,
-            undefined,
+            [],
             ['createdAt'],
         )
             .sort()

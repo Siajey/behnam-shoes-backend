@@ -16,7 +16,7 @@ export interface IGetUsers {
   execute(getItems: ListUsersQuery): Promise<{
     users: User[]
     length: number
-    nextCursor?: string
+    nextCursor: string | null
   }>
 }
 

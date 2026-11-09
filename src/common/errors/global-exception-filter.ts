@@ -95,6 +95,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         } else {
             if (
                 typeof exception === 'object' &&
+                exception &&
                 'stack' in exception &&
                 typeof exception.stack === 'string'
             )

@@ -8,8 +8,8 @@ export class User {
   role: UserRole
   status: UserStatus
   createdAt: Date
-  updatedAt?: Date
-  profile?: Profile
+  updatedAt: Date | null
+  profile?: Profile | null
 
   constructor(obj: User) {
     Object.assign(this, obj)

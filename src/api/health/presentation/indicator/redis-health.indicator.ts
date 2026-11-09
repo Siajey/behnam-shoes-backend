@@ -3,7 +3,8 @@ import {HealthIndicatorResult, HealthIndicatorService} from '@nestjs/terminus'
 import KeyvRedis from '@keyv/redis'
 
 import {ConfigProvider} from '@common/configuration'
-import {CONFIG_PROVIDER} from '@common/di'
+import {APP_LOGGER_SERVICE, CONFIG_PROVIDER} from '@common/di'
+import {ILogger} from "@common/logger";
 
 @Injectable()
 export default class RedisHealthIndicator {
@@ -11,6 +12,8 @@ export default class RedisHealthIndicator {
         private readonly healthIndicatorService: HealthIndicatorService,
         @Inject(CONFIG_PROVIDER)
         private readonly configService: ConfigProvider,
+        @Inject(APP_LOGGER_SERVICE)
+        private readonly logger: ILogger,
     ) {
     }
 
@@ -23,7 +26,7 @@ export default class RedisHealthIndicator {
             await redisService.client.connect()
             return indicator.up()
         } catch (err) {
-            if (typeof err === 'object')
+            if (typeof err === 'object' && err)
                 if ('code' in err && err.code && err.code === 'ECONNREFUSED') {
                     return this.healthIndicatorService
                         .check(key)
@@ -100,6 +103,16 @@ export default class RedisHealthIndicator {
                             .down('No valid Redis client specified')
                     }
                 }
+            this.logger.error('Something went wrong with redis', {
+                module: 'redis-health.indicator',
+                event: 'isHealthy',
+                operation: 'isHealthy',
+                err: err
+            })
+
+            return this.healthIndicatorService
+                .check(key)
+                .down('Something went wrong with redis')
         }
     }
 }
