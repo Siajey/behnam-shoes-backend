@@ -8,6 +8,20 @@
       "when": 1793780178917,
       "tag": "0000_loving_warstar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794246448370,
+      "tag": "0001_enable_pg_trgm",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794246510143,
+      "tag": "0002_deep_machine_man",
+      "breakpoints": true
     }
   ]
 }
