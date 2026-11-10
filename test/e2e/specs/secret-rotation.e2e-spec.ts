@@ -66,7 +66,7 @@ describe('Secret Rotation (e2e)', () => {
         expect(userResponse.statusCode).toBe(200)
 
         const newAccessSecret = 'xwZlqWfoJR+bYCGGv4JTTXIINnDQU4k59E/APRaRwmg='
-        process.env.ACCESS_TOKEN_SECRET_PREVIOUS = null
+        process.env.ACCESS_TOKEN_SECRET_PREVIOUS = undefined
         process.env.ACCESS_TOKEN_SECRET_CURRENT = newAccessSecret
 
         const res = await app.inject({

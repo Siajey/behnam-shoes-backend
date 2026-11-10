@@ -150,7 +150,6 @@ describe('Public catalog: cursor pagination (e2e)', () => {
 
         for (const [nextCursor, sort] of cursors) {
             const res = await anonymous.get(`/products${qs({nextCursor, sort})}`)
-
             expect(res.statusCode).toBeLessThan(500)
         }
     })

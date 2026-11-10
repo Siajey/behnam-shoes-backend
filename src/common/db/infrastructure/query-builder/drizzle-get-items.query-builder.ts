@@ -73,7 +73,13 @@ export class DrizzleGetItemsQueryBuilder<
     }
 
     private static coerceValue(dataType: string, raw: string): unknown {
-        if (dataType === 'date') return new Date(raw)
+        if (dataType === 'date') {
+            const date = new Date(raw)
+            if(
+                !Number.isFinite(date.getTime())
+            )
+                return null
+        }
         if (dataType === 'number') return Number(raw)
         return raw
     }
@@ -114,7 +120,7 @@ export class DrizzleGetItemsQueryBuilder<
                 DrizzleGetItemsQueryBuilder.assertEnumValueIsValid(target.expr as unknown as PgColumn, key, coerced)
             }
 
-            const opFn = match ? { gt, gte, lt, lte }[match[1] as 'gt' | 'gte' | 'lt' | 'lte'] : eq
+            const opFn = match ? {gt, gte, lt, lte}[match[1] as 'gt' | 'gte' | 'lt' | 'lte'] : eq
             this.where.push(opFn(target.expr, coerced))
         }
         return this

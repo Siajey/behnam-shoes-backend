@@ -73,7 +73,7 @@ describe('ProfileController (e2e)', () => {
         expect(updatedUser).toBeDefined()
         expect(updatedUser.status).toBe(UserStatus.ACTIVE)
         expect(updatedUser.profile).toBeDefined()
-        expect(updatedUser.profile.firstName).toBe('Ali')
+        expect(updatedUser.profile?.firstName).toBe('Ali')
     })
 
     it('/users/me (PATCH) should update user profile', async () => {
@@ -97,7 +97,7 @@ describe('ProfileController (e2e)', () => {
         expect(json.data.lastName).toBe('Doe')
 
         const updated = await userRepository.findByIdWithProfile(admin.id)
-        expect(updated.profile.firstName).toBe('Mohamad')
+        expect(updated?.profile?.firstName).toBe('Mohamad')
     })
 
     it('/users/me (PATCH) should update address when all fields are provided', async () => {
@@ -127,8 +127,8 @@ describe('ProfileController (e2e)', () => {
             postalCode: '90402',
         })
         const updated = await profileRepository.findByIdWithAddress(admin.id)
-        expect(updated.profile.addresses).toBeDefined()
-        expect(updated.profile.addresses[0]).toMatchObject({
+        expect(updated.profile?.addresses).toBeDefined()
+        expect(updated.profile?.addresses?.[0]).toMatchObject({
             street: '123 Main St',
             city: 'Nuremberg',
             province: 'Bavaria',
