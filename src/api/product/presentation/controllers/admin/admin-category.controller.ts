@@ -7,7 +7,7 @@ import {
     IGetPublicCategories,
 } from '@api/product/application'
 import {User} from '@api/users/domain'
-import {ReqUser, AdminOnly} from '@common/decorator'
+import {ReqUser, AdminOnly, AdminWriteOnly} from '@common/decorator'
 import {
     CREATE_CATEGORY,
     DELETE_CATEGORY,
@@ -28,7 +28,6 @@ import {SuccessResponse} from "@common/api";
 const idPipe = new ZodValidationPipe(uuidSchema)
 
 @Controller('admin/categories')
-@AdminOnly()
 export default class AdminCategoryController {
     constructor(
         @Inject(GET_PUBLIC_CATEGORIES) private readonly getCategories: IGetPublicCategories,
@@ -38,6 +37,7 @@ export default class AdminCategoryController {
     ) {
     }
 
+    @AdminOnly()
     @Get()
     async listController() {
         const categories = await this.getCategories.execute()
@@ -49,6 +49,7 @@ export default class AdminCategoryController {
         })
     }
 
+    @AdminWriteOnly()
     @Post()
     async createController(
         @Body(new ZodValidationPipe(CreateCategorySchema)) body: CreateCategoryBody,
@@ -64,6 +65,7 @@ export default class AdminCategoryController {
         })
     }
 
+    @AdminWriteOnly()
     @Patch(':id')
     async editController(
         @Param('id', idPipe) id: string,
@@ -79,6 +81,7 @@ export default class AdminCategoryController {
         })
     }
 
+    @AdminWriteOnly()
     @Delete(':id')
     async deleteController(@Param('id', idPipe) id: string, @ReqUser() user: User) {
         await this.deleteCategory.execute(id, user.id)

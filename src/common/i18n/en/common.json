@@ -24,5 +24,36 @@
     "updateAddressSuccess": "The address has been updated successfully.",
     "setDefaultAddressSuccess": "The default has been address set successfully.",
     "deleteAddressSuccess": "The address has been deleted successfully."
+  },
+  "product": {
+    "listSuccess": "The products retrieved successfully.",
+    "searchSuccess": "The products searched successfully.",
+    "filtersSuccess": "The product filters retrieved successfully.",
+    "getSuccess": "The product retrieved successfully.",
+    "createSuccess": "The product created successfully.",
+    "updateSuccess": "The product updated successfully.",
+    "galleryUpdateSuccess": "The product gallery updated successfully.",
+    "publishSuccess": "The product published successfully.",
+    "unpublishSuccess": "The product unpublished successfully.",
+    "archiveSuccess": "The product archived successfully.",
+    "mergeSuccess": "The products merged successfully.",
+    "splitSuccess": "The product split successfully."
+  },
+  "brand": {
+    "listSuccess": "The brands retrieved successfully.",
+    "createSuccess": "The brand created successfully.",
+    "updateSuccess": "The brand updated successfully.",
+    "deleteSuccess": "The brand deleted successfully."
+  },
+  "category": {
+    "listSuccess": "The categories retrieved successfully.",
+    "createSuccess": "The category created successfully.",
+    "updateSuccess": "The category updated successfully.",
+    "deleteSuccess": "The category deleted successfully."
+  },
+  "variant": {
+    "unassignedListSuccess": "The unassigned variants retrieved successfully.",
+    "attachSuccess": "The variants attached to the product successfully.",
+    "moveSuccess": "The variants moved successfully."
   }
 }

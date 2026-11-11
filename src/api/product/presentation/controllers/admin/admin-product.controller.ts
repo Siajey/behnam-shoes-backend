@@ -12,7 +12,7 @@ import {
     IUpdateProductGallery,
 } from '@api/product/application'
 import { User } from '@api/users/domain'
-import { ReqUser,AdminOnly } from '@common/decorator'
+import {ReqUser, AdminOnly, AdminWriteOnly} from '@common/decorator'
 import {
     ADMIN_GET_PRODUCT_BY_ID,
     ADMIN_LIST_PRODUCTS,
@@ -42,7 +42,6 @@ import { ProductPresenter } from '../../presenters'
 const idPipe = new ZodValidationPipe(uuidSchema)
 
 @Controller('admin/products')
-@AdminOnly()
 export default class AdminProductController {
     constructor(
         @Inject(ADMIN_LIST_PRODUCTS) private readonly listProducts: IAdminListProducts,
@@ -55,6 +54,7 @@ export default class AdminProductController {
         @Inject(ARCHIVE_PRODUCT) private readonly archiveProduct: IArchiveProduct,
     ) {}
 
+    @AdminOnly()
     @Get()
     async listController(
         @Query(new ZodValidationPipe(AdminListProductsQuerySchema)) query: AdminListProductsQuery,
@@ -71,6 +71,7 @@ export default class AdminProductController {
         })
     }
 
+    @AdminOnly()
     @Get(':id')
     async getController(@Param('id', idPipe) id: string) {
         return new SuccessResponse({
@@ -81,6 +82,7 @@ export default class AdminProductController {
         })
     }
 
+    @AdminWriteOnly()
     @Post()
     async createController(
         @Body(new ZodValidationPipe(CreateProductSchema)) body: CreateProductBody,
@@ -96,6 +98,7 @@ export default class AdminProductController {
         })
     }
 
+    @AdminWriteOnly()
     @Patch(':id')
     async updateController(
         @Param('id', idPipe) id: string,
@@ -111,6 +114,7 @@ export default class AdminProductController {
         })
     }
 
+    @AdminWriteOnly()
     @Put(':id/gallery')
     async galleryController(
         @Param('id', idPipe) id: string,
@@ -126,6 +130,7 @@ export default class AdminProductController {
         })
     }
 
+    @AdminWriteOnly()
     @Post(':id/publish')
     async publishController(@Param('id', idPipe) id: string, @ReqUser() user: User) {
         return new SuccessResponse({
@@ -136,6 +141,7 @@ export default class AdminProductController {
         })
     }
 
+    @AdminWriteOnly()
     @Post(':id/unpublish')
     async unpublishController(@Param('id', idPipe) id: string, @ReqUser() user: User) {
         return new SuccessResponse({
@@ -146,6 +152,7 @@ export default class AdminProductController {
         })
     }
 
+    @AdminWriteOnly()
     @Post(':id/archive')
     async archiveController(@Param('id', idPipe) id: string, @ReqUser() user: User) {
         return new SuccessResponse({

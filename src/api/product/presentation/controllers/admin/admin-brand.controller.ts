@@ -2,7 +2,7 @@ import {Body, Controller, Delete, Get, HttpStatus, Inject, Param, Patch, Post} f
 
 import {ICreateBrand, IDeleteBrand, IEditBrand, IGetPublicBrands} from '@api/product/application'
 import {User} from '@api/users/domain'
-import {ReqUser, AdminOnly} from '@common/decorator'
+import {ReqUser, AdminOnly, AdminWriteOnly} from '@common/decorator'
 import {CREATE_BRAND, DELETE_BRAND, EDIT_BRAND, GET_PUBLIC_BRANDS} from '@common/di'
 import {uuidSchema, ZodValidationPipe} from '@common/validations'
 import {SuccessResponse} from "@common/api";
@@ -18,7 +18,6 @@ import {TaxonomyPresenter} from '../../presenters'
 const idPipe = new ZodValidationPipe(uuidSchema)
 
 @Controller('admin/brands')
-@AdminOnly()
 export default class AdminBrandController {
     constructor(
         @Inject(GET_PUBLIC_BRANDS) private readonly getBrands: IGetPublicBrands,
@@ -28,6 +27,7 @@ export default class AdminBrandController {
     ) {
     }
 
+    @AdminOnly()
     @Get()
     async listController() {
         const brands = await this.getBrands.execute()
@@ -39,6 +39,7 @@ export default class AdminBrandController {
         })
     }
 
+    @AdminWriteOnly()
     @Post()
     async createController(
         @Body(new ZodValidationPipe(CreateBrandSchema)) body: CreateBrandBody,
@@ -54,6 +55,7 @@ export default class AdminBrandController {
         })
     }
 
+    @AdminWriteOnly()
     @Patch(':id')
     async editController(
         @Param('id', idPipe) id: string,
@@ -69,6 +71,7 @@ export default class AdminBrandController {
         })
     }
 
+    @AdminWriteOnly()
     @Delete(':id')
     async deleteController(@Param('id', idPipe) id: string, @ReqUser() user: User) {
         await this.deleteBrand.execute(id, user.id)

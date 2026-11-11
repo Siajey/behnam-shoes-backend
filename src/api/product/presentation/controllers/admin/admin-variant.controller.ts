@@ -8,7 +8,7 @@ import {
     ISplitProduct,
 } from '@api/product/application'
 import {User} from '@api/users/domain'
-import {ReqUser, AdminOnly} from '@common/decorator'
+import {ReqUser, AdminOnly, AdminWriteOnly} from '@common/decorator'
 import {
     ATTACH_VARIANTS,
     LIST_UNASSIGNED_VARIANTS,
@@ -34,7 +34,6 @@ import {ProductPresenter, VariantPresenter} from '../../presenters'
 const idPipe = new ZodValidationPipe(uuidSchema)
 
 @Controller('admin')
-@AdminOnly()
 export default class AdminVariantController {
     constructor(
         @Inject(LIST_UNASSIGNED_VARIANTS) private readonly listUnassigned: IListUnassignedVariants,
@@ -45,6 +44,7 @@ export default class AdminVariantController {
     ) {
     }
 
+    @AdminOnly()
     @Get('variants/unassigned')
     async unassignedController(
         @Query(new ZodValidationPipe(UnassignedVariantsQuerySchema)) query: UnassignedVariantsQuery,
@@ -58,6 +58,7 @@ export default class AdminVariantController {
         })
     }
 
+    @AdminWriteOnly()
     @Post('products/:id/variants')
     async attachController(
         @Param('id', idPipe) id: string,
@@ -73,6 +74,7 @@ export default class AdminVariantController {
         })
     }
 
+    @AdminWriteOnly()
     @Post('products/:id/variants/move')
     async moveController(
         @Param('id', idPipe) id: string,
@@ -94,6 +96,7 @@ export default class AdminVariantController {
         })
     }
 
+    @AdminWriteOnly()
     @Post('products/:id/merge')
     async mergeController(
         @Param('id', idPipe) id: string,
@@ -112,6 +115,7 @@ export default class AdminVariantController {
         })
     }
 
+    @AdminWriteOnly()
     @Post('products/:id/split')
     async splitController(
         @Param('id', idPipe) id: string,

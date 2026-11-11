@@ -23,5 +23,36 @@
     "updateAddressSuccess": "آدرس با موفقیت به‌روزرسانی شد.",
     "setDefaultAddressSuccess": "آدرس پیش‌فرض با موفقیت تنظیم شد.",
     "deleteAddressSuccess": "آدرس با موفقیت حذف شد."
+  },
+  "product": {
+    "listSuccess": "محصولات با موفقیت دریافت شدند.",
+    "searchSuccess": "جستجوی محصولات با موفقیت انجام شد.",
+    "filtersSuccess": "فیلترهای محصولات با موفقیت دریافت شدند.",
+    "getSuccess": "محصول با موفقیت دریافت شد.",
+    "createSuccess": "محصول با موفقیت ایجاد شد.",
+    "updateSuccess": "محصول با موفقیت به‌روزرسانی شد.",
+    "galleryUpdateSuccess": "گالری تصاویر محصول با موفقیت به‌روزرسانی شد.",
+    "publishSuccess": "محصول با موفقیت منتشر شد.",
+    "unpublishSuccess": "انتشار محصول با موفقیت لغو شد.",
+    "archiveSuccess": "محصول با موفقیت بایگانی شد.",
+    "mergeSuccess": "محصولات با موفقیت ادغام شدند.",
+    "splitSuccess": "محصول با موفقیت تفکیک شد."
+  },
+  "brand": {
+    "listSuccess": "برندها با موفقیت دریافت شدند.",
+    "createSuccess": "برند با موفقیت ایجاد شد.",
+    "updateSuccess": "برند با موفقیت به‌روزرسانی شد.",
+    "deleteSuccess": "برند با موفقیت حذف شد."
+  },
+  "category": {
+    "listSuccess": "دسته‌بندی‌ها با موفقیت دریافت شدند.",
+    "createSuccess": "دسته‌بندی با موفقیت ایجاد شد.",
+    "updateSuccess": "دسته‌بندی با موفقیت به‌روزرسانی شد.",
+    "deleteSuccess": "دسته‌بندی با موفقیت حذف شد."
+  },
+  "variant": {
+    "unassignedListSuccess": "تنوع‌های تخصیص‌نیافته با موفقیت دریافت شدند.",
+    "attachSuccess": "تنوع‌ها با موفقیت به محصول متصل شدند.",
+    "moveSuccess": "تنوع‌ها با موفقیت منتقل شدند."
   }
 }
