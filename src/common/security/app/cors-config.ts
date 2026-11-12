@@ -2,6 +2,7 @@ import {ForbiddenException} from '@nestjs/common'
 import {NestFastifyApplication} from '@nestjs/platform-fastify'
 import fastifyCors, {FastifyCorsOptions} from '@fastify/cors'
 
+
 import {ConfigProvider} from '@common/configuration'
 
 export const applyCors = async (app: NestFastifyApplication, configService: ConfigProvider) => {
