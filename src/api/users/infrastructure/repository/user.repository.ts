@@ -37,7 +37,7 @@ export class UserRepository implements IUserRepository {
 
   async findAll(
     dto: ListUsersQuery,
-  ): Promise<{ users: User[]; nextCursor?: string }> {
+  ): Promise<{ users: User[]; nextCursor: string | null}> {
     const builder = new DrizzleGetItemsQueryBuilder(
       dto,
       schema.users,
@@ -130,7 +130,7 @@ export class UserRepository implements IUserRepository {
       ...UserMapper.toDomain(userRow),
       profile: userRow?.profile
         ? ProfileMapper.toDomain(userRow.profile)
-        : undefined,
+        : null,
     }
   }
 
@@ -190,13 +190,13 @@ export class UserRepository implements IUserRepository {
                     .insert(profiles)
                     .values({
                         userId: id,
-                        ...stripUndefined(profile),
+                        ...stripUndefined(profile ?? {}),
                         updatedAt: now,
                     })
                     .onConflictDoUpdate({
                         target: profiles.userId,
                         set: {
-                            ...stripUndefined(profile),
+                            ...stripUndefined(profile ?? {}),
                             updatedAt: now,
                         },
                     })

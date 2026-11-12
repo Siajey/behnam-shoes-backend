@@ -120,10 +120,9 @@ export class SessionTokensService implements ISessionService {
             value: csrfSecret,
             httpOnly: true,
             secure: isProd,
-            sameSite: 'strict',
+            sameSite: 'lax',
             path: '/',
             maxAge: 3600,
         }
-
     }
 }

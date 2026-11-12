@@ -8,7 +8,7 @@ export class SessionCacheService {
     private readonly logger: ILogger,
   ) {}
 
-  async getUserSession(userId: string): Promise<User> {
+  async getUserSession(userId: string) {
     try {
       return await this.cache.getUserSession(userId)
     } catch (error) {

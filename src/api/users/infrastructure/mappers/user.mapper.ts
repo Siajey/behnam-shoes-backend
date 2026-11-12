@@ -32,7 +32,7 @@ export class UserMapper {
             role: user.role,
             status: user.status,
             createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
+            updatedAt: user.updatedAt ?? new Date(),
         }
     }
 }

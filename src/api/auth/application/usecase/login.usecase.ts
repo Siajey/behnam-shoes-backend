@@ -20,6 +20,7 @@ export class LoginUsecase implements ILogin {
             role: user.role,
             updatedAt: user.updatedAt,
             status: user.status,
+            profile: null
         }
     }
 }

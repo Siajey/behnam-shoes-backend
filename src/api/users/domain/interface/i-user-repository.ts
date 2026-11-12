@@ -22,7 +22,7 @@ export interface ListUsersQuery extends ListQuery<UserFilterField> {
 export interface IUserRepository {
   findAll(getItemsDto: ListUsersQuery): Promise<{
     users: User[]
-    nextCursor?: string
+    nextCursor: string | null
   }>
 
   count(getItemsDto: ListUsersQuery): Promise<number>

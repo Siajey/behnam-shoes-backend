@@ -70,5 +70,35 @@
       "mustBeValidCountryCode": "Please provide a valid two-letter country code.",
       "addressAllFieldsRequired": "All address fields (street, city, postal code, and country) are required."
     }
+  },
+  "product": {
+    "archived": "This product is archived and cannot be modified.",
+    "mergeSameProduct": "A product cannot be merged with itself.",
+    "typeMismatch": "This operation is not supported for products of type \"{type}\".",
+    "notFound": "Product not found.",
+    "slugAlreadyExists": "A product with the slug \"{slug}\" already exists.",
+    "slugLocked": "The product slug cannot be changed.",
+    "notPublishable": "The product cannot be published. The following fields are missing: {missing}.",
+    "invalidStatusTransition": "The product status cannot be changed from \"{from}\" to \"{to}\".",
+    "tooManyImages": "The product cannot have more than {max} images."
+  },
+  "variant": {
+    "alreadyAssigned": "The following variants are already assigned to another product: {variantIds}.",
+    "invalidAttributes": "The product variant attributes are invalid.",
+    "notFound": "Product variant not found.",
+    "invalidPrice": "The variant price is invalid.",
+    "invalidStock": "The variant stock quantity is invalid."
+  },
+  "category": {
+    "notFound": "Category not found.",
+    "slugAlreadyExists": "A category with the slug \"{slug}\" already exists.",
+    "circularParent": "A category cannot be its own parent or one of its descendants.",
+    "hasChildren": "This category cannot be deleted because it has child categories.",
+    "hasProducts": "This category cannot be deleted because it contains products."
+  },
+  "brand": {
+    "notFound": "Brand not found.",
+    "slugAlreadyExists": "A brand with the slug \"{slug}\" already exists.",
+    "hasProducts": "This brand cannot be deleted because it has associated products."
   }
 }

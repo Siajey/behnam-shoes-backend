@@ -7,7 +7,7 @@ export class GetUsers implements IGetUsers {
   async execute(getItems: ListUsersQuery): Promise<{
     users: User[]
     length: number
-    nextCursor?: string
+    nextCursor: string | null
   }> {
     const { users, nextCursor } = await this.userRepository.findAll(getItems)
     return {

@@ -18,6 +18,7 @@ import {DatabaseModule} from '@common/db'
 import {AuthModule} from "@api/auth";
 import {UserModule} from "@api/users";
 import {HealthModule} from "@api/health/health.module";
+import {ProductModule} from "@api/product/product.module";
 
 @Module({
     imports: [
@@ -47,7 +48,8 @@ import {HealthModule} from "@api/health/health.module";
         DatabaseModule,
         HealthModule,
         AuthModule,
-        UserModule
+        UserModule,
+        ProductModule
     ],
     providers: [GlobalExceptionFilter, ApiResponseInterceptor],
 })

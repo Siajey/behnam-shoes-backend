@@ -38,6 +38,7 @@
   "homepage": "https://github.com/Siajey/behnam-shoes-backend#readme",
   "dependencies": {
     "@electric-sql/pglite": "^0.5.14",
+    "@fastify/cors": "^11.4.1",
     "@fastify/helmet": "^13.2.0",
     "@fastify/multipart": "^10.1.6",
     "@fastify/secure-session": "^8.4.1",

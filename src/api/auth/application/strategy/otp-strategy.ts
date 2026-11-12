@@ -37,7 +37,7 @@ export default class OtpStrategy implements LoginStrategy {
             else
                 throw e
         }
-        const otp = this.configProvider.get('NODE_ENV') === 'production' ? generateOtpCode() : '12345'
+        const otp = this.configProvider.get('NODE_ENV') === 'production' ? generateOtpCode() : '123456'
 
         await this.createOtpUsecase.execute(loginBody.credentials.phoneNumber, otp)
 

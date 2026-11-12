@@ -105,7 +105,6 @@ export default class AuthController {
     public async verifyOtp(@Body() verifyOtpBody: VerifyOtpSchemaType) {
         const user = await this.verifyUser.execute(verifyOtpBody)
         const session = await this.authTokenService.generateAuthSession(user.id)
-
         return new SuccessResponse({
             messageObj: {message: 'common.auth.otpVerifiedSuccess'},
             code: 'verifyUserSuccess',
@@ -156,7 +155,7 @@ export default class AuthController {
         },
     })
     @Get('send-login-otp/:phoneNumber')
-    async sendConfirmEmailController(@Param('phoneNumber') phoneNumber: string) {
+    async sendLoginOtpController(@Param('phoneNumber') phoneNumber: string) {
         await this.sendLoginOtp.execute(phoneNumber)
         return new SuccessResponse({
             messageObj: {message: 'common.auth.otpSentSuccess'},

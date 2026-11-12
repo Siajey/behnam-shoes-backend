@@ -2,6 +2,7 @@ import postgres from 'postgres'
 import { PGlite } from '@electric-sql/pglite'
 import { readFileSync } from 'node:fs'
 import { Provider } from '@nestjs/common'
+import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
 
 import { CONFIG_PROVIDER, DATABASE_CLIENT } from '@common/di'
 import { ConfigProvider } from '@common/configuration'
@@ -40,7 +41,11 @@ export const DatabaseClientProvider: Provider = {
       }
 
       case DatabaseEngine.PGLITE:
-        return new PGlite('database.pglite')
+        return new PGlite('database.pglite',{
+            extensions: {
+                pg_trgm,
+            }
+        })
 
       default:
         throw new Error(`Unsupported database engine: ${config.get('DB')}`)
