@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common'
+import {Module} from '@nestjs/common'
 
-import { DatabaseModule } from '@common/db'
+import {DatabaseModule} from '@common/db'
 import {
     BRAND_REPOSITORY,
     CATEGORY_REPOSITORY,
-    DEACTIVATE_MISSING_VARIANTS,
+    DEACTIVATE_MISSING_VARIANTS, GET_PUBLISHED_PRODUCTS_BY_IDS,
     GET_VARIANTS_BY_IDS,
     PRODUCT_QUERY_REPOSITORY,
     PRODUCT_REPOSITORY,
@@ -46,16 +46,20 @@ import {SessionModule} from "@api/session";
         AdminBrandController,
     ],
     providers: [
-        { provide: PRODUCT_REPOSITORY, useClass: ProductRepository },
-        { provide: PRODUCT_QUERY_REPOSITORY, useClass: ProductQueryRepository },
-        { provide: VARIANT_REPOSITORY, useClass: VariantRepository },
-        { provide: CATEGORY_REPOSITORY, useClass: CategoryRepository },
-        { provide: BRAND_REPOSITORY, useClass: BrandRepository },
+        {provide: PRODUCT_REPOSITORY, useClass: ProductRepository},
+        {provide: PRODUCT_QUERY_REPOSITORY, useClass: ProductQueryRepository},
+        {provide: VARIANT_REPOSITORY, useClass: VariantRepository},
+        {provide: CATEGORY_REPOSITORY, useClass: CategoryRepository},
+        {provide: BRAND_REPOSITORY, useClass: BrandRepository},
         ...ProductReadUseCaseProviders,
         ...ProductAdminUseCaseProviders,
         ...ProductVariantAdminUseCaseProviders,
         ...ProductSystemUseCaseProviders,
     ],
-    exports: [UPSERT_VARIANTS_FROM_EXTERNAL, DEACTIVATE_MISSING_VARIANTS, GET_VARIANTS_BY_IDS],
+    exports: [UPSERT_VARIANTS_FROM_EXTERNAL,
+        DEACTIVATE_MISSING_VARIANTS,
+        GET_VARIANTS_BY_IDS,
+        GET_PUBLISHED_PRODUCTS_BY_IDS],
 })
-export class ProductModule {}
+export class ProductModule {
+}

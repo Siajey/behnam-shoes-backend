@@ -4,29 +4,28 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
-    Api,
-    VariantSeed,
     anonymousApi,
+    Api,
+    createSession,
+    expectError,
+    expectOk,
+    expectValidationError,
+    idsOf,
+    qs,
+    randomId,
+    sleep,
+    walkPages,
+} from '../../../util/test.util'
+import {
     createBrand,
     createCategory,
     createDraftProduct,
     createProduct,
     createPublishedProduct,
-    createSession,
-    expectError,
-    expectOk,
-    expectValidationError,
     getAdminProduct,
-    idsOf,
-    qs,
-    randomId,
     seedVariants,
     shoeBody,
-    sleep,
-    slug,
-    uid,
     upsertUseCase,
-    walkPages,
 } from './product-test.util'
 
 describe('Admin variants (e2e)', () => {
@@ -45,7 +44,6 @@ describe('Admin variants (e2e)', () => {
     const unassignedIds = async () =>
         (await walkPages(admin, '/admin/variants/unassigned', {pageSize: 100})).flatMap((p) => idsOf(p.items))
 
-    /** Makes an already-attached variant violate the shoe attribute rules (size out of range). */
     const breakVariant = async (seeded: Awaited<ReturnType<typeof seedVariants>>, index = 0) => {
         await upsertUseCase(ctx.app).execute({
             source: seeded.source,
@@ -65,8 +63,6 @@ describe('Admin variants (e2e)', () => {
         const {type, name, slug: newSlug, description, gender} = shoeBody()
         return {type, name, slug: newSlug, description, gender, ...overrides}
     }
-
-    /* ---------------------------------------------------------------- */
 
     describe('GET /admin/variants/unassigned', () => {
         it('lists unassigned variants with the admin shape', async () => {
@@ -136,8 +132,6 @@ describe('Admin variants (e2e)', () => {
             expectValidationError(await admin.get(`/admin/variants/unassigned${qs({nextCursor: 'x'.repeat(513)})}`))
         })
     })
-
-    /* ---------------------------------------------------------------- */
 
     describe('POST /admin/products/:id/variants (attach)', () => {
         it('attaches unassigned variants and returns the product with all of its variants', async () => {
@@ -287,8 +281,6 @@ describe('Admin variants (e2e)', () => {
             expectValidationError(await admin.post('/admin/products/not-a-uuid/variants', {variantIds: [randomId()]}))
         })
     })
-
-    /* ---------------------------------------------------------------- */
 
     describe('POST /admin/products/:id/variants/move', () => {
         it('moves variants between draft products', async () => {
@@ -480,7 +472,6 @@ describe('Admin variants (e2e)', () => {
         })
     })
 
-    /* ---------------------------------------------------------------- */
 
     describe('POST /admin/products/:id/merge', () => {
         it('moves every variant of the source into the target and archives the source', async () => {
@@ -601,8 +592,6 @@ describe('Admin variants (e2e)', () => {
             expectValidationError(await admin.post('/admin/products/not-a-uuid/merge', {sourceProductId: randomId()}))
         })
     })
-
-    /* ---------------------------------------------------------------- */
 
     describe('POST /admin/products/:id/split', () => {
         it('creates a draft product with the chosen variants and inherits category and brand', async () => {

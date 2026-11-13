@@ -100,5 +100,15 @@
     "notFound": "Brand not found.",
     "slugAlreadyExists": "A brand with the slug \"{slug}\" already exists.",
     "hasProducts": "This brand cannot be deleted because it has associated products."
+  },
+  "cart": {
+    "itemNotFound": "The cart item was not found.",
+    "itemLimitReached": "You cannot add more than {{max}} different items to your cart.",
+    "quantityLimitExceeded": "The maximum allowed quantity per item is {{max}}.",
+    "invalidQuantity": "The requested quantity is invalid.",
+    "variantUnavailable": "This product variant is currently unavailable.",
+    "insufficientStock": "Insufficient stock. Only {{available}} items are available.",
+    "checkoutBlocked": "Your cart contains items that cannot be purchased. Please review your cart and try again.",
+    "versionConflict": "Your cart has been updated by another request. Please refresh your cart and try again."
   }
 }

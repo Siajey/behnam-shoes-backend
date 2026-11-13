@@ -4,29 +4,31 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
-    AR_NAME,
     Api,
-    FA_NAME,
-    PERSIAN_FORTY_TWO,
-    createBrand,
-    createCategory,
-    createProduct,
+    AR_NAME,
     createSession,
     expectError,
     expectOk,
     expectValidationError,
-    getAdminProduct,
+    FA_NAME,
     idsOf,
     omit,
-    optionMap,
+    PERSIAN_FORTY_TWO,
     randomId,
-    seedVariants,
-    setGallery,
-    shoeBody,
     sleep,
     slug,
     uid,
     walkPages,
+} from '../../../util/test.util'
+import {
+    createBrand,
+    createCategory,
+    createProduct,
+    getAdminProduct,
+    optionMap,
+    seedVariants,
+    setGallery,
+    shoeBody,
 } from './product-test.util'
 
 describe('Admin products: create, update, gallery (e2e)', () => {
@@ -170,7 +172,6 @@ describe('Admin products: create, update, gallery (e2e)', () => {
                 expect(product.variants).toHaveLength(3)
                 expect(idsOf(product.variants).sort()).toEqual(variants.map((v) => v.id).sort())
                 product.variants.forEach((v: any) => expect(v.productId).toBe(product.id))
-                // inactive variants do not count for prices/options, but available ones make it in stock
                 expect(product.minPrice).toBe(1000)
                 expect(product.maxPrice).toBe(2500)
                 expect(product.inStock).toBe(true)
@@ -249,7 +250,6 @@ describe('Admin products: create, update, gallery (e2e)', () => {
 
                 expectError(await admin.post('/admin/products', body), 400, 'VARIANT_INVALID_ATTRIBUTES')
 
-                // nothing was persisted: the slug is still free and the variant is still unassigned
                 const retry = await admin.post('/admin/products', {...body, variantIds: undefined})
                 expect(retry.statusCode).toBe(201)
             })

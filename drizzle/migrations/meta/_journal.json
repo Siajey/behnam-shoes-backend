@@ -22,6 +22,13 @@
       "when": 1794246510143,
       "tag": "0002_deep_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794563351828,
+      "tag": "0003_normal_boomerang",
+      "breakpoints": true
     }
   ]
 }

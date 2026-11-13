@@ -53,6 +53,15 @@ export class ProductQueryRepository implements IProductQueryRepository {
         return this.findOne(eq(schema.products.slug, slug), statuses)
     }
 
+    async findDetailsByIds(ids: string[], statuses: ProductStatus[]): Promise<ProductWithVariants[]> {
+        if (ids.length === 0) return []
+        const rows = await this.db
+            .select()
+            .from(schema.products)
+            .where(and(inArray(schema.products.id, ids), inArray(schema.products.status, statuses)))
+        return this.assemble(rows)
+    }
+
     async getFilters(
         criteria: Pick<ProductListCriteria, 'statuses' | 'categoryId'>,
     ): Promise<CatalogFilters> {

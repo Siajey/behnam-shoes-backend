@@ -4,21 +4,23 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
+    Api,
     AR_NAME,
     AR_SLUG,
-    Api,
-    FA_NAME,
-    FA_SLUG,
-    createBrand,
-    createProduct,
     createSession,
     expectError,
     expectOk,
     expectValidationError,
+    FA_NAME,
+    FA_SLUG,
     randomId,
     sleep,
     slug,
     uid,
+} from '../../../util/test.util'
+import {
+    createBrand,
+    createProduct,
 } from './product-test.util'
 
 describe('Admin brands (e2e)', () => {
@@ -66,10 +68,7 @@ describe('Admin brands (e2e)', () => {
 
         it('trims the name and lowercases the slug', async () => {
             const tag = uid()
-            const res = await admin.post('/admin/brands', {
-                name: `  Reebok ${tag}  `,
-                slug: `Reebok-${tag}`.toUpperCase()
-            })
+            const res = await admin.post('/admin/brands', {name: `  Reebok ${tag}  `, slug: `Reebok-${tag}`.toUpperCase()})
 
             expect(res.statusCode).toBe(201)
             expect(res.json().data.name).toBe(`Reebok ${tag}`)
@@ -78,6 +77,7 @@ describe('Admin brands (e2e)', () => {
 
         it('normalises Arabic kaf/yeh to Persian in name and slug', async () => {
             const res = await admin.post('/admin/brands', {name: AR_NAME, slug: AR_SLUG})
+
             expect(res.statusCode).toBe(201)
             expect(res.json().data.name).toBe(FA_NAME)
             expect(res.json().data.slug).toBe(FA_SLUG)
@@ -133,8 +133,7 @@ describe('Admin brands (e2e)', () => {
             await createBrand(admin, {name})
 
             const res = await admin.post('/admin/brands', {name, slug: slug('different')})
-            // The use case only checks the slug; the DB unique index is the only guard for the name.
-            // The expected contract is a conflict, not a 500.
+
             expect(res.statusCode).toBe(409)
         })
     })
@@ -275,7 +274,7 @@ describe('Admin brands (e2e)', () => {
 
             expectError(await admin.delete(`/admin/brands/${brand.id}`), 409, 'BRAND_HAS_PRODUCTS')
 
-            // once the product no longer references the brand, deletion works
+
             const detach = await admin.patch(`/admin/products/${product.id}`, {brandId: null})
             expect(detach.statusCode).toBe(200)
             expectOk(await admin.delete(`/admin/brands/${brand.id}`), 200, 'BRAND_DELETE_SUCCESS')

@@ -55,5 +55,13 @@
     "unassignedListSuccess": "The unassigned variants retrieved successfully.",
     "attachSuccess": "The variants attached to the product successfully.",
     "moveSuccess": "The variants moved successfully."
+  },
+  "cart": {
+    "getSuccess": "Cart retrieved successfully.",
+    "addItemSuccess": "Item added to your cart successfully.",
+    "updateItemSuccess": "Cart item quantity updated successfully.",
+    "removeItemSuccess": "Item removed from your cart successfully.",
+    "clearSuccess": "Cart cleared successfully.",
+    "mergeSuccess": "Carts merged successfully."
   }
 }

@@ -4,25 +4,27 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
-    AR_NAME,
     Api,
-    FA_NAME,
-    createBrand,
-    createCategory,
-    createProduct,
-    createPublishedProduct,
+    AR_NAME,
     createSession,
     expectError,
     expectOk,
     expectValidationError,
-    getAdminProduct,
+    FA_NAME,
     idsOf,
-    optionMap,
     qs,
     randomId,
     sleep,
     uid,
     walkPages,
+} from '../../../util/test.util'
+import {
+    createBrand,
+    createCategory,
+    createProduct,
+    createPublishedProduct,
+    getAdminProduct,
+    optionMap,
 } from './product-test.util'
 
 describe('Admin products: detail and list (e2e)', () => {
