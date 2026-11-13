@@ -20,6 +20,7 @@ import {UserModule} from "@api/users";
 import {HealthModule} from "@api/health/health.module";
 import {ProductModule} from "@api/product/product.module";
 import {CartModule} from "@api/cart/cart.module";
+import {FavoritesModule} from "@api/favorites/favorite.module";
 
 @Module({
     imports: [
@@ -51,7 +52,8 @@ import {CartModule} from "@api/cart/cart.module";
         AuthModule,
         UserModule,
         ProductModule,
-        CartModule
+        CartModule,
+        FavoritesModule
     ],
     providers: [GlobalExceptionFilter, ApiResponseInterceptor],
 })

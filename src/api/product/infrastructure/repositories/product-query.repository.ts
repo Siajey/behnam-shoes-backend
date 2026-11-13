@@ -53,6 +53,15 @@ export class ProductQueryRepository implements IProductQueryRepository {
         return this.findOne(eq(schema.products.slug, slug), statuses)
     }
 
+    async findPublishedIds(ids: string[]): Promise<string[]> {
+        if (ids.length === 0) return []
+        const rows = await this.db
+            .select({ id: schema.products.id })
+            .from(schema.products)
+            .where(and(inArray(schema.products.id, ids), eq(schema.products.status, 'published')))
+        return rows.map((r) => r.id)
+    }
+
     async findDetailsByIds(ids: string[], statuses: ProductStatus[]): Promise<ProductWithVariants[]> {
         if (ids.length === 0) return []
         const rows = await this.db
