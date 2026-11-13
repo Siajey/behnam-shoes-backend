@@ -4,18 +4,20 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
-    Api,
     anonymousApi,
-    createBrand,
-    createCategory,
-    createDraftProduct,
-    createPublishedProduct,
+    Api,
     createSession,
     expectOk,
     expectValidationError,
     qs,
     randomId,
     uid,
+} from '../../../util/test.util'
+import {
+    createBrand,
+    createCategory,
+    createDraftProduct,
+    createPublishedProduct,
 } from './product-test.util'
 
 const byName = <T extends { name: string }>(items: T[]) => [...items].sort((a, b) => a.name.localeCompare(b.name))

@@ -4,24 +4,26 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
-    Api,
-    VariantSeed,
     anonymousApi,
-    createCategory,
-    createProduct,
-    createPublishedProduct,
+    Api,
     createSession,
     expectError,
     expectOk,
     expectValidationError,
-    getAdminProduct,
-    publishProduct,
     randomId,
-    seedVariants,
-    setGallery,
     sleep,
     slug,
+} from '../../../util/test.util'
+import {
+    createCategory,
+    createProduct,
+    createPublishedProduct,
+    getAdminProduct,
+    publishProduct,
+    seedVariants,
+    setGallery,
     upsertUseCase,
+    VariantSeed,
 } from './product-test.util'
 
 describe('Admin products: publish / unpublish / archive (e2e)', () => {
@@ -35,7 +37,6 @@ describe('Admin products: publish / unpublish / archive (e2e)', () => {
         anonymous = anonymousApi(ctx.app)
     })
 
-    /** A draft that has everything publishing requires, unless a piece is switched off. */
     const readyDraft = async (
         options: { category?: boolean; images?: number; variants?: VariantSeed[] } = {},
     ) => {

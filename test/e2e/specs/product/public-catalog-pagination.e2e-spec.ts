@@ -4,10 +4,8 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
-    Api,
     anonymousApi,
-    createCategory,
-    createPublishedProduct,
+    Api,
     createSession,
     expectValidationError,
     idsOf,
@@ -16,6 +14,10 @@ import {
     sleep,
     uid,
     walkPages,
+} from '../../../util/test.util'
+import {
+    createCategory,
+    createPublishedProduct,
 } from './product-test.util'
 
 const TOTAL = 12
@@ -150,6 +152,7 @@ describe('Public catalog: cursor pagination (e2e)', () => {
 
         for (const [nextCursor, sort] of cursors) {
             const res = await anonymous.get(`/products${qs({nextCursor, sort})}`)
+
             expect(res.statusCode).toBeLessThan(500)
         }
     })

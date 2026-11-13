@@ -5,8 +5,6 @@ import {UserRole} from '@api/users/domain'
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
     Api,
-    createCategory,
-    createProduct,
     createSession,
     expectError,
     expectOk,
@@ -15,6 +13,10 @@ import {
     sleep,
     slug,
     uid,
+} from '../../../util/test.util'
+import {
+    createCategory,
+    createProduct,
 } from './product-test.util'
 
 describe('Admin categories (e2e)', () => {
@@ -218,7 +220,6 @@ describe('Admin categories (e2e)', () => {
             expectError(await admin.patch(`/admin/categories/${a.id}`, {parentId: c.id}), 400, 'CATEGORY_CIRCULAR_PARENT')
             expectError(await admin.patch(`/admin/categories/${a.id}`, {parentId: b.id}), 400, 'CATEGORY_CIRCULAR_PARENT')
 
-            // the failed moves did not change anything
             const list = await admin.get('/admin/categories')
             const stored = (list.json().data as any[]).find((x) => x.id === a.id)
             expect(stored.parentId).toBeNull()

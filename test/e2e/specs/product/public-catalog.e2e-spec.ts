@@ -4,27 +4,29 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
-    AR_NAME,
-    Api,
-    FA_NAME,
-    PERSIAN_FORTY,
     anonymousApi,
-    createBrand,
-    createCategory,
-    createDraftProduct,
-    createPublishedProduct,
+    Api,
+    AR_NAME,
     createSession,
     expectError,
     expectOk,
     expectValidationError,
-    galleryImages,
+    FA_NAME,
     idsOf,
-    optionMap,
+    PERSIAN_FORTY,
     qs,
     randomId,
     sleep,
     uid,
     walkPages,
+} from '../../../util/test.util'
+import {
+    createBrand,
+    createCategory,
+    createDraftProduct,
+    createPublishedProduct,
+    galleryImages,
+    optionMap,
 } from './product-test.util'
 
 describe('Public catalog: list, search, detail (e2e)', () => {
@@ -134,6 +136,7 @@ describe('Public catalog: list, search, detail (e2e)', () => {
     describe('GET /products', () => {
         it('returns only published products and no auth is needed', async () => {
             const res = await anonymous.get(`/products${qs({pageSize: 100})}`)
+
             expectOk(res, 200, 'PRODUCT_LIST_SUCCESS')
             expect(sortedIds(res.json().data.items)).toEqual(ids(p1, p2, p3, p4))
             expect(idsOf(res.json().data.items)).not.toContain(draftId)
