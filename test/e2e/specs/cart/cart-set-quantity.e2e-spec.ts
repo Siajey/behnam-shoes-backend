@@ -5,19 +5,23 @@ import {UserRole} from '@api/users/domain'
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
     Api,
-    UserSession,
-    VariantSeed,
-    changeVariant,
-    createPublishedProduct,
     createUserSession,
     expectError,
     expectOk,
     expectValidationError,
+    randomId,
+    UserSession,
+} from '../../../util/test.util'
+import {
+    changeVariant,
+    createPublishedProduct,
+    unpublishProduct,
+    VariantSeed,
+} from '../product/product-test.util'
+import {
     getCart,
     lineOf,
     putInCart,
-    randomId,
-    unpublishProduct,
 } from './cart-test.util'
 
 describe('Cart: PATCH /cart/items/:variantId (e2e)', () => {

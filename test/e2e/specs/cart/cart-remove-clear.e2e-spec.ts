@@ -5,21 +5,25 @@ import {UserRole} from '@api/users/domain'
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
     Api,
-    EMPTY_CART,
-    UserSession,
-    VariantSeed,
-    archiveProduct,
-    changeVariant,
-    createPublishedProduct,
     createUserSession,
     expectError,
     expectOk,
     expectValidationError,
+    randomId,
+    UserSession,
+} from '../../../util/test.util'
+import {
+    archiveProduct,
+    changeVariant,
+    createPublishedProduct,
+    unpublishProduct,
+    VariantSeed,
+} from '../product/product-test.util'
+import {
+    EMPTY_CART,
     getCart,
     lineOf,
     putInCart,
-    randomId,
-    unpublishProduct,
     variantIdsInCart,
 } from './cart-test.util'
 

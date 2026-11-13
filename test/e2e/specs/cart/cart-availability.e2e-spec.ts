@@ -5,18 +5,22 @@ import {UserRole} from '@api/users/domain'
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
     Api,
+    createUserSession,
     UserSession,
-    VariantSeed,
+} from '../../../util/test.util'
+import {
     archiveProduct,
     changeVariant,
     createPublishedProduct,
-    createUserSession,
-    getCart,
     imageKeyOf,
+    publishProduct,
+    unpublishProduct,
+    VariantSeed,
+} from '../product/product-test.util'
+import {
+    getCart,
     lineOf,
     putInCart,
-    republishProduct,
-    unpublishProduct,
 } from './cart-test.util'
 
 describe('Cart: availability and live catalog data (e2e)', () => {
@@ -230,7 +234,7 @@ describe('Cart: availability and live catalog data (e2e)', () => {
             // the stock is still there, so maxQuantity keeps reflecting it
             expect(hidden.maxQuantity).toBe(9)
 
-            await republishProduct(admin, product.id)
+            await publishProduct(admin, product.id)
 
             expect(lineOf(await getCart(user.api), variantId)).toMatchObject({
                 available: true,

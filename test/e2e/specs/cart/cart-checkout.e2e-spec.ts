@@ -5,26 +5,27 @@ import {UserRole} from '@api/users/domain'
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
     Api,
-    EMPTY_CART,
+    createUserSession,
     UserSession,
-    VariantSeed,
+} from '../../../util/test.util'
+import {
     archiveProduct,
-    cartSystemUseCases,
     changeVariant,
     createPublishedProduct,
-    createUserSession,
-    getCart,
     imageKeyOf,
+    unpublishProduct,
+    VariantSeed,
+} from '../product/product-test.util'
+import {
+    cartSystemUseCases,
+    EMPTY_CART,
+    getCart,
     lineOf,
     putInCart,
-    unpublishProduct,
     variantIdsInCart,
 } from './cart-test.util'
 
-/**
- * The order module consumes these use cases directly (there is no HTTP endpoint), so they are
- * exercised through the DI container. Failures are AppErrors (code/status/details).
- */
+
 describe('Cart: system use cases for checkout (e2e)', () => {
     let ctx: TestContext
     let admin: Api

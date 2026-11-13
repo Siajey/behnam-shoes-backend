@@ -5,13 +5,17 @@ import {UserRole} from '@api/users/domain'
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
     Api,
-    UserSession,
-    VariantSeed,
-    addToCart,
-    createPublishedProduct,
     createUserSession,
     expectError,
     expectValidationError,
+    UserSession,
+} from '../../../util/test.util'
+import {
+    createPublishedProduct,
+    VariantSeed,
+} from '../product/product-test.util'
+import {
+    addToCart,
     getCart,
     lineOf,
     mergeCart,

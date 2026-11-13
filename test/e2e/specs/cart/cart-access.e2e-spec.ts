@@ -4,15 +4,19 @@ import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
 import {
-    Api,
-    UserSession,
     anonymousApi,
+    Api,
     apiWithoutCsrf,
+    createUserSession, Method,
+    randomId,
+    UserSession,
+} from '../../../util/test.util'
+import {
     createPublishedProduct,
-    createUserSession,
+} from '../product/product-test.util'
+import {
     getCart,
     putInCart,
-    randomId,
 } from './cart-test.util'
 
 const REJECTED = [401, 403]
@@ -35,25 +39,45 @@ describe('Cart: access control (e2e)', () => {
         variantId = product.variantIds[0]
     })
 
-    type Route = [
-        label: string,
-        method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
-        url: () => string,
-        body?: () => unknown,
-    ]
+    type Route = {
+        label: string
+        method: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+        url: () => string
+        body?: () => unknown
+    }
 
     const routes: Route[] = [
-        ['GET /cart', 'GET', () => '/cart'],
-        ['POST /cart/items', 'POST', () => '/cart/items', () => ({variantId, quantity: 1})],
-        ['PATCH /cart/items/:variantId', 'PATCH', () => `/cart/items/${variantId}`, () => ({quantity: 2})],
-        ['DELETE /cart/items/:variantId', 'DELETE', () => `/cart/items/${variantId}`],
-        ['DELETE /cart', 'DELETE', () => '/cart'],
-        ['POST /cart/merge', 'POST', () => '/cart/merge', () => ({items: [{variantId, quantity: 1}]})],
+        {label: 'GET /cart', method: 'GET', url: () => '/cart'},
+        {
+            label: 'POST /cart/items',
+            method: 'POST',
+            url: () => '/cart/items',
+            body: () => ({variantId, quantity: 1}),
+        },
+        {
+            label: 'PATCH /cart/items/:variantId',
+            method: 'PATCH',
+            url: () => `/cart/items/${variantId}`,
+            body: () => ({quantity: 2}),
+        },
+        {
+            label: 'DELETE /cart/items/:variantId',
+            method: 'DELETE',
+            url: () => `/cart/items/${variantId}`,
+        },
+        {label: 'DELETE /cart', method: 'DELETE', url: () => '/cart'},
+        {
+            label: 'POST /cart/merge',
+            method: 'POST',
+            url: () => '/cart/merge',
+            body: () => ({items: [{variantId, quantity: 1}]}),
+        },
     ]
-    const mutating = routes.filter(([, method]) => method !== 'GET')
+
+    const mutating = routes.filter(({method}) => method !== 'GET')
 
     describe('without a session', () => {
-        it.each(routes)('%s is rejected', async (_label, method, url, body) => {
+        it.each(routes)('$label is rejected', async ({method, url, body}) => {
             const res = await anonymous.request(method, url(), body?.())
 
             expect(REJECTED).toContain(res.statusCode)
@@ -67,7 +91,7 @@ describe('Cart: access control (e2e)', () => {
     })
 
     describe('with a session but without the CSRF header', () => {
-        it.each(mutating)('%s is rejected', async (_label, method, url, body) => {
+        it.each(mutating)('%s is rejected', async ({method, url, body}) => {
             const res = await withoutCsrf.request(method, url(), body?.())
 
             expect(REJECTED).toContain(res.statusCode)
@@ -83,7 +107,7 @@ describe('Cart: access control (e2e)', () => {
     })
 
     describe('with a wrong CSRF token', () => {
-        it.each(mutating)('%s is rejected', async (_label, method, url, body) => {
+        it.each(mutating)('%s is rejected', async ({ method, url, body }) => {
             const res = await ctx.app.inject({
                 method,
                 url: url(),
@@ -146,7 +170,7 @@ describe('Cart: access control (e2e)', () => {
             const logout = await session.api.post('/auth/logout')
             expect(logout.statusCode).toBe(200)
 
-            for (const [, method, url, body] of routes) {
+            for (const { method, url, body } of routes) {
                 const res = await session.api.request(method, url(), body?.())
                 expect(REJECTED).toContain(res.statusCode)
             }
