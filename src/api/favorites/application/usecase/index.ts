@@ -1,0 +1,5 @@
+export { default as ListFavoritesUseCase } from './list-favorites.usecase'
+export { default as ListFavoriteIdsUseCase } from './list-favorite-ids.usecase'
+export { default as AddFavoriteUseCase } from './add-favorite.usecase'
+export { default as RemoveFavoriteUseCase } from './remove-favorite.usecase'
+export { default as MergeFavoritesUseCase } from './merge-favorites.usecase'

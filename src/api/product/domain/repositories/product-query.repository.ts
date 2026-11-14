@@ -40,4 +40,5 @@ export interface IProductQueryRepository {
     findDetailsBySlug(slug: string, statuses: ProductStatus[]): Promise<ProductWithVariants | null>
     getFilters(criteria: Pick<ProductListCriteria, 'statuses' | 'categoryId'>): Promise<CatalogFilters>
     findDetailsByIds(ids: string[], statuses: ProductStatus[]): Promise<ProductWithVariants[]>
+    findPublishedIds(ids: string[]): Promise<string[]>
 }
