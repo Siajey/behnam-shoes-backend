@@ -1,31 +1,31 @@
-import {Body, Controller, Delete, Get, Inject, Param, Patch, Post} from '@nestjs/common'
+import {Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put} from '@nestjs/common'
 
 
 import {User} from '@api/users/domain'
 import {ReqUser} from '@common/decorator'
 import {
-    ADD_CART_ITEM,
+    ADD_CART_ITEM, APPLY_CART_COUPON,
     CLEAR_CART,
     GET_CART,
-    MERGE_CART,
+    MERGE_CART, REMOVE_CART_COUPON,
     REMOVE_CART_ITEM,
     SET_CART_ITEM_QUANTITY,
 } from '@common/di'
 import {uuidSchema, ZodValidationPipe} from '@common/validations'
 import {SuccessResponse} from '@common/api'
-
 import {
-    IAddCartItem,
+    IAddCartItem, IApplyCartCoupon,
     IClearCart,
     IGetCart,
-    IMergeCart,
+    IMergeCart, IRemoveCartCoupon,
     IRemoveCartItem,
     ISetCartItemQuantity,
-} from '../../application'
+} from '@api/cart/application'
+
 import {UserOnly} from '../decorators'
 import {
     AddCartItemBody,
-    AddCartItemSchema,
+    AddCartItemSchema, ApplyCouponBody, ApplyCouponSchema,
     MergeCartBody,
     MergeCartSchema,
     SetCartItemQuantityBody,
@@ -45,6 +45,8 @@ export default class CartController {
         @Inject(REMOVE_CART_ITEM) private readonly removeItem: IRemoveCartItem,
         @Inject(CLEAR_CART) private readonly clearCart: IClearCart,
         @Inject(MERGE_CART) private readonly mergeCart: IMergeCart,
+        @Inject(APPLY_CART_COUPON) private readonly applyCoupon: IApplyCartCoupon,
+        @Inject(REMOVE_CART_COUPON) private readonly removeCoupon: IRemoveCartCoupon,
     ) {
     }
 
@@ -125,6 +127,31 @@ export default class CartController {
                 cart: CartPresenter.toResponse(result.cart),
                 skippedVariantIds: result.skippedVariantIds,
             },
+        })
+    }
+
+
+    @Put('coupon')
+    async applyCouponController(
+        @Body(new ZodValidationPipe(ApplyCouponSchema)) body: ApplyCouponBody,
+        @ReqUser() user: User,
+    ) {
+        const view = await this.applyCoupon.execute(body, user.id)
+        return new SuccessResponse({
+            messageObj: {message: 'common.cart.applyCouponSuccess'},
+            code: 'CART_APPLY_COUPON_SUCCESS',
+            path: '/cart/coupon',
+            data: CartPresenter.toResponse(view),
+        })
+    }
+
+    @Delete('coupon')
+    async removeCouponController(@ReqUser() user: User) {
+        return new SuccessResponse({
+            messageObj: {message: 'common.cart.removeCouponSuccess'},
+            code: 'CART_REMOVE_COUPON_SUCCESS',
+            path: '/cart/coupon',
+            data: CartPresenter.toResponse(await this.removeCoupon.execute(user.id)),
         })
     }
 }

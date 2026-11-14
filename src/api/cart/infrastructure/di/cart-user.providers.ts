@@ -1,21 +1,21 @@
 import {
-    ADD_CART_ITEM,
+    ADD_CART_ITEM, APPLY_CART_COUPON,
     CART_PRICING_SERVICE,
     CART_REPOSITORY,
     CART_VARIANT_CATALOG,
     CLEAR_CART,
     createProvider,
     GET_CART,
-    MERGE_CART,
+    MERGE_CART, REMOVE_CART_COUPON,
     REMOVE_CART_ITEM,
     SET_CART_ITEM_QUANTITY,
 } from '@common/di'
 
 import {
-    AddCartItemUseCase,
+    AddCartItemUseCase, ApplyCartCouponUseCase,
     ClearCartUseCase,
     GetCartUseCase,
-    MergeCartUseCase,
+    MergeCartUseCase, RemoveCartCouponUseCase,
     RemoveCartItemUseCase,
     SetCartItemQuantityUseCase,
 } from '@api/cart/application'
@@ -29,4 +29,6 @@ export const CartUserUseCaseProviders = [
     createProvider<RemoveCartItemUseCase>(REMOVE_CART_ITEM, RemoveCartItemUseCase, deps),
     createProvider<ClearCartUseCase>(CLEAR_CART, ClearCartUseCase, deps),
     createProvider<MergeCartUseCase>(MERGE_CART, MergeCartUseCase, deps),
+    createProvider<ApplyCartCouponUseCase>(APPLY_CART_COUPON, ApplyCartCouponUseCase, deps),
+    createProvider<RemoveCartCouponUseCase>(REMOVE_CART_COUPON, RemoveCartCouponUseCase, deps),
 ]

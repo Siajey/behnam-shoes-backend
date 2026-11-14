@@ -27,3 +27,12 @@ export const MergeCartSchema = z.object({
         .max(MAX_CART_LINES, { error: 'errors.validation.maxItems' }),
 })
 export type MergeCartBody = z.infer<typeof MergeCartSchema>
+
+export const ApplyCouponSchema = z.object({
+    code: z
+        .string({ error: 'errors.validation.requiredField' })
+        .trim()
+        .min(3, { error: 'errors.validation.minLengthString' })
+        .max(30, { error: 'errors.validation.maxLengthString' }),
+})
+export type ApplyCouponBody = z.infer<typeof ApplyCouponSchema>

@@ -11,7 +11,11 @@ import {Api} from '../../../util/test.util'
 
 export const EMPTY_CART = {
     items: [],
-    coupon: {code: null, status: 'none'},
+    coupon: {
+        code: null,
+        status: 'none',
+        invalidReason: null,
+    },
     totals: {itemCount: 0, subtotal: 0, productDiscountTotal: 0, couponDiscount: 0, total: 0},
     hasUnavailableLines: false,
 }

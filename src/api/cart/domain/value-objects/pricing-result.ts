@@ -12,4 +12,5 @@ export interface PricingResult {
     couponCode: string | null
     couponStatus: CouponStatus
     couponDiscount: number
+    couponInvalidReason: string | null
 }
