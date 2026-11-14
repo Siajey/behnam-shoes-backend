@@ -1,0 +1,22 @@
+export const DISCOUNT_REPOSITORY = Symbol('DISCOUNT_REPOSITORY')
+export const COUPON_REPOSITORY = Symbol('COUPON_REPOSITORY')
+export const COUPON_REDEMPTION_REPOSITORY = Symbol('COUPON_REDEMPTION_REPOSITORY')
+
+// admin
+export const LIST_DISCOUNTS = Symbol('LIST_DISCOUNTS')
+export const GET_DISCOUNT = Symbol('GET_DISCOUNT')
+export const CREATE_DISCOUNT = Symbol('CREATE_DISCOUNT')
+export const EDIT_DISCOUNT = Symbol('EDIT_DISCOUNT')
+export const DELETE_DISCOUNT = Symbol('DELETE_DISCOUNT')
+export const LIST_COUPONS = Symbol('LIST_COUPONS')
+export const GET_COUPON = Symbol('GET_COUPON')
+export const CREATE_COUPON = Symbol('CREATE_COUPON')
+export const EDIT_COUPON = Symbol('EDIT_COUPON')
+export const DELETE_COUPON = Symbol('DELETE_COUPON')
+export const GET_COUPON_USAGE = Symbol('GET_COUPON_USAGE')
+
+// system
+export const PRICE_ITEMS = Symbol('PRICE_ITEMS')
+export const RESERVE_COUPON = Symbol('RESERVE_COUPON')
+export const COMMIT_COUPON_REDEMPTION = Symbol('COMMIT_COUPON_REDEMPTION')
+export const RELEASE_COUPON_REDEMPTION = Symbol('RELEASE_COUPON_REDEMPTION')

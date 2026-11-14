@@ -63,3 +63,13 @@ export class CartVersionConflictError extends ConflictError {
         super({ message: 'errors.cart.versionConflict', code: 'CART_VERSION_CONFLICT' })
     }
 }
+
+export class CartCouponInvalidError extends ConflictError {
+    constructor(reason: string) {
+        super({
+            message: 'errors.cart.couponInvalid',
+            code: 'CART_COUPON_INVALID',
+            details: { reason },
+        })
+    }
+}

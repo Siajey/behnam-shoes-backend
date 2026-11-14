@@ -14,19 +14,20 @@ import {
     CartRepository,
     CartSystemUseCaseProviders,
     CartUserUseCaseProviders,
-    NoDiscountPricingService,
+    DiscountPricingService,
     ProductVariantCatalog,
 } from './infrastructure'
 import { CartController } from './presentation'
 import {SessionModule} from "@api/session";
+import {DiscountModule} from "@api/discount/discount.module";
 
 @Module({
-    imports: [DatabaseModule, SessionModule, ProductModule],
+    imports: [DatabaseModule, SessionModule, ProductModule,DiscountModule],
     controllers: [CartController],
     providers: [
         { provide: CART_REPOSITORY, useClass: CartRepository },
         { provide: CART_VARIANT_CATALOG, useClass: ProductVariantCatalog },
-        { provide: CART_PRICING_SERVICE, useClass: NoDiscountPricingService },
+        { provide: CART_PRICING_SERVICE, useClass: DiscountPricingService },
         ...CartUserUseCaseProviders,
         ...CartSystemUseCaseProviders,
     ],

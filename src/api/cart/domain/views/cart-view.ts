@@ -1,6 +1,6 @@
-import { CartItem } from '../entities'
-import { CartCheckoutBlockedError } from '../errors'
-import { CouponStatus, PricingResult, PurchasableVariant } from '../value-objects'
+import {CartItem} from '../entities'
+import {CartCheckoutBlockedError} from '../errors'
+import {CouponStatus, PricingResult, PurchasableVariant} from '../value-objects'
 
 export type UnavailableReason =
     | 'variantUnavailable'
@@ -53,9 +53,10 @@ export interface CartViewLine extends EvaluatedLine {
 export class CartView {
     private constructor(
         readonly lines: readonly CartViewLine[],
-        readonly coupon: { code: string | null; status: CouponStatus },
+        readonly coupon: { code: string | null; status: CouponStatus; invalidReason: string | null },
         readonly couponDiscount: number,
-    ) {}
+    ) {
+    }
 
     static build(evaluated: readonly EvaluatedLine[], pricing: PricingResult): CartView {
         const priced = new Map(pricing.lines.map((l) => [l.variantId, l]))
@@ -75,7 +76,11 @@ export class CartView {
             }
         })
 
-        return new CartView(lines, { code: pricing.couponCode, status: pricing.couponStatus }, pricing.couponDiscount)
+        return new CartView(lines, {
+            code: pricing.couponCode,
+            status: pricing.couponStatus,
+            invalidReason: pricing.couponInvalidReason
+        }, pricing.couponDiscount)
     }
 
     get itemCount(): number {
@@ -102,11 +107,14 @@ export class CartView {
     }
 
     assertCheckoutable(): void {
-        if (this.lines.length === 0) throw new CartCheckoutBlockedError([{ variantId: null, reason: 'empty' }])
+        if (this.lines.length === 0) throw new CartCheckoutBlockedError([{variantId: null, reason: 'empty'}])
+        if (this.coupon.status === 'invalid') {
+            throw new CartCheckoutBlockedError([{ variantId: null, reason: 'couponInvalid' }])
+        }
 
         const problems = this.lines
             .filter((l) => l.unavailableReason !== null)
-            .map((l) => ({ variantId: l.variantId, reason: l.unavailableReason as string }))
+            .map((l) => ({variantId: l.variantId, reason: l.unavailableReason as string}))
         if (problems.length > 0) throw new CartCheckoutBlockedError(problems)
     }
 }

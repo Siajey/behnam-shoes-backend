@@ -4,3 +4,6 @@ export {default as ClearCartUseCase} from './clear-cart.usecase'
 export {default as MergeCartUseCase} from './merge-cart.usecase'
 export {default as RemoveCartItemUseCase} from './remove-cart-item.usecase'
 export {default as SetCartItemQuantityUseCase} from './set-cart-item-quantity.usecase'
+export {default as ApplyCartCouponUseCase} from './apply-cart-coupon.usecase'
+export {default as RemoveCartCouponUseCase} from './remove-cart-coupon.usecase'
+
