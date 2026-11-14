@@ -62,7 +62,9 @@
     "updateItemSuccess": "The cart item quantity updated successfully.",
     "removeItemSuccess": "The item removed from your cart successfully.",
     "clearSuccess": "The cart cleared successfully.",
-    "mergeSuccess": "The carts merged successfully."
+    "mergeSuccess": "The carts merged successfully.",
+    "applyCouponSuccess": "The coupon applied to your cart successfully.",
+    "removeCouponSuccess": "The coupon removed from your cart successfully."
   },
   "favorites": {
     "listSuccess": "The favorite products retrieved successfully.",
@@ -70,5 +72,20 @@
     "addSuccess": "The product added to favorites successfully.",
     "removeSuccess": "The product removed from favorites successfully.",
     "mergeSuccess": "The favorite products merged successfully."
+  },
+  "discount": {
+    "listSuccess": "The discounts retrieved successfully.",
+    "getSuccess": "The discount retrieved successfully.",
+    "createSuccess": "The discount created successfully.",
+    "updateSuccess": "The discount updated successfully.",
+    "deleteSuccess": "The discount deleted successfully."
+  },
+  "coupon": {
+    "listSuccess": "The coupons retrieved successfully.",
+    "getSuccess": "The coupon retrieved successfully.",
+    "createSuccess": "The coupon created successfully.",
+    "updateSuccess": "The coupon updated successfully.",
+    "deleteSuccess": "The coupon deleted successfully.",
+    "usageSuccess": "The coupon usage information retrieved successfully."
   }
 }

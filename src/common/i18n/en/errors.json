@@ -102,6 +102,7 @@
     "hasProducts": "This brand cannot be deleted because it has associated products."
   },
   "cart": {
+    "couponInvalid": "This coupon is invalid or cannot be applied to your cart.",
     "itemNotFound": "The cart item was not found.",
     "itemLimitReached": "You cannot add more than {{max}} different items to your cart.",
     "quantityLimitExceeded": "The maximum allowed quantity per item is {{max}}.",
@@ -114,5 +115,16 @@
   "favorites": {
     "limitReached": "You have reached the maximum number of favorite products.",
     "productNotFound": "The requested product was not found."
+  },
+  "discount": {
+    "notFound": "The requested discount was not found.",
+    "invalid": "The discount is invalid: {{reason}}."
+  },
+  "coupon": {
+    "notFound": "The requested coupon was not found.",
+    "codeAlreadyExists": "A coupon with this code already exists.",
+    "invalid": "The coupon is invalid: {{reason}}.",
+    "hasRedemptions": "This coupon cannot be modified or deleted because it has already been redeemed.",
+    "limitReached": "The coupon usage limit has been reached: {{reason}}."
   }
 }
