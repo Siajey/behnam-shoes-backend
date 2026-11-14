@@ -110,5 +110,9 @@
     "insufficientStock": "Insufficient stock. Only {{available}} items are available.",
     "checkoutBlocked": "Your cart contains items that cannot be purchased. Please review your cart and try again.",
     "versionConflict": "Your cart has been updated by another request. Please refresh your cart and try again."
+  },
+  "favorites": {
+    "limitReached": "You have reached the maximum number of favorite products.",
+    "productNotFound": "The requested product was not found."
   }
 }

@@ -57,11 +57,18 @@
     "moveSuccess": "The variants moved successfully."
   },
   "cart": {
-    "getSuccess": "Cart retrieved successfully.",
-    "addItemSuccess": "Item added to your cart successfully.",
-    "updateItemSuccess": "Cart item quantity updated successfully.",
-    "removeItemSuccess": "Item removed from your cart successfully.",
-    "clearSuccess": "Cart cleared successfully.",
-    "mergeSuccess": "Carts merged successfully."
+    "getSuccess": "The cart retrieved successfully.",
+    "addItemSuccess": "The item added to your cart successfully.",
+    "updateItemSuccess": "The cart item quantity updated successfully.",
+    "removeItemSuccess": "The item removed from your cart successfully.",
+    "clearSuccess": "The cart cleared successfully.",
+    "mergeSuccess": "The carts merged successfully."
+  },
+  "favorites": {
+    "listSuccess": "The favorite products retrieved successfully.",
+    "idsSuccess": "The favorite product IDs retrieved successfully.",
+    "addSuccess": "The product added to favorites successfully.",
+    "removeSuccess": "The product removed from favorites successfully.",
+    "mergeSuccess": "The favorite products merged successfully."
   }
 }

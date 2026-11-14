@@ -19,9 +19,10 @@ import {
 } from './infrastructure'
 import { CartController } from './presentation'
 import {SessionModule} from "@api/session";
+import {DiscountModule} from "@api/discount/discount.module";
 
 @Module({
-    imports: [DatabaseModule, SessionModule, ProductModule],
+    imports: [DatabaseModule, SessionModule, ProductModule,DiscountModule],
     controllers: [CartController],
     providers: [
         { provide: CART_REPOSITORY, useClass: CartRepository },
