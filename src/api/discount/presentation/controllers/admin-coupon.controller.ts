@@ -3,7 +3,7 @@ import {Body, Controller, Delete, Get, HttpStatus, Inject, Param, Patch, Post, Q
 import {
     ICreateCoupon, IDeleteCoupon, IEditCoupon, IGetCoupon, IGetCouponUsage, IListCoupons,
 } from '@api/discount/application'
-import {ReqUser, AdminOnly} from '@common/decorator'
+import {ReqUser, AdminOnly, AdminWriteOnly} from '@common/decorator'
 import {User} from '@api/users/domain'
 import {SuccessResponse} from '@common/api'
 import {
@@ -66,6 +66,7 @@ export default class AdminCouponController {
         })
     }
 
+    @AdminWriteOnly()
     @Post()
     async createController(
         @Body(new ZodValidationPipe(CreateCouponSchema)) body: CreateCouponBody,
@@ -81,6 +82,7 @@ export default class AdminCouponController {
         })
     }
 
+    @AdminWriteOnly()
     @Patch(':id')
     async editController(
         @Param('id', idPipe) id: string,
@@ -96,6 +98,7 @@ export default class AdminCouponController {
         })
     }
 
+    @AdminWriteOnly()
     @Delete(':id')
     async deleteController(@Param('id', idPipe) id: string, @ReqUser() user: User) {
         await this.deleteCoupon.execute(id, user.id)

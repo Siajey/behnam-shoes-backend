@@ -2,7 +2,7 @@ import {Body, Controller, Delete, Get, HttpStatus, Inject, Param, Patch, Post, Q
 import {
     ICreateDiscount, IDeleteDiscount, IEditDiscount, IGetDiscount, IListDiscounts,
 } from '@api/discount/application'
-import {ReqUser, AdminOnly} from '@common/decorator'
+import {ReqUser, AdminOnly, AdminWriteOnly} from '@common/decorator'
 import {User} from '@api/users/domain'
 import {SuccessResponse} from '@common/api'
 import {uuidSchema, ZodValidationPipe} from '@common/validations'
@@ -52,6 +52,7 @@ export default class AdminDiscountController {
         })
     }
 
+    @AdminWriteOnly()
     @Post()
     async createController(
         @Body(new ZodValidationPipe(CreateDiscountSchema)) body: CreateDiscountBody,
@@ -67,6 +68,7 @@ export default class AdminDiscountController {
         })
     }
 
+    @AdminWriteOnly()
     @Patch(':id')
     async editController(
         @Param('id', idPipe) id: string,
@@ -82,6 +84,7 @@ export default class AdminDiscountController {
         })
     }
 
+    @AdminWriteOnly()
     @Delete(':id')
     async deleteController(@Param('id', idPipe) id: string, @ReqUser() user: User) {
         await this.deleteDiscount.execute(id, user.id)

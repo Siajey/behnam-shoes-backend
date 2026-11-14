@@ -1,13 +1,14 @@
-import { Discount, IDiscountRepository } from '@api/discount/domain'
-import { ILogger } from '@common/logger'
+import {Discount, IDiscountRepository} from '@api/discount/domain'
+import {ILogger} from '@common/logger'
 
-import { CreateDiscountCommand, ICreateDiscount } from '../../interfaces'
+import {CreateDiscountCommand, ICreateDiscount} from '../../interfaces'
 
 export default class CreateDiscountUseCase implements ICreateDiscount {
     constructor(
         private readonly discounts: IDiscountRepository,
         private readonly logger: ILogger,
-    ) {}
+    ) {
+    }
 
     async execute(command: CreateDiscountCommand, actorId: string): Promise<Discount> {
         const discount = Discount.create(command)

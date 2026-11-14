@@ -16,6 +16,15 @@ import {
     shoeProductDetails,
     variantAttributes, variants
 } from "@api/product/infrastructure/models"
+import {cartItems, carts} from "@api/cart/infrastructure/models";
+import {favorites} from "@api/favorites/infrastructure/models";
+import {
+    couponRedemptions,
+    coupons,
+    couponTargets,
+    discounts,
+    discountTargets
+} from "@api/discount/infrastructure/models";
 
 let db: Database<any>
 let dbClient: PGlite
@@ -60,5 +69,13 @@ const clearDb = async () => {
         db.delete(shoeProductDetails),
         db.delete(variantAttributes),
         db.delete(variants),
+        db.delete(carts),
+        db.delete(cartItems),
+        db.delete(favorites),
+        db.delete(discounts),
+        db.delete(discountTargets),
+        db.delete(coupons),
+        db.delete(couponRedemptions),
+        db.delete(couponTargets),
     ])
 }
