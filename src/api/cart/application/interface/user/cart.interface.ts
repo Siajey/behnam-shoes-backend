@@ -37,3 +37,14 @@ export interface IClearCart {
 export interface IMergeCart {
     execute(command: MergeCartCommand, userId: string): Promise<MergeCartResult>
 }
+export interface ApplyCartCouponCommand {
+    code: string
+}
+
+export interface IApplyCartCoupon {
+    execute(command: ApplyCartCouponCommand, userId: string): Promise<CartView>
+}
+
+export interface IRemoveCartCoupon {
+    execute(userId: string): Promise<CartView>
+}
