@@ -65,6 +65,7 @@
       "notFound": "OTP not found"
     },
     "address": {
+      "shippingAddressIsIncomplete": "All shipping address fields are required: first name, last name, province, city, street, and postal code.",
       "notFound": "Address not found.",
       "limitReached": "You can save a maximum of 2 addresses.",
       "mustBeValidCountryCode": "Please provide a valid two-letter country code.",
@@ -126,5 +127,16 @@
     "invalid": "The coupon is invalid: {{reason}}.",
     "hasRedemptions": "This coupon cannot be modified or deleted because it has already been redeemed.",
     "limitReached": "The coupon usage limit has been reached: {{reason}}."
+  },
+  "order": {
+    "notFound": "Order not found.",
+    "empty": "An order must contain at least one item.",
+    "invalidStatusTransition": "The order cannot be changed from '{{from}}' to '{{to}}'.",
+    "versionConflict": "The order has been modified by another operation. Please try again.",
+    "priceChanged": "The order total has changed from {{expectedTotal}} to {{actualTotal}}. Please review the updated price before proceeding.",
+    "couponInvalid": "The applied coupon is no longer valid. {{reason}}",
+    "recipientIncomplete": "The recipient information is incomplete. Please provide: {{missing}}.",
+    "notPayable": "This order cannot be paid for in its current status: {{status}}.",
+    "invalidIdempotencyKey": "The idempotency key is missing or invalid. Please provide a valid idempotency key."
   }
 }

@@ -9,6 +9,8 @@ export const USER_REPOSITORY = Symbol('USER_REPOSITORY')
 export const PROFILE_REPOSITORY = Symbol('PROFILE_REPOSITORY')
 export const UPDATE_ME = Symbol('UPDATE_ME')
 export const GET_ME = Symbol('GET_ME')
+export const GET_SHIPPING_INFO = Symbol('GET_SHIPPING_INFO')
+
 export const ADDRESS_REPOSITORY = Symbol('ADDRESS_REPOSITORY')
 export const GET_MY_ADDRESSES = Symbol('GET_MY_ADDRESSES')
 export const CREATE_ADDRESS = Symbol('CREATE_ADDRESS')

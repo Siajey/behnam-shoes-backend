@@ -87,5 +87,12 @@
     "updateSuccess": "The coupon updated successfully.",
     "deleteSuccess": "The coupon deleted successfully.",
     "usageSuccess": "The coupon usage information retrieved successfully."
+  },
+  "order": {
+    "placeSuccess": "Your order has been placed successfully.",
+    "listSuccess": "The orders retrieved successfully.",
+    "getSuccess": "The order details retrieved successfully.",
+    "cancelSuccess": "Your order has been cancelled successfully.",
+    "statusUpdateSuccess": "The order status updated successfully."
   }
 }

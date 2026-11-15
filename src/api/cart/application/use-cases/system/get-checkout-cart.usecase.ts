@@ -29,6 +29,8 @@ export default class GetCheckoutCartUseCase implements IGetCheckoutCart {
                         productSlug: variant.productSlug ?? '',
                         imageKey: variant.imageKey,
                         attributes: variant.attributes,
+                        brand: variant.brandId,
+                        category: variant.categoryId,
                         quantity: line.quantity,
                         originalUnitPrice: pricing.originalUnitPrice,
                         unitPrice: pricing.unitPrice,

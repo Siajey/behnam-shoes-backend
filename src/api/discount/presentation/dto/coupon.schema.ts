@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 import { DISCOUNT_KINDS } from '@api/discount/domain'
-import { isNonEmptyBody, requiredText } from '@common/validations'
+import {dateSchema, isNonEmptyBody, requiredText} from '@common/validations'
 
-import { amountSchema, dateSchema, scopeSchema } from './discount.schema'
+import { amountSchema, scopeSchema } from './discount.schema'
 
 const invalid = { error: 'errors.validation.invalidFieldValue' }
 const limit = z.number(invalid).int(invalid).min(1, { error: 'errors.validation.mustBePositive' })

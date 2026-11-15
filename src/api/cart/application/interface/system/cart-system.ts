@@ -9,6 +9,8 @@ export interface CheckoutCartLine {
     originalUnitPrice: number
     unitPrice: number
     couponAllocation: number
+    brand: string | null
+    category: string | null
 }
 
 export interface CheckoutCart {
