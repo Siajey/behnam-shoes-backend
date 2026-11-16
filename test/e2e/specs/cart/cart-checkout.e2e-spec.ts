@@ -64,7 +64,8 @@ describe('Cart: system use cases for checkout (e2e)', () => {
 
             const checkout = await getCheckoutCart.execute(user.userId)
 
-            expect(checkout).toEqual({
+            // toMatchObject: checkout lines also carry category/brand now (used by the order module)
+            expect(checkout).toMatchObject({
                 lines: [
                     {
                         variantId: first,

@@ -1,8 +1,9 @@
+import { z } from 'zod'
+
 import { ORDER_STATUSES } from '@api/order/domain'
 import {
   cursorSchema, dateSchema, pageSizeSchema, requiredText, uuidSchema,
 } from '@common/validations'
-import { z } from 'zod'
 
 const invalid = { error: 'errors.validation.invalidFieldValue' }
 

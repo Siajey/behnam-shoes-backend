@@ -5,7 +5,8 @@ import {ValidationError} from "@common/errors";
 export default class GetShippingInfoUseCase implements IGetShippingInfo {
     constructor(
         private readonly profiles: IProfileRepository,
-    ) {}
+    ) {
+    }
 
     async execute(
         userId: string,
@@ -18,6 +19,7 @@ export default class GetShippingInfoUseCase implements IGetShippingInfo {
 
         if (!shippingInfo) {
             throw new ValidationError({
+                code: 'ORDER_RECIPIENT_INCOMPLETE',
                 message: 'errors.validation.address.shippingAddressIsIncomplete'
             })
         }

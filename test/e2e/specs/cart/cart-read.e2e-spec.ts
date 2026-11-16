@@ -98,7 +98,7 @@ describe('Cart: GET /cart (e2e)', () => {
                     quantity: 1,
                     available: true,
                     unavailableReason: null,
-                    maxQuantity: 10, // capped at the per-line maximum even though 20 are in stock
+                    maxQuantity: 10,
                     product: productBlock,
                     attributes: expect.arrayContaining([
                         {name: 'size', value: '41'},
@@ -110,7 +110,7 @@ describe('Cart: GET /cart (e2e)', () => {
                     couponAllocation: 0,
                 },
             ],
-            coupon: {code: null, status: 'none'},
+            coupon: {code: null, status: 'none', invalidReason: null},
             totals: {itemCount: 3, subtotal: 4500, productDiscountTotal: 0, couponDiscount: 0, total: 4500},
             hasUnavailableLines: false,
         })
@@ -126,11 +126,9 @@ describe('Cart: GET /cart (e2e)', () => {
             await sleep(10)
         }
 
-        // adding to an existing line does not move it
         await putInCart(user.api, a)
         expect(variantIdsInCart(await getCart(user.api))).toEqual([a, b, c])
 
-        // removing and re-adding moves the line to the end
         expect((await user.api.delete(`/cart/items/${b}`)).statusCode).toBe(200)
         await sleep(10)
         await putInCart(user.api, b)

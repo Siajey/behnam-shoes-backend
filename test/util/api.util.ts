@@ -17,24 +17,42 @@ export class Api {
         private readonly app: NestFastifyApplication,
         private readonly session?: Session,
         private readonly sendCsrf = true,
-    ) {
-    }
+    ) {}
 
-    request(method: Method, url: string, payload?: unknown) {
+    request(
+        method: Method,
+        url: string,
+        payload?: unknown,
+        headers?: Record<string, string>,
+    ) {
         return this.app.inject({
             method,
             url,
             cookies: this.session?.cookies,
-            headers: this.session && this.sendCsrf ? {'x-csrf-token': this.session.csrfToken} : undefined,
+            headers: {
+                ...(this.session && this.sendCsrf
+                    ? {'x-csrf-token': this.session.csrfToken}
+                    : {}),
+                ...headers,
+            },
             payload: payload as any,
         })
     }
 
-    get = (url: string) => this.request('GET', url)
-    post = (url: string, payload?: unknown) => this.request('POST', url, payload ?? {})
-    patch = (url: string, payload?: unknown) => this.request('PATCH', url, payload ?? {})
-    put = (url: string, payload?: unknown) => this.request('PUT', url, payload ?? {})
-    delete = (url: string) => this.request('DELETE', url)
+    get = (url: string, headers?: Record<string, string>) =>
+        this.request('GET', url, undefined, headers)
+
+    post = (url: string, payload?: unknown, headers?: Record<string, string>) =>
+        this.request('POST', url, payload ?? {}, headers)
+
+    patch = (url: string, payload?: unknown, headers?: Record<string, string>) =>
+        this.request('PATCH', url, payload ?? {}, headers)
+
+    put = (url: string, payload?: unknown, headers?: Record<string, string>) =>
+        this.request('PUT', url, payload ?? {}, headers)
+
+    delete = (url: string, headers?: Record<string, string>) =>
+        this.request('DELETE', url, undefined, headers)
 }
 
 export const anonymousApi = (app: NestFastifyApplication) => new Api(app)
