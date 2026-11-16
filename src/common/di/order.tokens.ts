@@ -1,0 +1,21 @@
+export const ORDER_REPOSITORY = Symbol('ORDER_REPOSITORY')
+export const ORDER_CART_GATEWAY = Symbol('ORDER_CART_GATEWAY')
+export const ORDER_PROMOTIONS = Symbol('ORDER_PROMOTIONS')
+export const ORDER_VARIANT_REFS = Symbol('ORDER_VARIANT_REFS')
+export const ORDER_SHIPPING_DETAILS = Symbol('ORDER_SHIPPING_DETAILS')
+export const ORDER_SHIPPING_CALCULATOR = Symbol('ORDER_SHIPPING_CALCULATOR')
+
+export const PLACE_ORDER = Symbol('PLACE_ORDER')
+export const LIST_MY_ORDERS = Symbol('LIST_MY_ORDERS')
+export const GET_MY_ORDER = Symbol('GET_MY_ORDER')
+export const CANCEL_MY_ORDER = Symbol('CANCEL_MY_ORDER')
+
+export const ADMIN_LIST_ORDERS = Symbol('ADMIN_LIST_ORDERS')
+export const ADMIN_GET_ORDER = Symbol('ADMIN_GET_ORDER')
+export const UPDATE_ORDER_STATUS = Symbol('UPDATE_ORDER_STATUS')
+
+export const EXPIRE_UNPAID_ORDERS = Symbol('EXPIRE_UNPAID_ORDERS')
+export const GET_ORDER_PAYMENT_INFO = Symbol('GET_ORDER_PAYMENT_INFO')
+export const GET_PAYABLE_ORDER = Symbol('GET_PAYABLE_ORDER')
+export const MARK_ORDER_PAID = Symbol('MARK_ORDER_PAID')
+

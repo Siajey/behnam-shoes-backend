@@ -25,6 +25,7 @@ import {
     discounts,
     discountTargets
 } from "@api/discount/infrastructure/models";
+import {orderLines, orders, orderStatusEvents} from "@api/order/infrastructure";
 
 let db: Database<any>
 let dbClient: PGlite
@@ -74,8 +75,11 @@ const clearDb = async () => {
         db.delete(favorites),
         db.delete(discounts),
         db.delete(discountTargets),
-        db.delete(coupons),
         db.delete(couponRedemptions),
         db.delete(couponTargets),
+        db.delete(coupons),
+        db.delete(orderLines),
+        db.delete(orderStatusEvents),
+        db.delete(orders),
     ])
 }

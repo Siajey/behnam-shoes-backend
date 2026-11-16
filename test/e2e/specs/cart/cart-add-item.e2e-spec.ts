@@ -117,7 +117,7 @@ describe('Cart: POST /cart/items (e2e)', () => {
             })
 
             expect(res.statusCode).toBe(200)
-            expect(res.json().data.coupon).toEqual({code: null, status: 'none'})
+            expect(res.json().data.coupon).toEqual({code: null, status: 'none', invalidReason: null})
             expect(res.json().data.items[0].unitPrice).not.toBe(1)
         })
     })

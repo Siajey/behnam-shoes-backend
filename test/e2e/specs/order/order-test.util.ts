@@ -1,0 +1,133 @@
+import {NestFastifyApplication} from '@nestjs/platform-fastify'
+import {expect, jest} from '@jest/globals'
+
+import {
+    IExpireUnpaidOrders,
+    IGetOrderPaymentInfo,
+    IGetPayableOrder,
+    IMarkOrderPaid,
+} from '@api/order/application'
+import {
+    EXPIRE_UNPAID_ORDERS,
+    GET_ORDER_PAYMENT_INFO,
+    GET_PAYABLE_ORDER,
+    MARK_ORDER_PAID,
+} from '@common/di'
+
+import {TestContext} from '../test-context.e2e'
+import {Api, UserSession, createUserSession, uid} from '../../../util/test.util'
+import {putInCart} from '../cart/cart-test.util'
+
+/* Order-only helpers. Shared helpers live in test/util/test.util; catalog, cart and discount helpers
+ * next to their specs (../product, ../cart, ../discount). */
+
+export const ADDRESS = {street: 'Valiasr St 12', city: 'Tehran', province: 'Tehran', postalCode: '1234567890'}
+export const PROFILE = {firstName: 'Sara', lastName: 'Ahmadi'}
+
+export const PAYMENT_WINDOW_MS = 30 * 60_000
+
+/* Shipping and currency come from configuration (SHIPPING_FLAT_FEE, SHIPPING_FREE_THRESHOLD, SHOP_CURRENCY).
+ * These mirror ConfigShippingCalculator and read the same variables from process.env; if the e2e config does
+ * not set them the fee is 0 and the assertions still hold. */
+const FLAT_FEE = Number(process.env.SHIPPING_FLAT_FEE ?? 0)
+const FREE_FROM = Number(process.env.SHIPPING_FREE_THRESHOLD ?? 0)
+export const CURRENCY = process.env.SHOP_CURRENCY ?? 'IRR'
+export const shippingFeeFor = (subtotalAfterDiscounts: number) =>
+    FREE_FROM > 0 && subtotalAfterDiscounts >= FREE_FROM ? 0 : Number.isFinite(FLAT_FEE) && FLAT_FEE > 0 ? Math.floor(FLAT_FEE) : 0
+
+/* ------------------------------------------------------------------ */
+/* Customers and placing orders                                        */
+/* ------------------------------------------------------------------ */
+
+export interface Customer extends UserSession {
+    addressId: string
+}
+
+/** A logged-in user with a profile (first/last name) and one saved address, ready to order. */
+export const createCustomer = async (
+    ctx: TestContext,
+    options: { withProfile?: boolean; withAddress?: boolean } = {},
+): Promise<Customer> => {
+    const user = await createUserSession(ctx)
+    if (options.withProfile !== false) {
+        expect((await user.api.patch('/users/me', PROFILE)).statusCode).toBe(200)
+    }
+    let addressId = ''
+    if (options.withAddress !== false) {
+        const res = await user.api.post('/users/me/addresses', ADDRESS)
+        expect(res.statusCode).toBe(201)
+        addressId = res.json().data.id
+    }
+    return {...user, addressId}
+}
+
+export const newKey = () => `key-${uid()}-${uid()}`
+
+export const fillCart = async (api: Api, items: { variantId: string; quantity?: number }[]) => {
+    for (const item of items) await putInCart(api, item.variantId, item.quantity)
+}
+export const placeOrder = (
+    customer: Customer,
+    body: Record<string, unknown> = {},
+    key: string | null = newKey(),
+) =>
+    customer.api.post(
+        '/orders',
+        {addressId: customer.addressId, ...body},
+        key === null ? undefined : {'idempotency-key': key},
+    )
+
+export const placeOk = async (customer: Customer, body: Record<string, unknown> = {}, key?: string) => {
+    const res = await placeOrder(customer, body, key ?? newKey())
+    expect(res.statusCode).toBe(201)
+    return res.json().data
+}
+
+export const getOrder = async (api: Api, id: string) => {
+    const res = await api.get(`/orders/${id}`)
+    expect(res.statusCode).toBe(200)
+    return res.json().data
+}
+
+export const getAdminOrder = async (admin: Api, id: string) => {
+    const res = await admin.get(`/admin/orders/${id}`)
+    expect(res.statusCode).toBe(200)
+    return res.json().data
+}
+
+export const adminStatus = (admin: Api, id: string, body: Record<string, unknown>) =>
+    admin.post(`/admin/orders/${id}/status`, body)
+
+export const statusesOf = (timeline: { status: string; at: string }[]) =>
+    [...timeline].sort((a, b) => a.at.localeCompare(b.at)).map((e) => e.status)
+
+/* ------------------------------------------------------------------ */
+/* System use cases (called by the payment module / the expiry job)    */
+/* ------------------------------------------------------------------ */
+
+export const orderSystemUseCases = (app: NestFastifyApplication) => ({
+    markPaid: app.get<IMarkOrderPaid>(MARK_ORDER_PAID, {strict: false}),
+    expireUnpaid: app.get<IExpireUnpaidOrders>(EXPIRE_UNPAID_ORDERS, {strict: false}),
+    getPayable: app.get<IGetPayableOrder>(GET_PAYABLE_ORDER, {strict: false}),
+    getPaymentInfo: app.get<IGetOrderPaymentInfo>(GET_ORDER_PAYMENT_INFO, {strict: false}),
+})
+
+/**
+ * Runs `fn` while `Date` is `ms` milliseconds ahead (timers stay real). Used to get past the 30 minute
+ * payment window without waiting. Only call system use cases inside it, not HTTP requests.
+ */
+export const withNowPlus = async <T>(ms: number, fn: () => Promise<T>): Promise<T> => {
+    jest.useFakeTimers({
+        now: Date.now() + ms,
+        doNotFake: [
+            'hrtime', 'nextTick', 'performance', 'queueMicrotask', 'requestAnimationFrame',
+            'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'setImmediate',
+            'clearImmediate', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout',
+        ] as any,
+    })
+    try {
+        return await fn()
+    } finally {
+        jest.useRealTimers()
+    }
+}

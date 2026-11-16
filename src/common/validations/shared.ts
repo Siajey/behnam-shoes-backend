@@ -28,3 +28,7 @@ export const pageSizeSchema = z.coerce
 export const cursorSchema = z.string().trim().min(1, invalid).max(512, invalid)
 
 export const isNonEmptyBody = (value: object) => Object.keys(value).length > 0
+
+export const dateSchema = z
+    .iso.datetime({ offset: true, error: 'errors.validation.invalidFieldValue' })
+    .transform((s) => new Date(s))

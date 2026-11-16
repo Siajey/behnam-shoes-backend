@@ -1,13 +1,9 @@
 import { z } from 'zod'
 
 import { DISCOUNT_KINDS, MAX_SCOPE_TARGETS, SCOPE_TYPES } from '@api/discount/domain'
-import { cursorSchema, isNonEmptyBody, pageSizeSchema, requiredText, uuidSchema } from '@common/validations'
+import { cursorSchema, dateSchema, isNonEmptyBody, pageSizeSchema, requiredText, uuidSchema } from '@common/validations'
 
 const invalid = { error: 'errors.validation.invalidFieldValue' }
-
-export const dateSchema = z
-    .iso.datetime({ offset: true, error: 'errors.validation.invalidFieldValue' })
-    .transform((s) => new Date(s))
 
 export const amountSchema = z
     .number(invalid)

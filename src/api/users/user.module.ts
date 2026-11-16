@@ -7,7 +7,7 @@ import {
     UserRepository,
     UserUseCaseProviders,
 } from '@api/users/infrastructure'
-import {ADDRESS_REPOSITORY, PROFILE_REPOSITORY, USER_REPOSITORY} from '@common/di'
+import {ADDRESS_REPOSITORY, GET_SHIPPING_INFO, PROFILE_REPOSITORY, USER_REPOSITORY} from '@common/di'
 import {ProfileController, UserController, AddressController} from '@api/users/presentation'
 import SessionModule from '@api/session/session.module'
 import {DatabaseModule} from '@common/db'
@@ -23,7 +23,7 @@ import {DatabaseModule} from '@common/db'
         ...ProfileProviders,
         ...AddressProviders
     ],
-    exports: [...UserUseCaseProviders, USER_REPOSITORY],
+    exports: [...UserUseCaseProviders, USER_REPOSITORY,GET_SHIPPING_INFO],
 })
 export default class UserModule {
 }
