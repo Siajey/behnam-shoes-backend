@@ -17,10 +17,10 @@
     "foreignKeyConflict": "تعارض در ارجاع به داده‌های پایگاه داده رخ داده است."
   },
   "file": {
-    "fileIsNotMultipart": "درخواست باید از نوع form-data باشد.",
+    "fileTypeNotAllowed": "نوع فایل «{contentType}» مجاز نیست. انواع فایل‌های مجاز: {allowed}.",
+    "fileTooLarge": "حجم فایل از حداکثر اندازه مجاز ({maxSizeBytes} بایت) بیشتر است.",
     "fileNotFound": "فایل موردنظر یافت نشد.",
-    "fileTooLarge": "حجم فایل بیش از حد مجاز است.",
-    "fileTypeNotAllowed": "نوع فایل مجاز نیست.",
+    "fileIsNotMultipart": "درخواست باید از نوع form-data باشد.",
     "tooManyFiles": "تعداد فایل‌های ارسالی بیش از حد مجاز است."
   },
   "sessions": {
@@ -140,3 +140,4 @@
     "invalidIdempotencyKey": "کلید جلوگیری از ثبت تکراری سفارش وجود ندارد یا نامعتبر است. لطفاً یک کلید معتبر ارسال کنید."
   }
 }
+
