@@ -33,9 +33,10 @@ import {
     ProductController,
 } from './presentation'
 import {SessionModule} from "@api/session";
+import {FilesModule} from "@common/files";
 
 @Module({
-    imports: [DatabaseModule, SessionModule],
+    imports: [DatabaseModule, SessionModule, FilesModule],
     controllers: [
         ProductController,
         CategoryController,

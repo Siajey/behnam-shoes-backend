@@ -1,15 +1,18 @@
 import { Product, ProductImage, ProductWithVariants, ShoeProduct } from '@api/product/domain'
+import { UploadTarget } from '@common/storage'
 
 import { VariantPresenter } from './variant.presenter'
+
+export type UrlOf = (fileKey: string) => string
 
 const typeDetails = (p: Product) =>
     p instanceof ShoeProduct ? { gender: p.gender, material: p.material } : null
 
-const publicImage = (i: ProductImage | null) =>
-    i ? { fileKey: i.fileKey, altText: i.altText } : null
+const publicImage = (i: ProductImage | null, urlOf: UrlOf) =>
+    i ? { fileKey: i.fileKey, url: urlOf(i.fileKey), altText: i.altText } : null
 
 export class ProductPresenter {
-    static publicListItem(view: ProductWithVariants) {
+    static publicListItem(view: ProductWithVariants, urlOf: UrlOf) {
         const p = view.product
         return {
             id: p.id,
@@ -18,7 +21,7 @@ export class ProductPresenter {
             slug: p.slug,
             categoryId: p.categoryId,
             brandId: p.brandId,
-            primaryImage: publicImage(p.primaryImage),
+            primaryImage: publicImage(p.primaryImage, urlOf),
             minPrice: view.minPrice,
             maxPrice: view.maxPrice,
             inStock: view.isInStock,
@@ -26,17 +29,17 @@ export class ProductPresenter {
         }
     }
 
-    static publicDetail(view: ProductWithVariants) {
+    static publicDetail(view: ProductWithVariants, urlOf: UrlOf) {
         return {
-            ...ProductPresenter.publicListItem(view),
+            ...ProductPresenter.publicListItem(view, urlOf),
             description: view.product.description,
-            images: view.product.images.map(publicImage),
+            images: view.product.images.map((i) => publicImage(i, urlOf)),
             options: view.options,
             variants: view.activeVariants.map(VariantPresenter.toPublic),
         }
     }
 
-    static adminProduct(p: Product) {
+    static adminProduct(p: Product, urlOf: UrlOf) {
         return {
             id: p.id,
             type: p.type,
@@ -49,6 +52,7 @@ export class ProductPresenter {
             images: p.images.map((i) => ({
                 id: i.id,
                 fileKey: i.fileKey,
+                url: urlOf(i.fileKey),
                 altText: i.altText,
                 position: i.position,
             })),
@@ -59,7 +63,7 @@ export class ProductPresenter {
         }
     }
 
-    static adminListItem(view: ProductWithVariants) {
+    static adminListItem(view: ProductWithVariants, urlOf: UrlOf) {
         const p = view.product
         return {
             id: p.id,
@@ -69,7 +73,7 @@ export class ProductPresenter {
             status: p.status,
             categoryId: p.categoryId,
             brandId: p.brandId,
-            primaryImage: publicImage(p.primaryImage),
+            primaryImage: publicImage(p.primaryImage, urlOf),
             minPrice: view.minPrice,
             maxPrice: view.maxPrice,
             inStock: view.isInStock,
@@ -79,14 +83,25 @@ export class ProductPresenter {
         }
     }
 
-    static adminDetail(view: ProductWithVariants) {
+    static adminDetail(view: ProductWithVariants, urlOf: UrlOf) {
         return {
-            ...ProductPresenter.adminProduct(view.product),
+            ...ProductPresenter.adminProduct(view.product, urlOf),
             minPrice: view.minPrice,
             maxPrice: view.maxPrice,
             inStock: view.isInStock,
             options: view.options,
             variants: view.variants.map(VariantPresenter.toAdmin),
+        }
+    }
+
+    static uploadTarget(t: UploadTarget) {
+        return {
+            key: t.key,
+            uploadUrl: t.url,
+            method: t.method,
+            headers: t.headers,
+            expiresInSeconds: t.expiresInSeconds,
+            publicUrl: t.publicUrl,
         }
     }
 }

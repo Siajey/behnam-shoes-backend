@@ -54,8 +54,7 @@ import {FilesModule} from "@common/files";
         UserModule,
         ProductModule,
         FavoritesModule,
-        OrderModule,
-        FilesModule
+        OrderModule
     ],
     providers: [GlobalExceptionFilter, ApiResponseInterceptor],
 })

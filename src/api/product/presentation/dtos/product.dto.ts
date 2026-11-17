@@ -1,16 +1,16 @@
-import { z } from 'zod'
+import {z} from 'zod'
 
-import { MAX_PRODUCT_IMAGES, SHOE_GENDERS } from '@api/product/domain'
-import { isNonEmptyBody, requiredText, slugSchema, uuidSchema } from '@common/validations'
+import {MAX_PRODUCT_IMAGES, SHOE_GENDERS} from '@api/product/domain'
+import {isNonEmptyBody, requiredText, slugSchema, uuidSchema} from '@common/validations'
 import {normalizePersianLetters} from "@common/util";
-import {CreateProductCommand, UpdateProductCommand} from "@api/product/application";
+import {CreateProductCommand, PRODUCT_IMAGE_UPLOAD_POLICY, UpdateProductCommand} from "@api/product/application";
 
-const invalid = { error: 'errors.validation.invalidFieldValue' }
+const invalid = {error: 'errors.validation.invalidFieldValue'}
 
 const descriptionSchema = z
-    .string({ error: 'errors.validation.requiredField' })
+    .string({error: 'errors.validation.requiredField'})
     .trim()
-    .max(5000, { error: 'errors.validation.maxLengthString' })
+    .max(5000, {error: 'errors.validation.maxLengthString'})
     .overwrite(normalizePersianLetters)
 
 const newShoeSchema = z.object({
@@ -27,7 +27,7 @@ const newShoeSchema = z.object({
 export const NewProductSchema = z.discriminatedUnion('type', [newShoeSchema])
 
 export const CreateProductSchema = z.discriminatedUnion('type', [
-    newShoeSchema.extend({ variantIds: z.array(uuidSchema).max(200, invalid).optional() }),
+    newShoeSchema.extend({variantIds: z.array(uuidSchema).max(200, invalid).optional()}),
 ])  satisfies z.ZodType<CreateProductCommand>
 export type CreateProductBody = z.infer<typeof CreateProductSchema>
 
@@ -45,7 +45,7 @@ export const UpdateProductSchema = z
             })
             .optional(),
     })
-    .refine(isNonEmptyBody, { error: 'errors.validation.requiredRequestBody' }) satisfies z.ZodType<Omit<UpdateProductCommand, 'id'>>
+    .refine(isNonEmptyBody, {error: 'errors.validation.requiredRequestBody'}) satisfies z.ZodType<Omit<UpdateProductCommand, 'id'>>
 export type UpdateProductBody = z.infer<typeof UpdateProductSchema>
 
 export const UpdateGallerySchema = z.object({
@@ -56,6 +56,20 @@ export const UpdateGallerySchema = z.object({
                 altText: requiredText(255).nullish(),
             }),
         )
-        .max(MAX_PRODUCT_IMAGES, { error: 'errors.validation.maxItems' }),
+        .max(MAX_PRODUCT_IMAGES, {error: 'errors.validation.maxItems'}),
 })
 export type UpdateGalleryBody = z.infer<typeof UpdateGallerySchema>
+
+export const CreateImageUploadSchema = z.object({
+    contentType: z.enum(
+        PRODUCT_IMAGE_UPLOAD_POLICY.allowedContentTypes as [string, ...string[]],
+        {error: 'errors.file.fileTypeNotAllowed'},
+    ),
+    sizeBytes: z
+        .number(invalid)
+        .int(invalid)
+        .min(1, {error: 'errors.validation.mustBePositive'})
+        .max(PRODUCT_IMAGE_UPLOAD_POLICY.maxSizeBytes, {error: 'errors.file.fileTooLarge'}),
+})
+
+export type CreateImageUploadBody = z.infer<typeof CreateImageUploadSchema>

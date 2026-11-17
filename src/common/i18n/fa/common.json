@@ -36,7 +36,8 @@
     "unpublishSuccess": "انتشار محصول با موفقیت لغو شد.",
     "archiveSuccess": "محصول با موفقیت بایگانی شد.",
     "mergeSuccess": "محصولات با موفقیت ادغام شدند.",
-    "splitSuccess": "محصول با موفقیت تفکیک شد."
+    "splitSuccess": "محصول با موفقیت تفکیک شد.",
+    "imageUploadUrlSuccess": "لینک بارگذاری تصویر با موفقیت ایجاد شد."
   },
   "brand": {
     "listSuccess": "برندها با موفقیت دریافت شدند.",

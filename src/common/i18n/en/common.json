@@ -37,7 +37,8 @@
     "unpublishSuccess": "The product unpublished successfully.",
     "archiveSuccess": "The product archived successfully.",
     "mergeSuccess": "The products merged successfully.",
-    "splitSuccess": "The product split successfully."
+    "splitSuccess": "The product split successfully.",
+    "imageUploadUrlSuccess": "The image upload URL generated successfully."
   },
   "brand": {
     "listSuccess": "The brands retrieved successfully.",
