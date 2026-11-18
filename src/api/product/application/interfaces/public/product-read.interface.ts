@@ -3,28 +3,30 @@ import {
     CatalogFilters,
     Category,
     ProductListCriteria,
-    ProductPage,
     ProductSearchCriteria,
-    ProductWithVariants,
 } from '@api/product/domain'
+import { ProductWithMeta } from '@api/product/domain'
 
 export type PublicProductListQuery = Omit<ProductListCriteria, 'statuses'>
 export type PublicProductSearchQuery = Omit<ProductSearchCriteria, 'statuses'>
 
+
+export interface ProductMetaPage {
+    products: ProductWithMeta[]
+    nextCursor: string | null
+}
+
 export interface IListProducts {
-    execute(query: PublicProductListQuery): Promise<ProductPage>
+    execute(query: PublicProductListQuery): Promise<ProductMetaPage>
 }
-
 export interface ISearchProducts {
-    execute(query: PublicProductSearchQuery): Promise<ProductPage>
+    execute(query: PublicProductSearchQuery): Promise<ProductMetaPage>
 }
-
 export interface IGetProductById {
-    execute(id: string): Promise<ProductWithVariants>
+    execute(id: string): Promise<ProductWithMeta>
 }
-
 export interface IGetProductBySlug {
-    execute(slug: string): Promise<ProductWithVariants>
+    execute(slug: string): Promise<ProductWithMeta>
 }
 
 export interface IGetCatalogFilters {

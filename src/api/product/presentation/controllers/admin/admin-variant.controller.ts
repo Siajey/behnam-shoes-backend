@@ -10,7 +10,7 @@ import {
 import {User} from '@api/users/domain'
 import {ReqUser, AdminOnly, AdminWriteOnly} from '@common/decorator'
 import {
-    ATTACH_VARIANTS,
+    ATTACH_VARIANTS, FILE_STORAGE,
     LIST_UNASSIGNED_VARIANTS,
     MERGE_PRODUCTS,
     MOVE_VARIANTS,
@@ -30,6 +30,7 @@ import {
     VariantIdsSchema,
 } from '../../dtos'
 import {ProductPresenter, VariantPresenter} from '../../presenters'
+import {IFileStorage} from "@common/storage";
 
 const idPipe = new ZodValidationPipe(uuidSchema)
 
@@ -41,8 +42,12 @@ export default class AdminVariantController {
         @Inject(MOVE_VARIANTS) private readonly moveVariants: IMoveVariants,
         @Inject(MERGE_PRODUCTS) private readonly mergeProducts: IMergeProducts,
         @Inject(SPLIT_PRODUCT) private readonly splitProduct: ISplitProduct,
+        @Inject(FILE_STORAGE)
+        private readonly storage: IFileStorage,
     ) {
     }
+
+    private readonly urlOf = (key: string): string => this.storage.publicUrl(key)
 
     @AdminOnly()
     @Get('variants/unassigned')
@@ -70,7 +75,7 @@ export default class AdminVariantController {
             messageObj: {message: 'common.variant.attachSuccess'},
             code: 'VARIANT_ATTACH_SUCCESS',
             path: `/admin/products/${id}/variants`,
-            data: ProductPresenter.adminDetail(view),
+            data: ProductPresenter.adminDetail(view, this.urlOf),
         })
     }
 
@@ -90,7 +95,7 @@ export default class AdminVariantController {
             code: 'VARIANT_MOVE_SUCCESS',
             path: `/admin/products/${id}/variants/move`,
             data: {
-                target: ProductPresenter.adminDetail(result.target),
+                target: ProductPresenter.adminDetail(result.target, this.urlOf),
                 unpublishedProductIds: result.unpublishedProductIds,
             },
         })
@@ -111,7 +116,7 @@ export default class AdminVariantController {
             messageObj: {message: 'common.product.mergeSuccess'},
             code: 'PRODUCT_MERGE_SUCCESS',
             path: `/admin/products/${id}/merge`,
-            data: ProductPresenter.adminDetail(view),
+            data: ProductPresenter.adminDetail(view, this.urlOf),
         })
     }
 
@@ -129,8 +134,8 @@ export default class AdminVariantController {
             path: `/admin/products/${id}/split`,
             status: HttpStatus.CREATED,
             data: {
-                source: ProductPresenter.adminDetail(result.source),
-                created: ProductPresenter.adminDetail(result.created),
+                source: ProductPresenter.adminDetail(result.source, this.urlOf),
+                created: ProductPresenter.adminDetail(result.created, this.urlOf),
             },
         })
     }

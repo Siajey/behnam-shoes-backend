@@ -2,14 +2,14 @@ import {
     createProvider,
     DEACTIVATE_MISSING_VARIANTS, GET_PUBLISHED_PRODUCT_IDS, GET_PUBLISHED_PRODUCTS_BY_IDS,
     GET_VARIANTS_BY_IDS, PRODUCT_QUERY_REPOSITORY,
-    PRODUCT_REPOSITORY,
+    PRODUCT_REPOSITORY, PRODUCT_STATS_REPOSITORY, REPLACE_PRODUCT_STATS,
     UPSERT_VARIANTS_FROM_EXTERNAL,
     VARIANT_REPOSITORY,
 } from '@common/di'
 
 import {
     DeactivateMissingVariantsUseCase, GetPublishedProductIdsUseCase, GetPublishedProductsByIdsUseCase,
-    GetVariantsByIdsUseCase,
+    GetVariantsByIdsUseCase, ReplaceProductStatsUseCase,
     UpsertVariantsFromExternalUseCase,
 } from '@api/product/application'
 
@@ -26,5 +26,8 @@ export const ProductSystemUseCaseProviders = [
     ),
     createProvider<GetPublishedProductIdsUseCase>(
         GET_PUBLISHED_PRODUCT_IDS, GetPublishedProductIdsUseCase, [PRODUCT_QUERY_REPOSITORY],
+    ),
+    createProvider<ReplaceProductStatsUseCase>(
+        REPLACE_PRODUCT_STATS, ReplaceProductStatsUseCase, [PRODUCT_STATS_REPOSITORY],
     ),
 ]

@@ -3,3 +3,4 @@ export { default as DeactivateMissingVariantsUseCase } from './deactivate-missin
 export { default as GetVariantsByIdsUseCase } from './get-variants-by-ids.usecase'
 export { default as GetPublishedProductsByIdsUseCase } from './get-published-products-by-id.usecase'
 export { default as GetPublishedProductIdsUseCase } from './get-published-product-ids.usecase'
+export { default as ReplaceProductStatsUseCase } from './replace-product-stats.usecase'

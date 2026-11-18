@@ -26,7 +26,9 @@ export const applyCors = async (app: NestFastifyApplication, configService: Conf
             'Authorization',
             'x-csrf-token',
             'x-lang',
-            'x-custom-lang'],
+            'x-custom-lang',
+            'idempotency-key'
+        ],
     }
 
     await app.register(fastifyCors, CORSConfigs)

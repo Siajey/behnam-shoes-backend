@@ -9,6 +9,7 @@ import {
     ISearchProducts,
 } from '@api/product/application'
 import {
+    FILE_STORAGE,
     GET_CATALOG_FILTERS,
     GET_PRODUCT_BY_ID,
     GET_PRODUCT_BY_SLUG,
@@ -30,18 +31,23 @@ import {
 
 import {toProductListQuery, toProductSearchQuery} from '../../mappers'
 import {ProductPresenter} from '../../presenters'
+import {IFileStorage} from "@common/storage";
 
 @Controller('products')
 @Throttle(PUBLIC_READ_THROTTLE)
 export default class ProductController {
+    private readonly urlOf = (key: string): string => this.storage.publicUrl(key)
+
     constructor(
         @Inject(LIST_PRODUCTS) private readonly listProducts: IListProducts,
         @Inject(SEARCH_PRODUCTS) private readonly searchProducts: ISearchProducts,
         @Inject(GET_CATALOG_FILTERS) private readonly getFilters: IGetCatalogFilters,
         @Inject(GET_PRODUCT_BY_ID) private readonly getById: IGetProductById,
         @Inject(GET_PRODUCT_BY_SLUG) private readonly getBySlug: IGetProductBySlug,
+        @Inject(FILE_STORAGE) private readonly storage: IFileStorage,
     ) {
     }
+
 
     @Get()
     async listController(
@@ -53,7 +59,7 @@ export default class ProductController {
             code: 'PRODUCT_LIST_SUCCESS',
             path: '/products',
             data: {
-                items: page.products.map((v) => ProductPresenter.publicListItem(v)),
+                items: page.products.map((item) => ProductPresenter.publicListItem(item, this.urlOf)),
                 nextCursor: page.nextCursor,
             },
         })
@@ -69,7 +75,7 @@ export default class ProductController {
             code: 'PRODUCT_SEARCH_SUCCESS',
             path: '/products/search',
             data: {
-                items: page.products.map((v) => ProductPresenter.publicListItem(v)),
+                items: page.products.map((item) => ProductPresenter.publicListItem(item, this.urlOf)),
                 nextCursor: page.nextCursor,
             },
         })
@@ -94,7 +100,7 @@ export default class ProductController {
             messageObj: {message: 'common.product.getSuccess'},
             code: 'PRODUCT_GET_SUCCESS',
             path: `/products/slug/${slug}`,
-            data: ProductPresenter.publicDetail(view),
+            data: ProductPresenter.publicDetail(view, this.urlOf),
         })
     }
 
@@ -105,7 +111,7 @@ export default class ProductController {
             messageObj: {message: 'common.product.getSuccess'},
             code: 'PRODUCT_GET_SUCCESS',
             path: `/products/${id}`,
-            data: ProductPresenter.publicDetail(view),
+            data: ProductPresenter.publicDetail(view, this.urlOf),
         })
     }
 }

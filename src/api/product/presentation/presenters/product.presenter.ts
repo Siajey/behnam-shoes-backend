@@ -1,9 +1,11 @@
 import { Product, ProductImage, ProductWithVariants, ShoeProduct } from '@api/product/domain'
 import { UploadTarget } from '@common/storage'
+import { ProductMeta, ProductWithMeta } from '@api/product/domain'
 
 import { VariantPresenter } from './variant.presenter'
 
 export type UrlOf = (fileKey: string) => string
+const metaOf = (m: ProductMeta) => ({ tags: m.tags, pricing: m.pricing })
 
 const typeDetails = (p: Product) =>
     p instanceof ShoeProduct ? { gender: p.gender, material: p.material } : null
@@ -12,7 +14,8 @@ const publicImage = (i: ProductImage | null, urlOf: UrlOf) =>
     i ? { fileKey: i.fileKey, url: urlOf(i.fileKey), altText: i.altText } : null
 
 export class ProductPresenter {
-    static publicListItem(view: ProductWithVariants, urlOf: UrlOf) {
+    static publicListItem(item: ProductWithMeta, urlOf: UrlOf) {
+        const { view, meta } = item
         const p = view.product
         return {
             id: p.id,
@@ -26,12 +29,14 @@ export class ProductPresenter {
             maxPrice: view.maxPrice,
             inStock: view.isInStock,
             details: typeDetails(p),
+            meta: metaOf(meta),
         }
     }
 
-    static publicDetail(view: ProductWithVariants, urlOf: UrlOf) {
+    static publicDetail(item: ProductWithMeta, urlOf: UrlOf) {
+        const { view } = item
         return {
-            ...ProductPresenter.publicListItem(view, urlOf),
+            ...ProductPresenter.publicListItem(item, urlOf),
             description: view.product.description,
             images: view.product.images.map((i) => publicImage(i, urlOf)),
             options: view.options,
@@ -105,3 +110,4 @@ export class ProductPresenter {
         }
     }
 }
+
