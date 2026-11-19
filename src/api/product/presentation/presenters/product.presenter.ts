@@ -3,6 +3,7 @@ import { UploadTarget } from '@common/storage'
 import { ProductMeta, ProductWithMeta } from '@api/product/domain'
 
 import { VariantPresenter } from './variant.presenter'
+import { AttributePresenter } from "./attribute.presenter"
 
 export type UrlOf = (fileKey: string) => string
 const metaOf = (m: ProductMeta) => ({ tags: m.tags, pricing: m.pricing })
@@ -34,16 +35,16 @@ export class ProductPresenter {
     }
 
     static publicDetail(item: ProductWithMeta, urlOf: UrlOf) {
-        const { view } = item
+        const {view} = item
         return {
             ...ProductPresenter.publicListItem(item, urlOf),
             description: view.product.description,
             images: view.product.images.map((i) => publicImage(i, urlOf)),
             options: view.options,
             variants: view.activeVariants.map(VariantPresenter.toPublic),
+            attributes: item.attributes.map(AttributePresenter.resolved), // visible ones only
         }
     }
-
     static adminProduct(p: Product, urlOf: UrlOf) {
         return {
             id: p.id,

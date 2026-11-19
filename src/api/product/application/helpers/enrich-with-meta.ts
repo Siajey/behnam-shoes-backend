@@ -2,7 +2,7 @@ import {
     buildPricingMeta, IProductStatsRepository, ProductWithMeta, ProductWithVariants, tagsFor,
 } from '@api/product/domain'
 
-import { IProductPricing } from '../ports'
+import {IProductPricing} from '../ports'
 
 export async function enrichWithMeta(
     pricing: IProductPricing,
@@ -18,7 +18,7 @@ export async function enrichWithMeta(
                 productId: view.product.id,
                 categoryId: view.product.categoryId,
                 brandId: view.product.brandId,
-                variants: view.activeVariants.map((v) => ({ variantId: v.id, price: v.price })),
+                variants: view.activeVariants.map((v) => ({variantId: v.id, price: v.price})),
             })),
         ),
         stats.findFlagsByProductIds(views.map((v) => v.product.id)),
@@ -35,5 +35,6 @@ export async function enrichWithMeta(
                 })),
             ),
         },
+        attributes: []
     }))
 }

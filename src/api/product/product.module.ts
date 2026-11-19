@@ -2,10 +2,11 @@ import {Module} from '@nestjs/common'
 
 import {DatabaseModule} from '@common/db'
 import {
+    ATTRIBUTE_DEFINITION_REPOSITORY,
     BRAND_REPOSITORY,
     CATEGORY_REPOSITORY,
     DEACTIVATE_MISSING_VARIANTS, GET_PUBLISHED_PRODUCT_IDS, GET_PUBLISHED_PRODUCTS_BY_IDS,
-    GET_VARIANTS_BY_IDS, PRODUCT_PRICING,
+    GET_VARIANTS_BY_IDS, PRODUCT_ATTRIBUTE_REPOSITORY, PRODUCT_PRICING,
     PRODUCT_QUERY_REPOSITORY,
     PRODUCT_REPOSITORY, PRODUCT_STATS_REPOSITORY,
     UPSERT_VARIANTS_FROM_EXTERNAL,
@@ -21,11 +22,13 @@ import {
     ProductAdminUseCaseProviders,
     ProductReadUseCaseProviders,
     ProductSystemUseCaseProviders,
-    ProductVariantAdminUseCaseProviders, ProductStatsRepository, DiscountProductPricing,
+    ProductVariantAdminUseCaseProviders, ProductStatsRepository, DiscountProductPricing, AttributeDefinitionRepository,
+    ProductAttributeRepository, ProductAttributeUseCaseProviders,
 } from './infrastructure'
 import {
+    AdminAttributeController,
     AdminBrandController,
-    AdminCategoryController,
+    AdminCategoryController, AdminProductAttributeController,
     AdminProductController,
     AdminVariantController,
     BrandController,
@@ -46,6 +49,8 @@ import {DiscountModule} from "@api/discount/discount.module";
         AdminVariantController,
         AdminCategoryController,
         AdminBrandController,
+        AdminAttributeController,
+        AdminProductAttributeController,
     ],
     providers: [
         {provide: PRODUCT_REPOSITORY, useClass: ProductRepository},
@@ -55,6 +60,9 @@ import {DiscountModule} from "@api/discount/discount.module";
         {provide: BRAND_REPOSITORY, useClass: BrandRepository},
         { provide: PRODUCT_STATS_REPOSITORY, useClass: ProductStatsRepository },
         { provide: PRODUCT_PRICING, useClass: DiscountProductPricing },
+        { provide: ATTRIBUTE_DEFINITION_REPOSITORY, useClass: AttributeDefinitionRepository },
+        { provide: PRODUCT_ATTRIBUTE_REPOSITORY, useClass: ProductAttributeRepository },
+        ...ProductAttributeUseCaseProviders,
         ...ProductReadUseCaseProviders,
         ...ProductAdminUseCaseProviders,
         ...ProductVariantAdminUseCaseProviders,
