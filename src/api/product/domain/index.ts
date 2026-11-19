@@ -5,3 +5,4 @@ export * from "./repositories";
 export * from "./value-objects";
 export * from "./child-entities";
 export * from "./factories";
+export * from "./services";

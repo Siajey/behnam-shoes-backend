@@ -1,13 +1,33 @@
 import { sql } from 'drizzle-orm'
 import {
-    index, pgEnum, pgTable, smallint, uniqueIndex, uuid, varchar,
+    boolean,
+    index, integer, pgEnum, pgTable, smallint, uniqueIndex, uuid, varchar,
 } from 'drizzle-orm/pg-core'
 
 import { commonTimestamps, timestamptz } from '@common/db'
-import {PRODUCT_STATUSES, PRODUCT_TYPES, SHOE_GENDERS, ShoeProduct} from '@api/product/domain'
+import {PRODUCT_STATUSES, PRODUCT_TYPES, SHOE_GENDERS} from '@api/product/domain'
 
 import { brands } from './brand.model'
 import { categories } from './category.model'
+
+export const productStats = pgTable(
+    'product_stats',
+    {
+        productId: uuid('product_id')
+            .primaryKey()
+            .references(() => products.id, { onDelete: 'cascade' }),
+        unitsSold: integer('units_sold').notNull().default(0),
+        favoritesAdded: integer('favorites_added').notNull().default(0),
+        isBestSeller: boolean('is_best_seller').notNull().default(false),
+        isPopular: boolean('is_popular').notNull().default(false),
+        computedAt: timestamptz('computed_at').notNull().defaultNow(),
+    },
+    (t) => [
+        index('product_stats_best_seller_idx').on(t.isBestSeller),
+        index('product_stats_popular_idx').on(t.isPopular),
+    ],
+)
+
 
 export const productStatusEnum = pgEnum('product_status', PRODUCT_STATUSES)
 export const productTypeEnum = pgEnum('product_type', PRODUCT_TYPES)

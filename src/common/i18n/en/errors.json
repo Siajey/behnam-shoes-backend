@@ -17,10 +17,10 @@
     "foreignKeyConflict": "Reference conflict in the database."
   },
   "file": {
+    "fileTypeNotAllowed": "The file type '{contentType}' is not allowed. Allowed file types: {allowed}.",
+    "fileTooLarge": "The file exceeds the maximum allowed size of {maxSizeBytes} bytes.",
+    "fileNotFound": "The requested file was not found.",
     "fileIsNotMultipart": "The request should be a form-data",
-    "fileNotFound": "The file is not found",
-    "fileTooLarge": "The file is too large",
-    "fileTypeNotAllowed": "The file type is not allowed",
     "tooManyFiles": "The request contains too many files"
   },
   "sessions": {

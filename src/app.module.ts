@@ -21,6 +21,7 @@ import {HealthModule} from "@api/health/health.module";
 import {ProductModule} from "@api/product/product.module";
 import {FavoritesModule} from "@api/favorites/favorite.module";
 import {OrderModule} from "@api/order/order.module";
+import {FilesModule} from "@common/files";
 
 @Module({
     imports: [

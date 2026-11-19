@@ -1,5 +1,17 @@
 import { PricingLine, PricingResult } from '@api/discount/domain'
 
+export interface PriceCatalogCommand {
+    lines: PricingLine[]
+}
+
+export interface PriceCatalogResult {
+    lines: { variantId: string; originalUnitPrice: number; unitPrice: number }[]
+}
+
+export interface IPriceCatalog {
+    execute(command: PriceCatalogCommand): Promise<PriceCatalogResult>
+}
+
 export interface PriceItemsCommand {
     userId: string
     lines: PricingLine[]

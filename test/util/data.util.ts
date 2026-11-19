@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto'
+import {jest} from '@jest/globals'
 
 /** 8 hex chars, enough to keep names/slugs unique inside one spec file. */
 export const uid = () => randomUUID().replace(/-/g, '').slice(0, 8)
@@ -30,3 +31,20 @@ export const FA_SLUG = '\u06A9\u0641\u0634-\u0648\u0631\u0632\u0634\u06CC' // ک
 export const AR_SLUG = '\u0643\u0641\u0634-\u0648\u0631\u0632\u0634\u064A' // Arabic variant of FA_SLUG
 export const PERSIAN_FORTY_TWO = '\u06F4\u06F2' // ۴۲
 export const PERSIAN_FORTY = '\u06F4\u06F0' // ۴۰
+
+
+export const withNowPlus = async <T>(ms: number, fn: () => Promise<T>): Promise<T> => {
+    jest.useFakeTimers({
+        now: Date.now() + ms,
+        doNotFake: [
+            'hrtime', 'nextTick', 'performance', 'queueMicrotask', 'requestAnimationFrame',
+            'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'setImmediate',
+            'clearImmediate', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout',
+        ] as any,
+    })
+    try {
+        return await fn()
+    } finally {
+        jest.useRealTimers()
+    }
+}

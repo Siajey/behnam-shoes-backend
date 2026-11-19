@@ -12,7 +12,7 @@ import {
     brands,
     categories,
     productImages,
-    products,
+    products, productStats,
     shoeProductDetails,
     variantAttributes, variants
 } from "@api/product/infrastructure/models"
@@ -63,6 +63,7 @@ const clearDb = async () => {
         db.delete(users),
         db.delete(otpCodes),
         db.delete(addresses),
+        db.delete(productStats),
         db.delete(products),
         db.delete(brands),
         db.delete(categories),

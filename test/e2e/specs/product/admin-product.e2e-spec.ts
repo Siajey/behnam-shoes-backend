@@ -28,8 +28,9 @@ import {
     optionMap,
     seedVariants,
     setGallery,
-    shoeBody,
+    shoeBody, stubUploaded,
 } from './product-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 describe('Admin products: create, update, gallery (e2e)', () => {
     let ctx: TestContext
@@ -179,7 +180,12 @@ describe('Admin products: create, update, gallery (e2e)', () => {
             })
 
             it('returns the admin variant shape', async () => {
-                const {variants, items} = await seedVariants(ctx.app, [{size: '43', color: 'red', price: 777, stock: 4}])
+                const {variants, items} = await seedVariants(ctx.app, [{
+                    size: '43',
+                    color: 'red',
+                    price: 777,
+                    stock: 4
+                }])
                 const product = await createProduct(admin, {variantIds: [variants[0].id]})
 
                 const variant = product.variants[0]
@@ -446,6 +452,10 @@ describe('Admin products: create, update, gallery (e2e)', () => {
         it('replaces the gallery keeping the given order as positions', async () => {
             const product = await createProduct(admin)
 
+            stubUploaded('products/a.webp',
+                'products/b.webp',
+                'products/c.webp')
+
             const res = await admin.put(`/admin/products/${product.id}/gallery`, {
                 images: [
                     {fileKey: 'products/a.webp', altText: 'first'},
@@ -456,17 +466,35 @@ describe('Admin products: create, update, gallery (e2e)', () => {
 
             expectOk(res, 200, 'PRODUCT_GALLERY_UPDATE_SUCCESS')
             expect(res.json().data.images).toEqual([
-                {id: expect.any(String), fileKey: 'products/a.webp', altText: 'first', position: 0},
-                {id: expect.any(String), fileKey: 'products/b.webp', altText: null, position: 1},
-                {id: expect.any(String), fileKey: 'products/c.webp', altText: null, position: 2},
+                {
+                    id: expect.any(String),
+                    fileKey: 'products/a.webp',
+                    url: cdnUrl('products/a.webp'),
+                    altText: 'first',
+                    position: 0
+                },
+                {
+                    id: expect.any(String),
+                    fileKey: 'products/b.webp',
+                    url: cdnUrl('products/b.webp'),
+                    altText: null,
+                    position: 1
+                },
+                {
+                    id: expect.any(String),
+                    fileKey: 'products/c.webp',
+                    url: cdnUrl('products/c.webp'),
+                    altText: null,
+                    position: 2
+                },
             ])
-            // gallery endpoint returns the product without variants
             expect(res.json().data.variants).toBeUndefined()
             expect(res.json().data.id).toBe(product.id)
         })
 
         it('is persisted and can be reordered', async () => {
             const product = await createProduct(admin)
+            stubUploaded('products/a.webp','products/b.webp')
             await admin.put(`/admin/products/${product.id}/gallery`, {
                 images: [{fileKey: 'products/a.webp'}, {fileKey: 'products/b.webp'}],
             })
@@ -484,6 +512,11 @@ describe('Admin products: create, update, gallery (e2e)', () => {
 
         it('accepts exactly 12 images and rejects 13', async () => {
             const product = await createProduct(admin)
+            const keys: string[] = []
+            for (let i = 0; i <12; i++) {
+                keys.push(`products/img-${i}.webp`)
+            }
+            stubUploaded(...keys)
             const make = (n: number) => ({
                 images: Array.from({length: n}, (_, i) => ({fileKey: `products/img-${i}.webp`})),
             })
@@ -508,6 +541,7 @@ describe('Admin products: create, update, gallery (e2e)', () => {
         })
 
         it('trims the fileKey', async () => {
+            stubUploaded('products/trim.webp')
             const product = await createProduct(admin)
 
             const res = await admin.put(`/admin/products/${product.id}/gallery`, {

@@ -1,4 +1,4 @@
-import {beforeAll, describe, expect, it, beforeEach} from '@jest/globals'
+import {beforeAll, describe, expect, it} from '@jest/globals'
 
 import {UserRole} from '@api/users/domain'
 
@@ -12,7 +12,7 @@ import {
     qs,
     randomId,
     sleep,
-    walkPages,
+    walkPages, withNowPlus,
 } from '../../../util/test.util'
 import {createPublishedProduct, imageKeyOf} from '../product/product-test.util'
 import {createCoupon} from '../discount/discount-test.util'
@@ -27,7 +27,6 @@ import {
     placeOk,
     shippingFeeFor,
     statusesOf,
-    withNowPlus,
 } from './order-test.util'
 
 type Status = 'pending_payment' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'expired'

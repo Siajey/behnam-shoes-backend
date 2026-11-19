@@ -16,6 +16,7 @@ import {
 } from '@common/di'
 
 import {Api, slug, uid} from '../../../util/test.util'
+import {cdnUrl, fakeFileStorage} from '../../../util/fake-file-storage'
 
 /** Maps an `options` array to {name: sortedValues} so assertions do not depend on DB ordering. */
 export const optionMap = (options: { name: string; values: string[] }[]) =>
@@ -137,15 +138,8 @@ export const galleryImages = (productId: string, count: number) =>
     Array.from({length: count}, (_, i) => ({
         fileKey: `products/${productId}/img-${i}.webp`,
         altText: `image ${i}`,
+        url: cdnUrl(`products/${productId}/img-${i}.webp`),
     }))
-
-export const setGallery = async (admin: Api, productId: string, count = 1) => {
-    const res = await admin.put(`/admin/products/${productId}/gallery`, {
-        images: galleryImages(productId, count),
-    })
-    expect(res.statusCode).toBe(200)
-    return res.json().data
-}
 
 export const publishProduct = async (admin: Api, productId: string) => {
     const res = await admin.post(`/admin/products/${productId}/publish`)
@@ -268,4 +262,37 @@ export const changeVariant = async (
             },
         ],
     })
+}
+
+/** Marks keys as uploaded (valid image, 1 KB) so the gallery accepts them. */
+export const stubUploaded = (...keys: string[]) =>
+    keys.forEach((key) => fakeFileStorage.simulateUpload(key, {sizeBytes: 1024, contentType: 'image/webp'}))
+
+/** Requests an upload URL, simulates the browser PUT, returns the upload target. */
+export const uploadProductImage = async (
+    admin: Api,
+    options: {contentType?: string; sizeBytes?: number} = {},
+) => {
+    const contentType = options.contentType ?? 'image/png'
+    const sizeBytes = options.sizeBytes ?? 2048
+    const res = await admin.post('/admin/products/images/upload-url', {contentType, sizeBytes})
+    expect(res.statusCode).toBe(201)
+    const target = res.json().data as {
+        key: string
+        uploadUrl: string
+        method: string
+        headers: Record<string, string>
+        expiresInSeconds: number
+        publicUrl: string
+    }
+    fakeFileStorage.simulateUpload(target.key, {sizeBytes, contentType})
+    return target
+}
+
+export const setGallery = async (admin: Api, productId: string, count = 1) => {
+    const images = galleryImages(productId, count)
+    stubUploaded(...images.map((i) => i.fileKey))
+    const res = await admin.put(`/admin/products/${productId}/gallery`, {images})
+    expect(res.statusCode).toBe(200)
+    return res.json().data
 }

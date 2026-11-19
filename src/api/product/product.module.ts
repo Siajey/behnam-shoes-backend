@@ -5,9 +5,9 @@ import {
     BRAND_REPOSITORY,
     CATEGORY_REPOSITORY,
     DEACTIVATE_MISSING_VARIANTS, GET_PUBLISHED_PRODUCT_IDS, GET_PUBLISHED_PRODUCTS_BY_IDS,
-    GET_VARIANTS_BY_IDS,
+    GET_VARIANTS_BY_IDS, PRODUCT_PRICING,
     PRODUCT_QUERY_REPOSITORY,
-    PRODUCT_REPOSITORY,
+    PRODUCT_REPOSITORY, PRODUCT_STATS_REPOSITORY,
     UPSERT_VARIANTS_FROM_EXTERNAL,
     VARIANT_REPOSITORY,
 } from '@common/di'
@@ -21,7 +21,7 @@ import {
     ProductAdminUseCaseProviders,
     ProductReadUseCaseProviders,
     ProductSystemUseCaseProviders,
-    ProductVariantAdminUseCaseProviders,
+    ProductVariantAdminUseCaseProviders, ProductStatsRepository, DiscountProductPricing,
 } from './infrastructure'
 import {
     AdminBrandController,
@@ -33,9 +33,11 @@ import {
     ProductController,
 } from './presentation'
 import {SessionModule} from "@api/session";
+import {FilesModule} from "@common/files";
+import {DiscountModule} from "@api/discount/discount.module";
 
 @Module({
-    imports: [DatabaseModule, SessionModule],
+    imports: [DatabaseModule, SessionModule, FilesModule,DiscountModule],
     controllers: [
         ProductController,
         CategoryController,
@@ -51,6 +53,8 @@ import {SessionModule} from "@api/session";
         {provide: VARIANT_REPOSITORY, useClass: VariantRepository},
         {provide: CATEGORY_REPOSITORY, useClass: CategoryRepository},
         {provide: BRAND_REPOSITORY, useClass: BrandRepository},
+        { provide: PRODUCT_STATS_REPOSITORY, useClass: ProductStatsRepository },
+        { provide: PRODUCT_PRICING, useClass: DiscountProductPricing },
         ...ProductReadUseCaseProviders,
         ...ProductAdminUseCaseProviders,
         ...ProductVariantAdminUseCaseProviders,

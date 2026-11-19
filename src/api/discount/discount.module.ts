@@ -7,7 +7,7 @@ import {
     COMMIT_COUPON_REDEMPTION,
     COUPON_REDEMPTION_REPOSITORY,
     COUPON_REPOSITORY,
-    DISCOUNT_REPOSITORY,
+    DISCOUNT_REPOSITORY, PRICE_CATALOG,
     PRICE_ITEMS,
     RELEASE_COUPON_REDEMPTION,
     RESERVE_COUPON,
@@ -32,7 +32,7 @@ import {AdminCouponController, AdminDiscountController} from './presentation'
         ...DiscountAdminUseCaseProviders,
         ...DiscountSystemUseCaseProviders,
     ],
-    exports: [PRICE_ITEMS, RESERVE_COUPON, COMMIT_COUPON_REDEMPTION, RELEASE_COUPON_REDEMPTION],
+    exports: [PRICE_ITEMS, RESERVE_COUPON, COMMIT_COUPON_REDEMPTION, RELEASE_COUPON_REDEMPTION, PRICE_CATALOG],
 })
 export class DiscountModule {
 }

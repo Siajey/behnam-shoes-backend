@@ -1,10 +1,10 @@
 import {
     COMMIT_COUPON_REDEMPTION, COUPON_REDEMPTION_REPOSITORY, COUPON_REPOSITORY, createProvider,
-    DISCOUNT_REPOSITORY, PRICE_ITEMS, RELEASE_COUPON_REDEMPTION, RESERVE_COUPON,
+    DISCOUNT_REPOSITORY, PRICE_CATALOG, PRICE_ITEMS, RELEASE_COUPON_REDEMPTION, RESERVE_COUPON,
 } from '@common/di'
 
 import {
-    CommitCouponRedemptionUseCase, PriceItemsUseCase, ReleaseCouponRedemptionUseCase,
+    CommitCouponRedemptionUseCase, PriceCatalogUseCase, PriceItemsUseCase, ReleaseCouponRedemptionUseCase,
     ReserveCouponUseCase,
 } from '@api/discount/application'
 
@@ -19,4 +19,5 @@ export const DiscountSystemUseCaseProviders = [
     createProvider<ReleaseCouponRedemptionUseCase>(
         RELEASE_COUPON_REDEMPTION, ReleaseCouponRedemptionUseCase, [COUPON_REDEMPTION_REPOSITORY],
     ),
+    createProvider<PriceCatalogUseCase>(PRICE_CATALOG, PriceCatalogUseCase, [DISCOUNT_REPOSITORY]),
 ]
