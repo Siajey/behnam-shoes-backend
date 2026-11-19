@@ -1,0 +1,1 @@
+export const DEFAULT_SHOP_CURRENCY = 'IRT'

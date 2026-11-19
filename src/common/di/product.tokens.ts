@@ -20,6 +20,7 @@ export const DELETE_CATEGORY = Symbol('DELETE_CATEGORY')
 export const CREATE_BRAND = Symbol('CREATE_BRAND')
 export const EDIT_BRAND = Symbol('EDIT_BRAND')
 export const DELETE_BRAND = Symbol('DELETE_BRAND')
+export const CREATE_TAXONOMY_IMAGE_UPLOAD = Symbol('CREATE_TAXONOMY_IMAGE_UPLOAD')
 
 export const CREATE_PRODUCT = Symbol('CREATE_PRODUCT')
 export const UPDATE_PRODUCT = Symbol('UPDATE_PRODUCT')

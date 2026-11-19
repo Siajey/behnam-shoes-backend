@@ -11,6 +11,7 @@ import {
   ICartGateway, IOrderPromotions, IShippingCalculator, IShippingDetailsProvider,
   IVariantRefProvider, PromotionResult, ShippingDetails,
 } from '../../ports'
+import {DEFAULT_SHOP_CURRENCY} from "@common/money";
 
 export default class PlaceOrderUseCase implements IPlaceOrder {
   constructor(
@@ -89,7 +90,7 @@ export default class PlaceOrderUseCase implements IPlaceOrder {
           ? { couponId: priced.coupon.couponId, code: priced.coupon.code }
           : null,
       shippingFee,
-      currency: this.config.getOptional('SHOP_CURRENCY') ?? 'IRR',
+      currency: this.config.getOptional('SHOP_CURRENCY') ?? DEFAULT_SHOP_CURRENCY,
       shippingAddress: details.address,
       recipient,
     })

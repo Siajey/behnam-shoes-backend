@@ -7,7 +7,7 @@ import {
     CREATE_BRAND,
     CREATE_CATEGORY,
     CREATE_PRODUCT,
-    CREATE_PRODUCT_IMAGE_UPLOAD,
+    CREATE_PRODUCT_IMAGE_UPLOAD, CREATE_TAXONOMY_IMAGE_UPLOAD,
     createProvider,
     DELETE_BRAND,
     DELETE_CATEGORY,
@@ -36,15 +36,20 @@ import {
     ArchiveProductUseCase,
     AdminListProductsUseCase,
     AdminGetProductByIdUseCase,
-    CreateProductImageUploadUseCase
+    CreateProductImageUploadUseCase, CreateTaxonomyImageUploadUseCase
 } from '@api/product/application'
 
 export const ProductAdminUseCaseProviders = [
-    createProvider<CreateCategoryUseCase>(CREATE_CATEGORY, CreateCategoryUseCase, [CATEGORY_REPOSITORY]),
-    createProvider<EditCategoryUseCase>(EDIT_CATEGORY, EditCategoryUseCase, [CATEGORY_REPOSITORY]),
+    createProvider<CreateTaxonomyImageUploadUseCase>(
+        CREATE_TAXONOMY_IMAGE_UPLOAD, CreateTaxonomyImageUploadUseCase, [FILE_STORAGE],
+    ),
+    createProvider<CreateCategoryUseCase>(CREATE_CATEGORY, CreateCategoryUseCase, [CATEGORY_REPOSITORY, FILE_STORAGE]),
+    createProvider<EditCategoryUseCase>(EDIT_CATEGORY, EditCategoryUseCase, [CATEGORY_REPOSITORY, FILE_STORAGE]),
+    createProvider<CreateBrandUseCase>(CREATE_BRAND, CreateBrandUseCase, [BRAND_REPOSITORY, FILE_STORAGE]),
+    createProvider<EditBrandUseCase>(EDIT_BRAND, EditBrandUseCase, [BRAND_REPOSITORY, FILE_STORAGE]),
+
+    // TODO add repository below too
     createProvider<DeleteCategoryUseCase>(DELETE_CATEGORY, DeleteCategoryUseCase, [CATEGORY_REPOSITORY]),
-    createProvider<CreateBrandUseCase>(CREATE_BRAND, CreateBrandUseCase, [BRAND_REPOSITORY]),
-    createProvider<EditBrandUseCase>(EDIT_BRAND, EditBrandUseCase, [BRAND_REPOSITORY]),
     createProvider<DeleteBrandUseCase>(DELETE_BRAND, DeleteBrandUseCase, [BRAND_REPOSITORY]),
 
     createProvider<CreateProductUseCase>(CREATE_PRODUCT, CreateProductUseCase, [
@@ -58,7 +63,7 @@ export const ProductAdminUseCaseProviders = [
     createProvider<ArchiveProductUseCase>(ARCHIVE_PRODUCT, ArchiveProductUseCase, [PRODUCT_REPOSITORY]),
     createProvider<AdminListProductsUseCase>(ADMIN_LIST_PRODUCTS, AdminListProductsUseCase, [PRODUCT_QUERY_REPOSITORY]),
     createProvider<AdminGetProductByIdUseCase>(ADMIN_GET_PRODUCT_BY_ID, AdminGetProductByIdUseCase, [PRODUCT_QUERY_REPOSITORY]),
-    createProvider<UpdateProductGalleryUseCase>(UPDATE_PRODUCT_GALLERY, UpdateProductGalleryUseCase, [PRODUCT_REPOSITORY,FILE_STORAGE]),
+    createProvider<UpdateProductGalleryUseCase>(UPDATE_PRODUCT_GALLERY, UpdateProductGalleryUseCase, [PRODUCT_REPOSITORY, FILE_STORAGE]),
     createProvider<CreateProductImageUploadUseCase>(
         CREATE_PRODUCT_IMAGE_UPLOAD,
         CreateProductImageUploadUseCase,
