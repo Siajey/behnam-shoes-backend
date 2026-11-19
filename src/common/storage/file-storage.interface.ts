@@ -29,6 +29,6 @@ export interface IFileStorage {
   verifyUploaded(policy: UploadPolicy, key: string): Promise<StoredObjectInfo>
 
   head(key: string): Promise<StoredObjectInfo | null>
-  delete(key: string): Promise<void>
+  delete(keys: string[]): Promise<void>
   publicUrl(key: string): string
 }

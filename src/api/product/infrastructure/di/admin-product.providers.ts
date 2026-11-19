@@ -48,9 +48,8 @@ export const ProductAdminUseCaseProviders = [
     createProvider<CreateBrandUseCase>(CREATE_BRAND, CreateBrandUseCase, [BRAND_REPOSITORY, FILE_STORAGE]),
     createProvider<EditBrandUseCase>(EDIT_BRAND, EditBrandUseCase, [BRAND_REPOSITORY, FILE_STORAGE]),
 
-    // TODO add repository below too
-    createProvider<DeleteCategoryUseCase>(DELETE_CATEGORY, DeleteCategoryUseCase, [CATEGORY_REPOSITORY]),
-    createProvider<DeleteBrandUseCase>(DELETE_BRAND, DeleteBrandUseCase, [BRAND_REPOSITORY]),
+    createProvider<DeleteCategoryUseCase>(DELETE_CATEGORY, DeleteCategoryUseCase, [CATEGORY_REPOSITORY, FILE_STORAGE]),
+    createProvider<DeleteBrandUseCase>(DELETE_BRAND, DeleteBrandUseCase, [BRAND_REPOSITORY, FILE_STORAGE]),
 
     createProvider<CreateProductUseCase>(CREATE_PRODUCT, CreateProductUseCase, [
         PRODUCT_REPOSITORY, VARIANT_REPOSITORY, CATEGORY_REPOSITORY, BRAND_REPOSITORY,

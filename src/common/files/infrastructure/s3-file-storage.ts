@@ -1,5 +1,5 @@
 import {
-    DeleteObjectCommand,
+    DeleteObjectsCommand,
     HeadBucketCommand,
     HeadObjectCommand,
     PutObjectCommand,
@@ -13,6 +13,7 @@ import {
     UploadRequest,
     UploadTarget,
 } from '@common/storage'
+import {ILogger} from "@common/logger";
 
 export interface S3StorageSettings {
     bucket: string
@@ -26,6 +27,7 @@ export class S3FileStorage extends FileStorage {
     constructor(
         private readonly client: S3Client,
         private readonly settings: S3StorageSettings,
+        private readonly logger: ILogger,
     ) {
         super()
     }
@@ -41,6 +43,8 @@ export class S3FileStorage extends FileStorage {
                 Key: key,
                 ContentType: request.contentType,
                 CacheControl: CACHE_CONTROL,
+                // Fields: { acl: 'public-read' },
+                // Conditions: [['starts-with', '$key', key.split('/')[0]], { acl: 'public-read' }],
             }),
             {expiresIn: this.settings.uploadUrlTtlSeconds},
         )
@@ -82,10 +86,24 @@ export class S3FileStorage extends FileStorage {
         }
     }
 
-    async delete(key: string): Promise<void> {
-        await this.client.send(
-            new DeleteObjectCommand({Bucket: this.settings.bucket, Key: key}),
-        )
+    async delete(keys: string[]) {
+        try {
+            await this.client.send(
+                new DeleteObjectsCommand({
+                    Bucket: this.settings.bucket,
+                    Delete: { Objects: keys.map((key) => ({ Key: key })) },
+                }),
+            )
+        } catch (err) {
+            this.logger.error('Failed to delete files from R2', {
+                module: 's3FileStorage',
+                event: 'file.delete',
+                operation: 'deleteFiles',
+                data: { keys },
+                err,
+            })
+            throw err
+        }
     }
 
     publicUrl(key: string): string {

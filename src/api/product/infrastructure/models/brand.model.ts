@@ -8,6 +8,7 @@ export const brands = pgTable(
         id: uuid('id').primaryKey().defaultRandom(),
         name: varchar('name', { length: 120 }).notNull(),
         slug: varchar('slug', { length: 150 }).notNull(),
+        logoKey: varchar('logo_key', { length: 255 }),
         imageKey: varchar('image_key', { length: 255 }),
         ...commonTimestamps,
     },
