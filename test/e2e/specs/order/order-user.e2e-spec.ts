@@ -12,7 +12,7 @@ import {
     qs,
     randomId,
     sleep,
-    walkPages,
+    walkPages, withNowPlus,
 } from '../../../util/test.util'
 import {createPublishedProduct, imageKeyOf} from '../product/product-test.util'
 import {createCoupon} from '../discount/discount-test.util'
@@ -27,9 +27,7 @@ import {
     placeOk,
     shippingFeeFor,
     statusesOf,
-    withNowPlus,
 } from './order-test.util'
-import {getCart} from "../cart/cart-test.util";
 
 describe('Orders: my orders (e2e)', () => {
     let ctx: TestContext

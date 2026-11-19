@@ -5,7 +5,8 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/test/e2e/setup/setup.ts'],
   rootDir: '../..',
   // testRegex: 'auth.e2e-spec.ts$',
-    testRegex: 'order/.*\\.e2e-spec\\.ts$',
+    testRegex: '.*\\.e2e-spec\\.ts$',
+    // testRegex: 'discount/discount-pricing.e2e-spec.ts$',
     transform: {
     '^.+\\.ts$': [
       'ts-jest',

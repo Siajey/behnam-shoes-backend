@@ -23,7 +23,7 @@ import {putInCart} from '../cart/cart-test.util'
 
 export const ADDRESS = {street: 'Valiasr St 12', city: 'Tehran', province: 'Tehran', postalCode: '1234567890'}
 export const PROFILE = {firstName: 'Sara', lastName: 'Ahmadi'}
-
+export const CURRENCY = process.env.SHOP_CURRENCY ?? 'IRT'
 export const PAYMENT_WINDOW_MS = 30 * 60_000
 
 /* Shipping and currency come from configuration (SHIPPING_FLAT_FEE, SHIPPING_FREE_THRESHOLD, SHOP_CURRENCY).
@@ -31,7 +31,6 @@ export const PAYMENT_WINDOW_MS = 30 * 60_000
  * not set them the fee is 0 and the assertions still hold. */
 const FLAT_FEE = Number(process.env.SHIPPING_FLAT_FEE ?? 0)
 const FREE_FROM = Number(process.env.SHIPPING_FREE_THRESHOLD ?? 0)
-export const CURRENCY = process.env.SHOP_CURRENCY ?? 'IRR'
 export const shippingFeeFor = (subtotalAfterDiscounts: number) =>
     FREE_FROM > 0 && subtotalAfterDiscounts >= FREE_FROM ? 0 : Number.isFinite(FLAT_FEE) && FLAT_FEE > 0 ? Math.floor(FLAT_FEE) : 0
 
@@ -111,23 +110,3 @@ export const orderSystemUseCases = (app: NestFastifyApplication) => ({
     getPayable: app.get<IGetPayableOrder>(GET_PAYABLE_ORDER, {strict: false}),
     getPaymentInfo: app.get<IGetOrderPaymentInfo>(GET_ORDER_PAYMENT_INFO, {strict: false}),
 })
-
-/**
- * Runs `fn` while `Date` is `ms` milliseconds ahead (timers stay real). Used to get past the 30 minute
- * payment window without waiting. Only call system use cases inside it, not HTTP requests.
- */
-export const withNowPlus = async <T>(ms: number, fn: () => Promise<T>): Promise<T> => {
-    jest.useFakeTimers({
-        now: Date.now() + ms,
-        doNotFake: [
-            'hrtime', 'nextTick', 'performance', 'queueMicrotask', 'requestAnimationFrame',
-            'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'setImmediate',
-            'clearImmediate', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout',
-        ] as any,
-    })
-    try {
-        return await fn()
-    } finally {
-        jest.useRealTimers()
-    }
-}

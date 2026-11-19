@@ -2,13 +2,13 @@ import {NestFastifyApplication} from '@nestjs/platform-fastify'
 import {expect} from '@jest/globals'
 
 import {
-    ICommitCouponRedemption,
+    ICommitCouponRedemption, IPriceCatalog,
     IPriceItems,
     IReleaseCouponRedemption,
     IReserveCoupon,
 } from '@api/discount/application'
 import {
-    COMMIT_COUPON_REDEMPTION,
+    COMMIT_COUPON_REDEMPTION, PRICE_CATALOG,
     PRICE_ITEMS,
     RELEASE_COUPON_REDEMPTION,
     RESERVE_COUPON,
@@ -35,6 +35,7 @@ export const discountUseCases = (app: NestFastifyApplication) => ({
     reserveCoupon: app.get<IReserveCoupon>(RESERVE_COUPON, {strict: false}),
     commitRedemption: app.get<ICommitCouponRedemption>(COMMIT_COUPON_REDEMPTION, {strict: false}),
     releaseRedemption: app.get<IReleaseCouponRedemption>(RELEASE_COUPON_REDEMPTION, {strict: false}),
+    priceCatalog: app.get<IPriceCatalog>(PRICE_CATALOG, {strict: false}),
 })
 
 export interface TestLine {

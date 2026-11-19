@@ -147,7 +147,7 @@ describe('Admin products: detail and list (e2e)', () => {
                 status: 'published',
                 categoryId: child.id,
                 brandId: brandA.id,
-                primaryImage: {fileKey: expect.any(String), altText: expect.any(String)},
+                primaryImage: {fileKey: expect.any(String), url: expect.any(String), altText: expect.any(String)},
                 minPrice: 1000,
                 maxPrice: 1500,
                 inStock: true,

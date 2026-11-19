@@ -28,6 +28,7 @@ import {
     galleryImages,
     optionMap,
 } from './product-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 describe('Public catalog: list, search, detail (e2e)', () => {
     let ctx: TestContext
@@ -154,11 +155,26 @@ describe('Public catalog: list, search, detail (e2e)', () => {
                 slug: p1.slug,
                 categoryId: sneakers.id,
                 brandId: brandA.id,
-                primaryImage: {fileKey: `products/${p1.id}/img-0.webp`, altText: 'image 0'},
+                primaryImage: {
+                    fileKey: `products/${p1.id}/img-0.webp`,
+                    url: cdnUrl(`products/${p1.id}/img-0.webp`),
+                    altText: 'image 0'
+                },
                 minPrice: 1000,
                 maxPrice: 1500,
                 inStock: true,
                 details: {gender: 'men', material: null},
+                meta: {
+                    tags: ['newest'],
+                    pricing: {
+                        minPrice: 1000,
+                        maxPrice: 1500,
+                        finalMinPrice: 1000,
+                        finalMaxPrice: 1500,
+                        hasDiscount: false,
+                        maxDiscountPercent: 0
+                    },
+                },
             })
         })
 
@@ -310,7 +326,11 @@ describe('Public catalog: list, search, detail (e2e)', () => {
 
             it('combines filters with AND', async () => {
                 expect(sortedIds(await list({brandId: brandA.id, inStock: true}))).toEqual(ids(p1))
-                expect(sortedIds(await list({brandId: brandA.id, categoryId: sneakers.id, attributes: 'color:black'}))).toEqual(
+                expect(sortedIds(await list({
+                    brandId: brandA.id,
+                    categoryId: sneakers.id,
+                    attributes: 'color:black'
+                }))).toEqual(
                     ids(p1),
                 )
             })
@@ -384,7 +404,22 @@ describe('Public catalog: list, search, detail (e2e)', () => {
                 slug: p1.slug,
                 categoryId: sneakers.id,
                 brandId: brandA.id,
-                primaryImage: {fileKey: `products/${p1.id}/img-0.webp`, altText: 'image 0'},
+                primaryImage: {
+                    fileKey: `products/${p1.id}/img-0.webp`,
+                    url: cdnUrl(`products/${p1.id}/img-0.webp`),
+                    altText: 'image 0'
+                },
+                meta: {
+                    tags: ['newest'],
+                    pricing: {
+                        minPrice: 1000,
+                        maxPrice: 1500,
+                        finalMinPrice: 1000,
+                        finalMaxPrice: 1500,
+                        hasDiscount: false,
+                        maxDiscountPercent: 0
+                    },
+                },
                 minPrice: 1000,
                 maxPrice: 1500,
                 inStock: true,
@@ -484,13 +519,23 @@ describe('Public catalog: list, search, detail (e2e)', () => {
 
             await admin.put(`/admin/products/${product.id}/gallery`, {
                 images: [
-                    {fileKey: `products/${product.id}/img-1.webp`, altText: 'second first'},
-                    {fileKey: `products/${product.id}/img-0.webp`, altText: null},
+                    {
+                        fileKey: `products/${product.id}/img-1.webp`,
+                        altText: 'second first',
+                    },
+                    {
+                        fileKey: `products/${product.id}/img-0.webp`,
+                        altText: null,
+                    },
                 ],
             })
 
             const after = (await list()).find((i) => i.id === product.id)
-            expect(after.primaryImage).toEqual({fileKey: `products/${product.id}/img-1.webp`, altText: 'second first'})
+            expect(after.primaryImage).toEqual({
+                fileKey: `products/${product.id}/img-1.webp`,
+                altText: 'second first',
+                url: cdnUrl(`products/${product.id}/img-1.webp`),
+            })
             const detail = (await anonymous.get(`/products/${product.id}`)).json().data
             expect(detail.images.map((i: any) => i.fileKey)).toEqual([
                 `products/${product.id}/img-1.webp`,

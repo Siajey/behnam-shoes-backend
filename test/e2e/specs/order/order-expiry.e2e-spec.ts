@@ -3,7 +3,7 @@ import {beforeAll, describe, expect, it} from '@jest/globals'
 import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, createUserSession, expectError} from '../../../util/test.util'
+import {Api, createUserSession, expectError, withNowPlus} from '../../../util/test.util'
 import {createPublishedProduct} from '../product/product-test.util'
 import {createCoupon} from '../discount/discount-test.util'
 import {
@@ -16,7 +16,6 @@ import {
     orderSystemUseCases,
     placeOk,
     statusesOf,
-    withNowPlus,
 } from './order-test.util'
 
 
