@@ -3,10 +3,10 @@ import {
     IProductQueryRepository, IProductStatsRepository, ProductNotFoundError, ProductWithMeta,
 } from '@api/product/domain'
 
-import { PUBLIC_PRODUCT_STATUSES } from '../../constants'
+import {PUBLIC_PRODUCT_STATUSES} from '../../constants'
 import {enrichWithMeta, resolveProductAttributes} from '../../helpers'
-import { IGetProductById } from '../../interfaces'
-import { IProductPricing } from '../../ports'
+import {IGetProductById} from '../../interfaces'
+import {IProductPricing} from '../../ports'
 
 export default class GetProductByIdUseCase implements IGetProductById {
     constructor(
@@ -15,13 +15,14 @@ export default class GetProductByIdUseCase implements IGetProductById {
         private readonly stats: IProductStatsRepository,
         private readonly definitions: IAttributeDefinitionRepository,
         private readonly attributeValues: IProductAttributeRepository,
-    ) {}
+    ) {
+    }
 
     async execute(id: string): Promise<ProductWithMeta> {
         const view = await this.productQuery.findDetailsBySlug(id, PUBLIC_PRODUCT_STATUSES)
-        if (!view) throw new ProductNotFoundError({ id })
+        if (!view) throw new ProductNotFoundError({id})
 
-        const [[item], attributes] = await Promise.all([enrichWithMeta(this.pricing, this.stats, [view]), resolveProductAttributes(this.definitions, this.attributeValues, id, true)])
+        const [[item], attributes] = await Promise.all([enrichWithMeta(this.pricing, this.stats, [view]), resolveProductAttributes(this.definitions, this.attributeValues, view.product.id, true)])
         return {...item, attributes}
     }
 }

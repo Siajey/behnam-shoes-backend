@@ -296,3 +296,38 @@ export const setGallery = async (admin: Api, productId: string, count = 1) => {
     expect(res.statusCode).toBe(200)
     return res.json().data
 }
+
+export const opt = (value: string, label = value) => ({value, label})
+
+export const attributeBody = (overrides: Record<string, unknown> = {}) => ({
+    key: `attr_${uid()}`,
+    name: `Attribute ${uid()}`,
+    type: 'text',
+    ...overrides,
+})
+
+export const createAttribute = async (admin: Api, overrides: Record<string, unknown> = {}) => {
+    const res = await admin.post('/admin/attributes', attributeBody(overrides))
+    expect(res.statusCode).toBe(201)
+    return res.json().data
+}
+
+export const setAttributes = (admin: Api, productId: string, values: {key: string; value: unknown}[]) =>
+    admin.put(`/admin/products/${productId}/attributes`, {values})
+
+/** Requests an upload URL for a brand (cover/logo) or category image and simulates the browser PUT. */
+export const uploadTaxonomyImage = async (
+    admin: Api,
+    resource: 'brands' | 'categories',
+    body: Record<string, unknown> = {},
+) => {
+    const payload = {contentType: 'image/png', sizeBytes: 1000, ...body}
+    const res = await admin.post(`/admin/${resource}/images/upload-url`, payload)
+    expect(res.statusCode).toBe(201)
+    const target = res.json().data as {key: string; publicUrl: string; headers: Record<string, string>}
+    fakeFileStorage.simulateUpload(target.key, {
+        sizeBytes: payload.sizeBytes as number,
+        contentType: payload.contentType as string,
+    })
+    return target
+}
