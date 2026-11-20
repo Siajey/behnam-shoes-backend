@@ -68,6 +68,7 @@ export class TaxonomyPresenter {
             key: t.key,
             uploadUrl: t.url,
             method: t.method,
+            fields: t.fields,
             headers: t.headers,
             expiresInSeconds: t.expiresInSeconds,
             publicUrl: t.publicUrl,
