@@ -2,10 +2,9 @@ import {
     DeleteObjectsCommand,
     HeadBucketCommand,
     HeadObjectCommand,
-    PutObjectCommand,
     S3Client,
 } from '@aws-sdk/client-s3'
-import {getSignedUrl} from '@aws-sdk/s3-request-presigner'
+import {createPresignedPost} from '@aws-sdk/s3-presigned-post'
 
 import {
     FileStorage,
@@ -36,22 +35,24 @@ export class S3FileStorage extends FileStorage {
         key: string,
         request: UploadRequest,
     ): Promise<Omit<UploadTarget, 'key' | 'publicUrl'>> {
-        const url = await getSignedUrl(
-            this.client,
-            new PutObjectCommand({
-                Bucket: this.settings.bucket,
-                Key: key,
-                ContentType: request.contentType,
-                CacheControl: CACHE_CONTROL,
-                // Fields: { acl: 'public-read' },
-                // Conditions: [['starts-with', '$key', key.split('/')[0]], { acl: 'public-read' }],
-            }),
-            {expiresIn: this.settings.uploadUrlTtlSeconds},
-        )
+        const url = await createPresignedPost(this.client, {
+            Bucket: this.settings.bucket,
+            Key: key,
+            Expires: this.settings.uploadUrlTtlSeconds,
+            Fields: {acl: 'public-read'},
+            Conditions: [
+                ['starts-with', '$key', key.split('/')[0]],
+                {acl: 'public-read'},
+                {'Content-Type': request.contentType},
+                {'Cache-Control': CACHE_CONTROL},
+                ['content-length-range', 1, request.sizeBytes],
+            ],
+        })
 
         return {
-            method: 'PUT',
-            url,
+            method: 'POST',
+            url: url.url,
+            fields: url.fields,
             headers: {
                 'Content-Type': request.contentType,
                 'Cache-Control': CACHE_CONTROL,
@@ -91,7 +92,7 @@ export class S3FileStorage extends FileStorage {
             await this.client.send(
                 new DeleteObjectsCommand({
                     Bucket: this.settings.bucket,
-                    Delete: { Objects: keys.map((key) => ({ Key: key })) },
+                    Delete: {Objects: keys.map((key) => ({Key: key}))},
                 }),
             )
         } catch (err) {
@@ -99,7 +100,7 @@ export class S3FileStorage extends FileStorage {
                 module: 's3FileStorage',
                 event: 'file.delete',
                 operation: 'deleteFiles',
-                data: { keys },
+                data: {keys},
                 err,
             })
             throw err
