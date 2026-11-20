@@ -39,11 +39,15 @@ export class S3FileStorage extends FileStorage {
             Bucket: this.settings.bucket,
             Key: key,
             Expires: this.settings.uploadUrlTtlSeconds,
-            Fields: {acl: 'public-read'},
+            Fields: {
+                "Content-Type": request.contentType,
+                "acl": "public-read",
+                'Cache-Control': CACHE_CONTROL,
+            },
             Conditions: [
                 ['starts-with', '$key', key.split('/')[0]],
                 {acl: 'public-read'},
-                {'Content-Type': request.contentType},
+                {"Content-Type": request.contentType},
                 {'Cache-Control': CACHE_CONTROL},
                 ['content-length-range', 1, request.sizeBytes],
             ],
@@ -56,6 +60,7 @@ export class S3FileStorage extends FileStorage {
             headers: {
                 'Content-Type': request.contentType,
                 'Cache-Control': CACHE_CONTROL,
+                'content-length-range': 'request.sizeBytes'
             },
             expiresInSeconds: this.settings.uploadUrlTtlSeconds,
         }
