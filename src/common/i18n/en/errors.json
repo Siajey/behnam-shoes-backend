@@ -83,6 +83,14 @@
     "invalidStatusTransition": "The product status cannot be changed from \"{from}\" to \"{to}\".",
     "tooManyImages": "The product cannot have more than {max} images."
   },
+    "attribute": {
+      "notFound": "Attribute definition not found.",
+      "keyAlreadyExists": "An attribute with key \"{key}\" already exists.",
+      "invalidDefinition": "The attribute definition is invalid ({reason}).",
+      "invalidValue": "Invalid value for attribute \"{key}\" ({reason}).",
+      "inUse": "This attribute is currently in use by one or more products and cannot be deleted.",
+      "optionInUse": "Attribute options ({optionIds}) are currently in use by products and cannot be removed."
+    },
   "variant": {
     "alreadyAssigned": "The following variants are already assigned to another product: {variantIds}.",
     "invalidAttributes": "The product variant attributes are invalid.",

@@ -12,6 +12,7 @@ export const categories = pgTable(
             onDelete: 'restrict',
         }),
         sortOrder: integer('sort_order').notNull().default(0),
+        imageKey: varchar('image_key', { length: 255 }),
         ...commonTimestamps,
     },
     (t) => [

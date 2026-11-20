@@ -3,6 +3,7 @@ import {Module} from '@nestjs/common'
 
 import {ConfigProvider} from '@common/configuration'
 import {
+    APP_LOGGER_SERVICE,
     CONFIG_PROVIDER,
     FILE_STORAGE,
     S3_CLIENT,
@@ -31,7 +32,7 @@ import {createFileStorage, FilesStorageHealthCheck} from './infrastructure'
         },
         {
             provide: FILE_STORAGE,
-            inject: [CONFIG_PROVIDER, S3_CLIENT],
+            inject: [CONFIG_PROVIDER, S3_CLIENT,APP_LOGGER_SERVICE],
             useFactory: createFileStorage,
         },
         FilesStorageHealthCheck,

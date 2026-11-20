@@ -2,7 +2,7 @@ import { IProductQueryRepository, IProductStatsRepository } from '@api/product/d
 
 import { PUBLIC_PRODUCT_STATUSES } from '../../constants'
 import { enrichWithMeta } from '../../helpers'
-import { IListProducts, ProductMetaPage, PublicProductListQuery } from '../../interfaces/public'
+import { IListProducts, ProductMetaPage, PublicProductListQuery } from '../../interfaces'
 import { IProductPricing } from '../../ports'
 
 export default class ListProductsUseCase implements IListProducts {

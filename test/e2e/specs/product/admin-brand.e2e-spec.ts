@@ -20,8 +20,9 @@ import {
 } from '../../../util/test.util'
 import {
     createBrand,
-    createProduct,
+    createProduct, stubUploaded,
 } from './product-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 describe('Admin brands (e2e)', () => {
     let ctx: TestContext
@@ -42,33 +43,52 @@ describe('Admin brands (e2e)', () => {
                 id: expect.any(String),
                 name: body.name,
                 slug: body.slug,
+                imageKey: null,
+                imageUrl: null,
                 logoKey: null,
+                logoUrl: null,
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
             })
         })
 
-        it('stores the logoKey when provided', async () => {
+        it('stores the logoKey and imageKey when provided', async () => {
+            stubUploaded('brands/logos/adidas.png', 'brands/covers/adidas.png',)
+
             const res = await admin.post('/admin/brands', {
                 name: `Adidas ${uid()}`,
                 slug: slug('adidas'),
-                logoKey: 'brands/adidas.png',
+                logoKey: 'brands/logos/adidas.png',
+                imageKey: 'brands/covers/adidas.png',
+            })
+
+
+            expect(res.statusCode).toBe(201)
+            expect(res.json().data.logoKey).toBe('brands/logos/adidas.png')
+            expect(res.json().data.logoUrl).toBe(cdnUrl('brands/logos/adidas.png'))
+            expect(res.json().data.imageKey).toBe('brands/covers/adidas.png')
+            expect(res.json().data.imageUrl).toBe(cdnUrl('brands/covers/adidas.png'))
+        })
+
+        it('accepts a null logoKey and imageKey', async () => {
+            const res = await admin.post('/admin/brands', {
+                name: `Puma ${uid()}`,
+                slug: slug('puma'),
+                logoKey: null,
+                imageKey: null
             })
 
             expect(res.statusCode).toBe(201)
-            expect(res.json().data.logoKey).toBe('brands/adidas.png')
-        })
-
-        it('accepts a null logoKey', async () => {
-            const res = await admin.post('/admin/brands', {name: `Puma ${uid()}`, slug: slug('puma'), logoKey: null})
-
-            expect(res.statusCode).toBe(201)
             expect(res.json().data.logoKey).toBeNull()
+            expect(res.json().data.imageKey).toBeNull()
         })
 
         it('trims the name and lowercases the slug', async () => {
             const tag = uid()
-            const res = await admin.post('/admin/brands', {name: `  Reebok ${tag}  `, slug: `Reebok-${tag}`.toUpperCase()})
+            const res = await admin.post('/admin/brands', {
+                name: `  Reebok ${tag}  `,
+                slug: `Reebok-${tag}`.toUpperCase()
+            })
 
             expect(res.statusCode).toBe(201)
             expect(res.json().data.name).toBe(`Reebok ${tag}`)
@@ -141,9 +161,10 @@ describe('Admin brands (e2e)', () => {
     describe('GET /admin/brands', () => {
         it('lists brands ordered by name with the admin shape', async () => {
             const tag = uid()
+            stubUploaded('brands/logos/bravo.png')
             const charlie = await createBrand(admin, {name: `${tag} Charlie`})
             const alpha = await createBrand(admin, {name: `${tag} Alpha`})
-            const bravo = await createBrand(admin, {name: `${tag} Bravo`, logoKey: 'brands/bravo.png'})
+            const bravo = await createBrand(admin, {name: `${tag} Bravo`, logoKey: 'brands/logos/bravo.png'})
 
             const res = await admin.get('/admin/brands')
 
@@ -154,7 +175,10 @@ describe('Admin brands (e2e)', () => {
                 id: bravo.id,
                 name: `${tag} Bravo`,
                 slug: bravo.slug,
-                logoKey: 'brands/bravo.png',
+                logoKey: 'brands/logos/bravo.png',
+                logoUrl: cdnUrl('brands/logos/bravo.png'),
+                imageKey: null,
+                imageUrl: null,
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
             })
@@ -182,15 +206,27 @@ describe('Admin brands (e2e)', () => {
             expect(res.json().data.slug).toBe(newSlug)
         })
 
-        it('sets and clears the logoKey', async () => {
+        it('sets and clears the logoKey and imageKey', async () => {
+            const coverKey = 'brands/covers/bravo.png'
+            const logoKey = 'brands/logos/bravo.png'
+            stubUploaded(logoKey, coverKey)
             const brand = await createBrand(admin)
 
-            const set = await admin.patch(`/admin/brands/${brand.id}`, {logoKey: 'brands/new.png'})
-            expect(set.json().data.logoKey).toBe('brands/new.png')
+            const set = await admin.patch(`/admin/brands/${brand.id}`, {
+                logoKey: logoKey,
+                imageKey: coverKey
+            })
+            expect(set.json().data.logoKey).toBe(logoKey)
+            expect(set.json().data.imageKey).toBe(coverKey)
+            expect(set.json().data.logoUrl).toBe(cdnUrl(logoKey))
+            expect(set.json().data.imageUrl).toBe(cdnUrl(coverKey))
 
-            const cleared = await admin.patch(`/admin/brands/${brand.id}`, {logoKey: null})
+            const cleared = await admin.patch(`/admin/brands/${brand.id}`, {logoKey: null, imageKey: null})
             expect(cleared.statusCode).toBe(200)
             expect(cleared.json().data.logoKey).toBeNull()
+            expect(cleared.json().data.logoUrl).toBeNull()
+            expect(cleared.json().data.imageKey).toBeNull()
+            expect(cleared.json().data.imageUrl).toBeNull()
         })
 
         it('allows re-sending the brand\'s own slug', async () => {

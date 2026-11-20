@@ -404,6 +404,7 @@ describe('Public catalog: list, search, detail (e2e)', () => {
                 slug: p1.slug,
                 categoryId: sneakers.id,
                 brandId: brandA.id,
+                attributes: [],
                 primaryImage: {
                     fileKey: `products/${p1.id}/img-0.webp`,
                     url: cdnUrl(`products/${p1.id}/img-0.webp`),

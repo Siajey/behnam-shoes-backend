@@ -17,8 +17,9 @@ import {
     createBrand,
     createCategory,
     createDraftProduct,
-    createPublishedProduct,
+    createPublishedProduct, stubUploaded,
 } from './product-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 const byName = <T extends { name: string }>(items: T[]) => [...items].sort((a, b) => a.name.localeCompare(b.name))
 const byValue = <T extends { value: string }>(items: T[]) => [...items].sort((a, b) => a.value.localeCompare(b.value))
@@ -225,7 +226,9 @@ describe('Public catalog: filters, brands, category tree (e2e)', () => {
     describe('GET /brands', () => {
         it('lists every brand (including those without products) ordered by name, public fields only', async () => {
             const tag = uid()
-            const charlie = await createBrand(admin, {name: `${tag} Charlie`, logoKey: 'brands/charlie.png'})
+            const logoKey = 'brands/logos/charlie.png'
+            stubUploaded(logoKey)
+            const charlie = await createBrand(admin, {name: `${tag} Charlie`, logoKey: logoKey})
             const alpha = await createBrand(admin, {name: `${tag} Alpha`})
 
             const res = await anonymous.get('/brands')
@@ -233,8 +236,22 @@ describe('Public catalog: filters, brands, category tree (e2e)', () => {
             expectOk(res, 200, 'BRAND_LIST_SUCCESS')
             const mine = (res.json().data as any[]).filter((b) => b.name.startsWith(tag))
             expect(mine).toEqual([
-                {id: alpha.id, name: `${tag} Alpha`, slug: alpha.slug, logoKey: null},
-                {id: charlie.id, name: `${tag} Charlie`, slug: charlie.slug, logoKey: 'brands/charlie.png'},
+                {
+                    id: alpha.id,
+                    name: `${tag} Alpha`,
+                    slug: alpha.slug,
+                    logoKey: null,
+                    imageUrl: null,
+                    logoUrl: null,
+                },
+                {
+                    id: charlie.id,
+                    name: `${tag} Charlie`,
+                    slug: charlie.slug,
+                    logoKey: logoKey,
+                    logoUrl: cdnUrl(logoKey),
+                    imageUrl: null,
+                },
             ])
         })
 
@@ -266,17 +283,36 @@ describe('Public catalog: filters, brands, category tree (e2e)', () => {
                     id: first.id,
                     name: `${tag} A-root`,
                     slug: first.slug,
+                    imageUrl: null,
                     children: [
                         {
                             id: childA.id,
                             name: `${tag} Child A`,
                             slug: childA.slug,
-                            children: [{id: grandchild.id, name: `${tag} Grandchild`, slug: grandchild.slug, children: []}],
+                            imageUrl: null,
+                            children: [{
+                                id: grandchild.id,
+                                name: `${tag} Grandchild`,
+                                imageUrl: null,
+                                slug: grandchild.slug, children: []
+                            }],
                         },
-                        {id: childB.id, name: `${tag} Child B`, slug: childB.slug, children: []},
+                        {
+                            id: childB.id,
+                            name: `${tag} Child B`,
+                            slug: childB.slug,
+                            children: [],
+                            imageUrl: null,
+                        },
                     ],
                 },
-                {id: second.id, name: `${tag} B-root`, slug: second.slug, children: []},
+                {
+                    id: second.id,
+                    name: `${tag} B-root`,
+                    slug: second.slug,
+                    children: [],
+                    imageUrl: null,
+                },
             ])
         })
 

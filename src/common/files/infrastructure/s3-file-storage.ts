@@ -1,11 +1,10 @@
 import {
-    DeleteObjectCommand,
+    DeleteObjectsCommand,
     HeadBucketCommand,
     HeadObjectCommand,
-    PutObjectCommand,
     S3Client,
 } from '@aws-sdk/client-s3'
-import {getSignedUrl} from '@aws-sdk/s3-request-presigner'
+import {createPresignedPost} from '@aws-sdk/s3-presigned-post'
 
 import {
     FileStorage,
@@ -13,6 +12,7 @@ import {
     UploadRequest,
     UploadTarget,
 } from '@common/storage'
+import {ILogger} from "@common/logger";
 
 export interface S3StorageSettings {
     bucket: string
@@ -26,6 +26,7 @@ export class S3FileStorage extends FileStorage {
     constructor(
         private readonly client: S3Client,
         private readonly settings: S3StorageSettings,
+        private readonly logger: ILogger,
     ) {
         super()
     }
@@ -34,23 +35,32 @@ export class S3FileStorage extends FileStorage {
         key: string,
         request: UploadRequest,
     ): Promise<Omit<UploadTarget, 'key' | 'publicUrl'>> {
-        const url = await getSignedUrl(
-            this.client,
-            new PutObjectCommand({
-                Bucket: this.settings.bucket,
-                Key: key,
-                ContentType: request.contentType,
-                CacheControl: CACHE_CONTROL,
-            }),
-            {expiresIn: this.settings.uploadUrlTtlSeconds},
-        )
+        const url = await createPresignedPost(this.client, {
+            Bucket: this.settings.bucket,
+            Key: key,
+            Expires: this.settings.uploadUrlTtlSeconds,
+            Fields: {
+                "Content-Type": request.contentType,
+                "acl": "public-read",
+                'Cache-Control': CACHE_CONTROL,
+            },
+            Conditions: [
+                ['starts-with', '$key', key.split('/')[0]],
+                {acl: 'public-read'},
+                {"Content-Type": request.contentType},
+                {'Cache-Control': CACHE_CONTROL},
+                ['content-length-range', 1, request.sizeBytes],
+            ],
+        })
 
         return {
-            method: 'PUT',
-            url,
+            method: 'POST',
+            url: url.url,
+            fields: url.fields,
             headers: {
                 'Content-Type': request.contentType,
                 'Cache-Control': CACHE_CONTROL,
+                'content-length-range': 'request.sizeBytes'
             },
             expiresInSeconds: this.settings.uploadUrlTtlSeconds,
         }
@@ -82,10 +92,24 @@ export class S3FileStorage extends FileStorage {
         }
     }
 
-    async delete(key: string): Promise<void> {
-        await this.client.send(
-            new DeleteObjectCommand({Bucket: this.settings.bucket, Key: key}),
-        )
+    async delete(keys: string[]) {
+        try {
+            await this.client.send(
+                new DeleteObjectsCommand({
+                    Bucket: this.settings.bucket,
+                    Delete: {Objects: keys.map((key) => ({Key: key}))},
+                }),
+            )
+        } catch (err) {
+            this.logger.error('Failed to delete files from R2', {
+                module: 's3FileStorage',
+                event: 'file.delete',
+                operation: 'deleteFiles',
+                data: {keys},
+                err,
+            })
+            throw err
+        }
     }
 
     publicUrl(key: string): string {

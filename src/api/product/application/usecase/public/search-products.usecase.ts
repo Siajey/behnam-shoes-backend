@@ -1,9 +1,10 @@
 import {IProductQueryRepository, IProductStatsRepository} from '@api/product/domain'
 
-import {PUBLIC_PRODUCT_STATUSES} from '../../constants'
 import {ISearchProducts, ProductMetaPage, PublicProductSearchQuery} from '../../interfaces'
 import {enrichWithMeta} from "@api/product/application";
 import {IProductPricing} from "@api/product/application/ports";
+
+import {PUBLIC_PRODUCT_STATUSES} from '../../constants'
 
 export default class SearchProductsUseCase implements ISearchProducts {
     constructor(private readonly productQuery: IProductQueryRepository,

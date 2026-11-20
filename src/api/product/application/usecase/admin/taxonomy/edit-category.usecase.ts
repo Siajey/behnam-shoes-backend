@@ -5,12 +5,15 @@ import {
     ICategoryRepository,
 } from '@api/product/domain'
 import { ILogger } from '@common/logger'
+import {IFileStorage} from "@common/storage";
 
 import { EditCategoryInput, IEditCategory } from '../../../interfaces'
+import { CATEGORY_IMAGE_UPLOAD_POLICY } from '../../../constants'
 
 export default class EditCategoryUseCase implements IEditCategory {
     constructor(
         private readonly categories: ICategoryRepository,
+        private readonly storage: IFileStorage,
         private readonly logger: ILogger,
     ) {}
 
@@ -32,7 +35,13 @@ export default class EditCategoryUseCase implements IEditCategory {
             category.moveTo(input.parentId, all)
         }
 
-        category.update({ name: input.name, slug: input.slug, sortOrder: input.sortOrder })
+        if (input.imageKey && input.imageKey !== category.imageKey) {
+            await this.storage.verifyUploaded(CATEGORY_IMAGE_UPLOAD_POLICY, input.imageKey)
+        }
+        category.update({
+            name: input.name, slug: input.slug, sortOrder: input.sortOrder, imageKey: input.imageKey,
+        })
+
         await this.categories.save(category)
 
         void this.logger.info('Category updated', {

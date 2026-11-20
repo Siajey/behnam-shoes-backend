@@ -22,8 +22,8 @@ export class FakeFileStorage extends FileStorage {
         return this.objects.get(key) ?? null
     }
 
-    async delete(key: string) {
-        this.objects.delete(key)
+    async delete(keys: string | string[]) {
+        for (const key of ([] as string[]).concat(keys)) this.objects.delete(key)
     }
 
     publicUrl(key: string) {

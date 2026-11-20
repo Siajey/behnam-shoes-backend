@@ -7,6 +7,7 @@ export interface CategoryProps {
     name: string
     slug: string
     parentId: string | null
+    imageKey: string | null
     sortOrder: number
     createdAt: Date
     updatedAt: Date
@@ -20,6 +21,7 @@ export class Category {
         slug: string
         parentId?: string | null
         sortOrder?: number
+        imageKey?: string  | null
     }): Category {
         const now = new Date()
         return new Category({
@@ -28,6 +30,7 @@ export class Category {
             slug: input.slug,
             parentId: input.parentId ?? null,
             sortOrder: input.sortOrder ?? 0,
+            imageKey: input.imageKey ?? null,
             createdAt: now,
             updatedAt: now,
         })
@@ -42,13 +45,15 @@ export class Category {
     get slug() { return this.props.slug }
     get parentId() { return this.props.parentId }
     get sortOrder() { return this.props.sortOrder }
+    get imageKey() { return this.props.imageKey }
     get createdAt() { return this.props.createdAt }
     get updatedAt() { return this.props.updatedAt }
 
-    update(input: { name?: string; slug?: string; sortOrder?: number }): void {
+    update(input: { name?: string; slug?: string; sortOrder?: number; imageKey?: string | null }): void {
         if (input.name !== undefined) this.props.name = input.name
         if (input.slug !== undefined) this.props.slug = input.slug
         if (input.sortOrder !== undefined) this.props.sortOrder = input.sortOrder
+        if (input.imageKey !== undefined) this.props.imageKey = input.imageKey
         this.props.updatedAt = new Date()
     }
 

@@ -16,8 +16,9 @@ import {
 } from '../../../util/test.util'
 import {
     createCategory,
-    createProduct,
+    createProduct, stubUploaded,
 } from './product-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 describe('Admin categories (e2e)', () => {
     let ctx: TestContext
@@ -40,6 +41,27 @@ describe('Admin categories (e2e)', () => {
                 slug: body.slug,
                 parentId: null,
                 sortOrder: 0,
+                imageKey: null,
+                imageUrl: null,
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+            })
+        })
+        it('creates a category with imageKey', async () => {
+            const cover = 'categories/mens.png'
+            stubUploaded(cover)
+            const body = {name: `Sneakers ${uid()}`, slug: slug('sneakers'),imageKey:cover }
+            const res = await admin.post('/admin/categories', body)
+
+            expectOk(res, 201, 'CATEGORY_CREATE_SUCCESS')
+            expect(res.json().data).toEqual({
+                id: expect.any(String),
+                name: body.name,
+                slug: body.slug,
+                parentId: null,
+                sortOrder: 0,
+                imageKey: cover,
+                imageUrl: cdnUrl(cover),
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
             })
@@ -152,6 +174,8 @@ describe('Admin categories (e2e)', () => {
                 slug: first.slug,
                 parentId: null,
                 sortOrder: 0,
+                imageKey: null,
+                imageUrl: null,
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
             })
@@ -159,6 +183,23 @@ describe('Admin categories (e2e)', () => {
     })
 
     describe('PATCH /admin/categories/:id', () => {
+        it('sets and clears the logoKey and imageKey', async () => {
+            const coverKey = 'categories/bravo.png'
+            stubUploaded(coverKey)
+            const brand = await createCategory(admin)
+
+            const set = await admin.patch(`/admin/categories/${brand.id}`, {
+                imageKey: coverKey
+            })
+            expect(set.json().data.imageKey).toBe(coverKey)
+            expect(set.json().data.imageUrl).toBe(cdnUrl(coverKey))
+
+            const cleared = await admin.patch(`/admin/categories/${brand.id}`, {imageKey: null})
+            expect(cleared.statusCode).toBe(200)
+            expect(cleared.json().data.imageKey).toBeNull()
+            expect(cleared.json().data.imageUrl).toBeNull()
+        })
+
         it('updates name, slug and sortOrder', async () => {
             const category = await createCategory(admin)
             const body = {name: `Renamed ${uid()}`, slug: slug('renamed'), sortOrder: 9}

@@ -44,12 +44,12 @@ export abstract class FileStorage implements IFileStorage {
     const contentType = info.contentType ? normalizeContentType(info.contentType) : null
 
     if (info.sizeBytes > policy.maxSizeBytes) {
-      await this.delete(key)
+      await this.delete([key])
       throw new FileTooLargeError(policy.maxSizeBytes)
     }
 
     if (!contentType || !policy.allowedContentTypes.includes(contentType)) {
-      await this.delete(key)
+      await this.delete([key])
       throw new FileTypeNotAllowedError(contentType ?? 'unknown', policy.allowedContentTypes)
     }
 
@@ -62,7 +62,7 @@ export abstract class FileStorage implements IFileStorage {
   ): Promise<Omit<UploadTarget, 'key' | 'publicUrl'>>
 
   abstract head(key: string): Promise<StoredObjectInfo | null>
-  abstract delete(key: string): Promise<void>
+  abstract delete(keys: string[]): Promise<void>
   abstract publicUrl(key: string): string
 
   private static generateKey(folder: string, extension: string): string {

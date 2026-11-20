@@ -1,10 +1,14 @@
 import { Brand, Category } from '@api/product/domain'
+import {UploadTarget} from "@common/storage";
+
+import { TaxonomyImagePurpose } from "../../constants";
 
 export interface CreateCategoryInput {
     name: string
     slug: string
     parentId?: string | null
     sortOrder?: number
+    imageKey?: string | null
 }
 
 export interface EditCategoryInput {
@@ -13,12 +17,14 @@ export interface EditCategoryInput {
     slug?: string
     parentId?: string | null
     sortOrder?: number
+    imageKey?: string | null
 }
 
 export interface CreateBrandInput {
     name: string
     slug: string
     logoKey?: string | null
+    imageKey?: string | null
 }
 
 export interface EditBrandInput {
@@ -26,6 +32,7 @@ export interface EditBrandInput {
     name?: string
     slug?: string
     logoKey?: string | null
+    imageKey?: string | null
 }
 
 export interface ICreateCategory {
@@ -46,4 +53,14 @@ export interface IEditBrand {
 }
 export interface IDeleteBrand {
     execute(id: string, actorId: string): Promise<void>
+}
+
+export interface CreateTaxonomyImageUploadCommand {
+    purpose: TaxonomyImagePurpose
+    contentType: string
+    sizeBytes: number
+}
+
+export interface ICreateTaxonomyImageUpload {
+    execute(command: CreateTaxonomyImageUploadCommand): Promise<UploadTarget>
 }
