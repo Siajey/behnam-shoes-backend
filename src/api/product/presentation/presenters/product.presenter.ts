@@ -104,6 +104,7 @@ export class ProductPresenter {
         return {
             key: t.key,
             uploadUrl: t.url,
+            fields: t.fields,
             method: t.method,
             headers: t.headers,
             expiresInSeconds: t.expiresInSeconds,
