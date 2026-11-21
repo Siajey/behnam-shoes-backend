@@ -109,5 +109,10 @@
   },
   "insights": {
     "productStatsRefreshSuccess": "The product statistics have been refreshed successfully."
+  },
+  "payment": {
+    "startSuccess": "The payment has been started successfully.",
+    "getSuccess": "The payment status retrieved successfully.",
+    "listSuccess": "The order payments retrieved successfully."
   }
 }
