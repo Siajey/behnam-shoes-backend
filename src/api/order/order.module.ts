@@ -10,6 +10,7 @@ import {DatabaseModule} from '@common/db'
 import {
     EXPIRE_UNPAID_ORDERS,
     GET_ORDER_PAYMENT_INFO,
+    GET_PRODUCT_SALES,
     GET_PAYABLE_ORDER,
     MARK_ORDER_PAID,
     ORDER_CART_GATEWAY,
@@ -45,7 +46,7 @@ import {AdminOrderController, OrderController} from './presentation'
         ...OrderSystemUseCaseProviders,
         ExpireUnpaidOrdersJob,
     ],
-    exports: [EXPIRE_UNPAID_ORDERS, GET_ORDER_PAYMENT_INFO, GET_PAYABLE_ORDER, MARK_ORDER_PAID],
+    exports: [EXPIRE_UNPAID_ORDERS, GET_ORDER_PAYMENT_INFO, GET_PAYABLE_ORDER, MARK_ORDER_PAID, GET_PRODUCT_SALES],
 })
 export class OrderModule {
 }

@@ -1,8 +1,8 @@
 import {Inject, Injectable} from '@nestjs/common'
-import {and, asc, eq, gte, inArray, lt, lte, SQL} from 'drizzle-orm'
+import {and, asc, eq, gte, inArray, lt, lte, sql, SQL} from 'drizzle-orm'
 
 import {
-    AdminOrderListCriteria, IOrderRepository, Order, OrderPage, OrderVersionConflictError,
+    AdminOrderListCriteria, IOrderRepository, Order, OrderPage, OrderVersionConflictError, ProductUnitsSold,
 } from '@api/order/domain'
 import {Database, DrizzleGetItemsQueryBuilder} from '@common/db'
 import {DATABASE} from '@common/di'
@@ -88,6 +88,22 @@ export class OrderRepository implements IOrderRepository {
             criteria.to ? lte(o.createdAt, criteria.to) : undefined,
             criteria.orderNumber !== undefined ? eq(o.orderNumber, criteria.orderNumber) : undefined,
         )
+    }
+
+    async unitsSoldByProduct(since: Date): Promise<ProductUnitsSold[]> {
+        const o = schema.orders
+        const l = schema.orderLines
+        const countedStatuses = ['paid', 'processing', 'shipped', 'delivered'] as const
+
+        return this.db
+            .select({
+                productId: l.productId,
+                unitsSold: sql<number>`sum(${l.quantity})`.mapWith(Number),
+            })
+            .from(l)
+            .innerJoin(o, eq(l.orderId, o.id))
+            .where(and(gte(o.paidAt, since), inArray(o.status, [...countedStatuses])))
+            .groupBy(l.productId)
     }
 
     async findExpirable(now: Date, limit: number): Promise<Order[]> {

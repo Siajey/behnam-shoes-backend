@@ -146,5 +146,8 @@
     "recipientIncomplete": "The recipient information is incomplete. Please provide: {{missing}}.",
     "notPayable": "This order cannot be paid for in its current status: {{status}}.",
     "invalidIdempotencyKey": "The idempotency key is missing or invalid. Please provide a valid idempotency key."
+  },
+  "insights": {
+    "refreshInProgress": "A product stats refresh is already in progress. Please try again later."
   }
 }

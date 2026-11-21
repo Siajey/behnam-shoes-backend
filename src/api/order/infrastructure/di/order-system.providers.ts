@@ -2,7 +2,7 @@ import {
     createProvider,
     EXPIRE_UNPAID_ORDERS,
     GET_ORDER_PAYMENT_INFO,
-    GET_PAYABLE_ORDER,
+    GET_PAYABLE_ORDER, GET_PRODUCT_SALES,
     MARK_ORDER_PAID,
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
@@ -10,7 +10,7 @@ import {
 } from '@common/di'
 
 import {
-    ExpireUnpaidOrdersUseCase, GetOrderPaymentInfoUseCase, GetPayableOrderUseCase,
+    ExpireUnpaidOrdersUseCase, GetOrderPaymentInfoUseCase, GetPayableOrderUseCase, GetProductSalesUseCase,
     MarkOrderPaidUseCase,
 } from '@api/order/application'
 
@@ -25,4 +25,5 @@ export const OrderSystemUseCaseProviders = [
     createProvider<MarkOrderPaidUseCase>(MARK_ORDER_PAID, MarkOrderPaidUseCase, [
         ORDER_REPOSITORY, ORDER_PROMOTIONS, ORDER_CART_GATEWAY,
     ]),
+    createProvider<GetProductSalesUseCase>(GET_PRODUCT_SALES, GetProductSalesUseCase, [ORDER_REPOSITORY]),
 ]

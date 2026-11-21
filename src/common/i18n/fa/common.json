@@ -105,5 +105,8 @@
     "getSuccess": "جزئیات سفارش با موفقیت دریافت شد.",
     "cancelSuccess": "سفارش شما با موفقیت لغو شد.",
     "statusUpdateSuccess": "وضعیت سفارش با موفقیت به‌روزرسانی شد."
+  },
+  "insights": {
+    "productStatsRefreshSuccess": "آمار محصولات با موفقیت به‌روزرسانی شد."
   }
 }
