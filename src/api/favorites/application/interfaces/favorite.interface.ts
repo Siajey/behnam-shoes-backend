@@ -1,4 +1,4 @@
-import { FavoriteProductSummary } from '@api/favorites/domain'
+import {FavoriteProductSummary, ProductFavoriteCount} from '@api/favorites/domain'
 
 export interface ListFavoritesQuery {
     pageSize?: number
@@ -32,3 +32,5 @@ export interface IRemoveFavorite {
 export interface IMergeFavorites {
     execute(productIds: string[], userId: string): Promise<MergeFavoritesResult>
 }
+
+export interface IGetRecentFavoriteCounts { execute(since: Date): Promise<ProductFavoriteCount[]> }

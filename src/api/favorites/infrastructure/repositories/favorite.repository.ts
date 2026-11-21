@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { and, desc, eq } from 'drizzle-orm'
+import { and, desc, eq, gte, sql } from 'drizzle-orm'
 
-import { Favorite, IFavoriteRepository } from '@api/favorites/domain'
+import { Favorite, IFavoriteRepository, ProductFavoriteCount } from '@api/favorites/domain'
 import { Database } from '@common/db'
 import { DATABASE } from '@common/di'
 
@@ -29,6 +29,17 @@ export class FavoriteRepository implements IFavoriteRepository {
             .onConflictDoNothing()
             .returning({ id: schema.favorites.id })
         return inserted.length
+    }
+
+    async countByProductSince(since: Date): Promise<ProductFavoriteCount[]> {
+        return this.db
+            .select({
+                productId: schema.favorites.productId,
+                count: sql<number>`count(*)`.mapWith(Number),
+            })
+            .from(schema.favorites)
+            .where(gte(schema.favorites.createdAt, since))
+            .groupBy(schema.favorites.productId)
     }
 
     async remove(userId: string, productId: string): Promise<void> {

@@ -5,7 +5,7 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/test/e2e/setup/setup.ts'],
   rootDir: '../..',
   // testRegex: 'auth.e2e-spec.ts$',
-    testRegex: 'product.*\\.e2e-spec\\.ts$',
+    testRegex: 'favorites.*\\.e2e-spec\\.ts$',
   //   testRegex: 'product/product-system-reads.e2e-spec.ts$',
     transform: {
     '^.+\\.ts$': [

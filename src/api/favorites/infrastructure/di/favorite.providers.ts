@@ -2,7 +2,7 @@ import {
     ADD_FAVORITE,
     createProvider,
     FAVORITE_PRODUCT_CATALOG,
-    FAVORITE_REPOSITORY,
+    FAVORITE_REPOSITORY, GET_RECENT_FAVORITE_COUNTS,
     LIST_FAVORITE_IDS,
     LIST_FAVORITES,
     MERGE_FAVORITES,
@@ -10,7 +10,7 @@ import {
 } from '@common/di'
 
 import {
-    AddFavoriteUseCase,
+    AddFavoriteUseCase, GetRecentFavoriteCountsUseCase,
     ListFavoriteIdsUseCase,
     ListFavoritesUseCase,
     MergeFavoritesUseCase,
@@ -25,4 +25,5 @@ export const FavoritesUseCaseProviders = [
     createProvider<AddFavoriteUseCase>(ADD_FAVORITE, AddFavoriteUseCase, deps),
     createProvider<RemoveFavoriteUseCase>(REMOVE_FAVORITE, RemoveFavoriteUseCase, [FAVORITE_REPOSITORY]),
     createProvider<MergeFavoritesUseCase>(MERGE_FAVORITES, MergeFavoritesUseCase, deps),
+    createProvider<GetRecentFavoriteCountsUseCase>(GET_RECENT_FAVORITE_COUNTS, GetRecentFavoriteCountsUseCase, [FAVORITE_REPOSITORY]),
 ]

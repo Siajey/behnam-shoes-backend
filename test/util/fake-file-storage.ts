@@ -11,7 +11,8 @@ export class FakeFileStorage extends FileStorage {
         request: UploadRequest,
     ): Promise<Omit<UploadTarget, 'key' | 'publicUrl'>> {
         return {
-            method: 'PUT',
+            method: 'POST',
+            fields: {},
             url: `https://upload.test/${key}?signature=fake`,
             headers: {'Content-Type': request.contentType, 'Cache-Control': 'public, max-age=31536000, immutable'},
             expiresInSeconds: 300,
