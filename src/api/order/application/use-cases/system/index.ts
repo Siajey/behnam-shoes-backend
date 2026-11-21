@@ -2,3 +2,4 @@ export { default as ExpireUnpaidOrdersUseCase } from './expire-unpaid-orders.use
 export { default as GetOrderPaymentInfoUseCase } from './get-order-payment-info.usecase'
 export { default as GetPayableOrderUseCase } from './get-payable-order.usecase'
 export { default as MarkOrderPaidUseCase } from './mark-order-paid.usecase'
+export { default as GetProductSalesUseCase } from './get-product-sales.usecase'
