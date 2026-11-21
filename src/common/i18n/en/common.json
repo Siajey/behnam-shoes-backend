@@ -106,5 +106,8 @@
     "getSuccess": "The order details retrieved successfully.",
     "cancelSuccess": "Your order has been cancelled successfully.",
     "statusUpdateSuccess": "The order status updated successfully."
+  },
+  "insights": {
+    "productStatsRefreshSuccess": "The product statistics have been refreshed successfully."
   }
 }
