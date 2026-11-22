@@ -1,23 +1,24 @@
-import {
-    Body, Controller, Get, Headers, HttpStatus, Inject, Param, Post, Query, UseGuards,
-} from '@nestjs/common'
+import {Body, Controller, Get, Headers, HttpStatus, Inject, Param, Post, Query, UseGuards,} from '@nestjs/common'
 import {Throttle} from '@nestjs/throttler'
 
-import {
-    ICancelMyOrder, IGetMyOrder, IListMyOrders, IPlaceOrder,
-} from '@api/order/application'
+import {ICancelMyOrder, IGetMyOrder, IListMyOrders, IPlaceOrder,} from '@api/order/application'
 import {CSRFGuard, JwtSessionGuard} from '@api/session/presentation'
 import {User} from '@api/users/domain'
 import {SuccessResponse} from '@common/api'
 import {ReqUser} from '@common/decorator'
-import {CANCEL_MY_ORDER, GET_MY_ORDER, LIST_MY_ORDERS, PLACE_ORDER} from '@common/di'
+import {CANCEL_MY_ORDER, FILE_STORAGE, GET_MY_ORDER, LIST_MY_ORDERS, PLACE_ORDER} from '@common/di'
 import {uuidSchema, ZodValidationPipe} from '@common/validations'
 import {ValidationError} from "@common/errors";
 
 import {
-    IdempotencyKeySchema, ListMyOrdersQuery, ListMyOrdersQuerySchema, PlaceOrderBody, PlaceOrderSchema,
+    IdempotencyKeySchema,
+    ListMyOrdersQuery,
+    ListMyOrdersQuerySchema,
+    PlaceOrderBody,
+    PlaceOrderSchema,
 } from '../dto'
 import {OrderPresenter} from '../presenters'
+import {IFileStorage} from "@common/storage";
 
 const idPipe = new ZodValidationPipe(uuidSchema)
 
@@ -29,8 +30,11 @@ export default class OrderController {
         @Inject(LIST_MY_ORDERS) private readonly listMyOrders: IListMyOrders,
         @Inject(GET_MY_ORDER) private readonly getMyOrder: IGetMyOrder,
         @Inject(CANCEL_MY_ORDER) private readonly cancelMyOrder: ICancelMyOrder,
+        @Inject(FILE_STORAGE) private readonly storage: IFileStorage,
     ) {
     }
+
+    private readonly urlOf = (key: string): string => this.storage.publicUrl(key)
 
 
     @Post()
@@ -59,7 +63,7 @@ export default class OrderController {
             code: 'ORDER_PLACE_SUCCESS',
             path: '/orders',
             status: HttpStatus.CREATED,
-            data: OrderPresenter.detail(order),
+            data: OrderPresenter.detail(order, this.urlOf),
         })
     }
 
@@ -74,7 +78,10 @@ export default class OrderController {
             messageObj: {message: 'common.order.listSuccess'},
             code: 'ORDER_LIST_SUCCESS',
             path: '/orders',
-            data: {items: page.orders.map(OrderPresenter.summary), nextCursor: page.nextCursor},
+            data: {
+                items: page.orders.map((o) => OrderPresenter.summary(o, this.urlOf)),
+                nextCursor: page.nextCursor
+            },
         })
     }
 
@@ -86,7 +93,7 @@ export default class OrderController {
             messageObj: {message: 'common.order.getSuccess'},
             code: 'ORDER_GET_SUCCESS',
             path: `/orders/${id}`,
-            data: OrderPresenter.detail(order),
+            data: OrderPresenter.detail(order,this.urlOf),
         })
     }
 
@@ -98,7 +105,7 @@ export default class OrderController {
             messageObj: {message: 'common.order.cancelSuccess'},
             code: 'ORDER_CANCEL_SUCCESS',
             path: `/orders/${id}/cancel`,
-            data: OrderPresenter.detail(order),
+            data: OrderPresenter.detail(order,this.urlOf),
         })
     }
 }

@@ -10,8 +10,8 @@ import {DatabaseModule} from '@common/db'
 import {
     EXPIRE_UNPAID_ORDERS,
     GET_ORDER_PAYMENT_INFO,
-    GET_PRODUCT_SALES,
     GET_PAYABLE_ORDER,
+    GET_PRODUCT_SALES,
     MARK_ORDER_PAID,
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
@@ -22,16 +22,29 @@ import {
 } from '@common/di'
 
 import {
-    CartCheckoutGateway, ConfigShippingCalculator, DiscountPromotions, ExpireUnpaidOrdersJob,
-    OrderAdminUseCaseProviders, OrderRepository, OrderSystemUseCaseProviders,
-    OrderUserUseCaseProviders, ProductVariantRefs, ProfileShippingDetails,
+    CartCheckoutGateway,
+    ConfigShippingCalculator,
+    DiscountPromotions,
+    ExpireUnpaidOrdersJob,
+    OrderAdminUseCaseProviders,
+    OrderRepository,
+    OrderSystemUseCaseProviders,
+    OrderUserUseCaseProviders,
+    ProductVariantRefs,
+    ProfileShippingDetails,
 } from './infrastructure'
 import {AdminOrderController, OrderController} from './presentation'
+import {FilesModule} from "@common/files";
 
 @Module({
     imports: [
-        DatabaseModule, SessionModule, AuthModule,
-        CartModule, DiscountModule, ProductModule, UserModule,
+        DatabaseModule,
+        FilesModule,
+        SessionModule,
+        CartModule,
+        DiscountModule,
+        ProductModule,
+        UserModule,
     ],
     controllers: [OrderController, AdminOrderController],
     providers: [
