@@ -20,6 +20,7 @@ import {
     putInCart,
     variantIdsInCart,
 } from './cart-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 describe('Cart: GET /cart (e2e)', () => {
     let ctx: TestContext
@@ -74,6 +75,7 @@ describe('Cart: GET /cart (e2e)', () => {
             name: product.name,
             slug: product.slug,
             imageKey: imageKeyOf(product.id),
+            imageUrl: cdnUrl(imageKeyOf(product.id))
         }
         expect(res.json().data).toEqual({
             items: [

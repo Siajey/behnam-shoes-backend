@@ -1,9 +1,11 @@
 import { CartView, CartViewLine, MAX_QUANTITY_PER_LINE } from '@api/cart/domain'
 
+export type UrlOf = (fileKey: string) => string
+
 export class CartPresenter {
-    static toResponse(view: CartView) {
+    static toResponse(view: CartView,urlOf:UrlOf) {
         return {
-            items: view.lines.map(CartPresenter.line),
+            items: view.lines.map((line) => CartPresenter.line(line,urlOf)),
             coupon: view.coupon,
             totals: {
                 itemCount: view.itemCount,
@@ -16,7 +18,7 @@ export class CartPresenter {
         }
     }
 
-    private static line(line: CartViewLine) {
+    private static line(line: CartViewLine,urlOf:UrlOf) {
         const { variant, pricing } = line
         return {
             variantId: line.variantId,
@@ -32,6 +34,7 @@ export class CartPresenter {
                     name: variant.productName,
                     slug: variant.productSlug,
                     imageKey: variant.imageKey,
+                    imageUrl: variant.imageKey? urlOf(variant.imageKey) : null,
                 }
                 : null,
             attributes: variant?.attributes ?? [],

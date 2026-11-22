@@ -7,6 +7,7 @@ import {User} from '@api/users/domain'
 import {SuccessResponse} from '@common/api'
 import {
     ADD_FAVORITE,
+    FILE_STORAGE,
     LIST_FAVORITE_IDS,
     LIST_FAVORITES,
     MERGE_FAVORITES,
@@ -21,13 +22,9 @@ import {
     IMergeFavorites,
     IRemoveFavorite,
 } from '@api/favorites/application'
-import {
-    ListFavoritesQueryDto,
-    ListFavoritesQuerySchema,
-    MergeFavoritesBody,
-    MergeFavoritesSchema,
-} from '../dto'
+import {ListFavoritesQueryDto, ListFavoritesQuerySchema, MergeFavoritesBody, MergeFavoritesSchema,} from '../dto'
 import {FavoritePresenter} from '../presenters'
+import {IFileStorage} from "@common/storage";
 
 const productIdPipe = new ZodValidationPipe(uuidSchema)
 
@@ -41,8 +38,11 @@ export default class FavoritesController {
         @Inject(ADD_FAVORITE) private readonly addFavorite: IAddFavorite,
         @Inject(REMOVE_FAVORITE) private readonly removeFavorite: IRemoveFavorite,
         @Inject(MERGE_FAVORITES) private readonly mergeFavorites: IMergeFavorites,
+        @Inject(FILE_STORAGE) private readonly storage: IFileStorage,
     ) {
     }
+
+    private readonly urlOf = (key: string): string => this.storage.publicUrl(key)
 
     @Get()
     async listController(
@@ -54,7 +54,10 @@ export default class FavoritesController {
             messageObj: {message: 'common.favorites.listSuccess'},
             code: 'FAVORITES_LIST_SUCCESS',
             path: '/favorites',
-            data: {items: page.items.map(FavoritePresenter.item), nextCursor: page.nextCursor},
+            data: {
+                items: page.items.map((f) => FavoritePresenter.item(f, this.urlOf)),
+                nextCursor: page.nextCursor
+            },
         })
     }
 

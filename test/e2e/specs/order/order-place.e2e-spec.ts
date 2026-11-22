@@ -28,6 +28,7 @@ import {
     placeOrder,
     shippingFeeFor,
 } from './order-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 describe('Orders: placing an order (e2e)', () => {
     let ctx: TestContext
@@ -73,6 +74,7 @@ describe('Orders: placing an order (e2e)', () => {
                 total: 2000 + fee,
                 currency: CURRENCY,
                 previewImageKey: imageKeyOf(p.id),
+                previewImageUrl: cdnUrl(imageKeyOf(p.id)),
                 createdAt: expect.any(String),
                 paidAt: null,
                 totals: {subtotal: 2000, productDiscountTotal: 0, couponDiscount: 0, shippingFee: fee, total: 2000 + fee},
@@ -84,6 +86,7 @@ describe('Orders: placing an order (e2e)', () => {
                         productName: p.name,
                         productSlug: p.slug,
                         imageKey: imageKeyOf(p.id),
+                        imageUrl: cdnUrl(imageKeyOf(p.id)),
                         attributes: expect.arrayContaining([
                             {name: 'size', value: '42'},
                             {name: 'color', value: 'black'},

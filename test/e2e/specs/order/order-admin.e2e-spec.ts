@@ -109,6 +109,7 @@ describe('Orders: admin (e2e)', () => {
                 total: 2000 + shippingFeeFor(2000),
                 currency: expect.any(String),
                 previewImageKey: expect.any(String),
+                previewImageUrl: expect.any(String),
                 createdAt: expect.any(String),
                 paidAt: null,
                 userId: customer.userId,
