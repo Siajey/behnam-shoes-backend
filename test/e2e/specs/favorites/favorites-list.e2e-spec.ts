@@ -30,6 +30,7 @@ import {
     resetFavorites,
     storedFavorites,
 } from './favorites-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 describe('Favorites: list and ids (e2e)', () => {
     let ctx: TestContext
@@ -80,6 +81,7 @@ describe('Favorites: list and ids (e2e)', () => {
                 name: a.name,
                 slug: a.slug,
                 imageKey: imageKeyOf(a.id),
+                imageUrl: cdnUrl(imageKeyOf(a.id)),
                 minPrice: 1000,
                 maxPrice: 1500,
                 inStock: true,

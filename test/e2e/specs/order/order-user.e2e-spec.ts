@@ -28,6 +28,7 @@ import {
     shippingFeeFor,
     statusesOf,
 } from './order-test.util'
+import {cdnUrl} from "../../../util/fake-file-storage";
 
 describe('Orders: my orders (e2e)', () => {
     let ctx: TestContext
@@ -79,6 +80,7 @@ describe('Orders: my orders (e2e)', () => {
                 total: 1000 + shippingFeeFor(1000),
                 currency: second.currency,
                 previewImageKey: imageKeyOf(p.id),
+                previewImageUrl: cdnUrl(imageKeyOf(p.id)),
                 createdAt: second.createdAt,
                 paidAt: null,
             })

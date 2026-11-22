@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common'
+import {Module} from '@nestjs/common'
 
-import { ProductModule } from '@api/product/product.module'
-import { DatabaseModule } from '@common/db'
+import {ProductModule} from '@api/product/product.module'
+import {DatabaseModule} from '@common/db'
 import {
     CART_PRICING_SERVICE,
     CART_REPOSITORY,
@@ -17,20 +17,22 @@ import {
     DiscountPricingService,
     ProductVariantCatalog,
 } from './infrastructure'
-import { CartController } from './presentation'
+import {CartController} from './presentation'
 import {SessionModule} from "@api/session";
 import {DiscountModule} from "@api/discount/discount.module";
+import {FilesModule} from "@common/files";
 
 @Module({
-    imports: [DatabaseModule, SessionModule, ProductModule,DiscountModule],
+    imports: [DatabaseModule, SessionModule, FilesModule, ProductModule, DiscountModule],
     controllers: [CartController],
     providers: [
-        { provide: CART_REPOSITORY, useClass: CartRepository },
-        { provide: CART_VARIANT_CATALOG, useClass: ProductVariantCatalog },
-        { provide: CART_PRICING_SERVICE, useClass: DiscountPricingService },
+        {provide: CART_REPOSITORY, useClass: CartRepository},
+        {provide: CART_VARIANT_CATALOG, useClass: ProductVariantCatalog},
+        {provide: CART_PRICING_SERVICE, useClass: DiscountPricingService},
         ...CartUserUseCaseProviders,
         ...CartSystemUseCaseProviders,
     ],
     exports: [GET_CHECKOUT_CART, CLEAR_CART_AFTER_ORDER],
 })
-export class CartModule {}
+export class CartModule {
+}

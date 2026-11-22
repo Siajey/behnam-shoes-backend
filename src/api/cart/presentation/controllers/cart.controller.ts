@@ -5,7 +5,7 @@ import {User} from '@api/users/domain'
 import {ReqUser} from '@common/decorator'
 import {
     ADD_CART_ITEM, APPLY_CART_COUPON,
-    CLEAR_CART,
+    CLEAR_CART, FILE_STORAGE,
     GET_CART,
     MERGE_CART, REMOVE_CART_COUPON,
     REMOVE_CART_ITEM,
@@ -32,6 +32,7 @@ import {
     SetCartItemQuantitySchema,
 } from '../dtos'
 import {CartPresenter} from '../presenters'
+import {IFileStorage} from "@common/storage";
 
 const variantIdPipe = new ZodValidationPipe(uuidSchema)
 
@@ -47,8 +48,12 @@ export default class CartController {
         @Inject(MERGE_CART) private readonly mergeCart: IMergeCart,
         @Inject(APPLY_CART_COUPON) private readonly applyCoupon: IApplyCartCoupon,
         @Inject(REMOVE_CART_COUPON) private readonly removeCoupon: IRemoveCartCoupon,
+        @Inject(FILE_STORAGE) private readonly storage: IFileStorage,
     ) {
     }
+
+    private readonly urlOf = (key: string): string => this.storage.publicUrl(key)
+
 
     @Get()
     async getController(@ReqUser() user: User) {
@@ -56,7 +61,7 @@ export default class CartController {
             messageObj: {message: 'common.cart.getSuccess'},
             code: 'CART_GET_SUCCESS',
             path: '/cart',
-            data: CartPresenter.toResponse(await this.getCart.execute(user.id)),
+            data: CartPresenter.toResponse(await this.getCart.execute(user.id),this.urlOf),
         })
     }
 
@@ -70,7 +75,7 @@ export default class CartController {
             messageObj: {message: 'common.cart.addItemSuccess'},
             code: 'CART_ADD_ITEM_SUCCESS',
             path: '/cart/items',
-            data: CartPresenter.toResponse(view),
+            data: CartPresenter.toResponse(view,this.urlOf),
         })
     }
 
@@ -85,7 +90,7 @@ export default class CartController {
             messageObj: {message: 'common.cart.updateItemSuccess'},
             code: 'CART_UPDATE_ITEM_SUCCESS',
             path: `/cart/items/${variantId}`,
-            data: CartPresenter.toResponse(view),
+            data: CartPresenter.toResponse(view,this.urlOf),
         })
     }
 
@@ -99,7 +104,7 @@ export default class CartController {
             messageObj: {message: 'common.cart.removeItemSuccess'},
             code: 'CART_REMOVE_ITEM_SUCCESS',
             path: `/cart/items/${variantId}`,
-            data: CartPresenter.toResponse(view),
+            data: CartPresenter.toResponse(view,this.urlOf),
         })
     }
 
@@ -109,7 +114,7 @@ export default class CartController {
             messageObj: {message: 'common.cart.clearSuccess'},
             code: 'CART_CLEAR_SUCCESS',
             path: '/cart',
-            data: CartPresenter.toResponse(await this.clearCart.execute(user.id)),
+            data: CartPresenter.toResponse(await this.clearCart.execute(user.id),this.urlOf),
         })
     }
 
@@ -124,7 +129,7 @@ export default class CartController {
             code: 'CART_MERGE_SUCCESS',
             path: '/cart/merge',
             data: {
-                cart: CartPresenter.toResponse(result.cart),
+                cart: CartPresenter.toResponse(result.cart,this.urlOf),
                 skippedVariantIds: result.skippedVariantIds,
             },
         })
@@ -141,7 +146,7 @@ export default class CartController {
             messageObj: {message: 'common.cart.applyCouponSuccess'},
             code: 'CART_APPLY_COUPON_SUCCESS',
             path: '/cart/coupon',
-            data: CartPresenter.toResponse(view),
+            data: CartPresenter.toResponse(view,this.urlOf),
         })
     }
 
@@ -151,7 +156,7 @@ export default class CartController {
             messageObj: {message: 'common.cart.removeCouponSuccess'},
             code: 'CART_REMOVE_COUPON_SUCCESS',
             path: '/cart/coupon',
-            data: CartPresenter.toResponse(await this.removeCoupon.execute(user.id)),
+            data: CartPresenter.toResponse(await this.removeCoupon.execute(user.id),this.urlOf),
         })
     }
 }
