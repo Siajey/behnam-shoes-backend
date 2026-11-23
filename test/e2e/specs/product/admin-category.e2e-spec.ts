@@ -13,12 +13,12 @@ import {
     sleep,
     slug,
     uid,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createCategory,
     createProduct, stubUploaded,
 } from './product-test.util'
-import {cdnUrl} from "../../../util/fake-file-storage";
+import {cdnUrl} from "../../util/fake-file-storage";
 
 describe('Admin categories (e2e)', () => {
     let ctx: TestContext

@@ -14,10 +14,11 @@ import {
 } from '@common/security'
 import {IUserRepository} from '@api/users/domain'
 import {UserRepository} from '@api/users/infrastructure'
-import {CONFIG_PROVIDER, FILE_STORAGE, S3_CLIENT, USER_REPOSITORY} from '@common/di'
+import {CONFIG_PROVIDER, FILE_STORAGE, PAYMENT_GATEWAYS, S3_CLIENT, USER_REPOSITORY} from '@common/di'
 import {NestConfigProvider} from '@common/configuration'
 import {AppModule} from "../../../src/app.module";
-import {fakeFileStorage} from "../../util/fake-file-storage";
+import {fakeFileStorage} from "../util/fake-file-storage";
+import {fakePaymentGateway} from "../util/fake-payment-gateway";
 
 export type TestContext = {
     app: NestFastifyApplication
@@ -34,6 +35,7 @@ export const testContextE2e = async (): Promise<TestContext> => {
     })
         .overrideProvider(S3_CLIENT).useValue({})
         .overrideProvider(FILE_STORAGE).useValue(fakeFileStorage)
+        .overrideProvider(PAYMENT_GATEWAYS).useValue([fakePaymentGateway])
         .compile()
 
 

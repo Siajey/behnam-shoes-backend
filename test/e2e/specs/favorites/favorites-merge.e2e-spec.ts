@@ -3,7 +3,7 @@ import {beforeAll, beforeEach, describe, expect, it} from '@jest/globals'
 import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, UserSession, createUserSession, expectOk, expectValidationError, randomId, sleep} from '../../../util/test.util'
+import {Api, UserSession, createUserSession, expectOk, expectValidationError, randomId, sleep} from '../../util/test.util'
 import {createPublishedProduct, unpublishProduct} from '../product/product-test.util'
 import {
     favoriteIds,

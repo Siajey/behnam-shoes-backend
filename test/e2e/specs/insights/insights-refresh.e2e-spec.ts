@@ -14,7 +14,7 @@ import {
     createUserSession,
     expectOk,
     withNowPlus,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {createPublishedProduct} from '../product/product-test.util'
 import {Customer, adminStatus, createCustomer, fillCart, orderSystemUseCases, placeOk} from '../order/order-test.util'
 import {putFavorite} from '../favorites/favorites-test.util'

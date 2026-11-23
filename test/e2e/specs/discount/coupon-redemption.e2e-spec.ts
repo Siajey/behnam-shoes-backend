@@ -3,7 +3,7 @@ import {beforeAll, describe, expect, it} from '@jest/globals'
 import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, UserSession, createUserSession, expectError, randomId} from '../../../util/test.util'
+import {Api, UserSession, createUserSession, expectError, randomId} from '../../util/test.util'
 import {createCoupon, discountUseCases} from './discount-test.util'
 
 describe('Coupon redemptions (e2e)', () => {

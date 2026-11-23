@@ -11,7 +11,7 @@ import {
     expectOk,
     expectValidationError,
     randomId,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createAttribute,
     createCategory,

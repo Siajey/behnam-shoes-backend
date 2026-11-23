@@ -7,7 +7,7 @@ import { IUserRepository, User, UserRole, UserStatus } from '@api/users/domain'
 import { SESSION_CACHE_SERVICE } from '@common/di'
 import { NotFoundError } from '@common/errors'
 import { SessionCacheService } from '@api/session/application'
-import { createUser, loginWithOtp, newPhone } from '../../util/test.util'
+import { createUser, loginWithOtp, newPhone } from '../util/test.util'
 
 describe('UserController (e2e)', () => {
     let ctx: TestContext

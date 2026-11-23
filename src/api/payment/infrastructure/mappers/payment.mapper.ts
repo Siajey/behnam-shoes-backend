@@ -5,11 +5,22 @@ import {payments} from '../models'
 export class PaymentMapper {
     static toDomain(row: typeof payments.$inferSelect): Payment {
         return Payment.restore({
-            id: row.id, orderId: row.orderId, userId: row.userId, gateway: row.gateway, amount: row.amount,
-            currency: row.currency, status: row.status, reference: row.reference, trackingCode: row.trackingCode,
-            cardMask: row.cardMask, failureReason: row.failureReason, paidAt: row.paidAt ? new Date(row.paidAt) : null,
-            orderConfirmedAt: row.orderConfirmedAt ? new Date(row.orderConfirmedAt) : null, version: row.version,
-            createdAt: new Date(row.createdAt), updatedAt: new Date(row.updatedAt)
+            id: row.id,
+            orderId: row.orderId,
+            userId: row.userId,
+            gateway: row.gateway,
+            amount: row.amount,
+            currency: row.currency,
+            status: row.status,
+            reference: row.reference,
+            trackingCode: row.trackingCode,
+            cardMask: row.cardMask,
+            failureReason: row.failureReason,
+            paidAt: row.paidAt ? new Date(row.paidAt) : null,
+            orderConfirmedAt: row.orderConfirmedAt ? new Date(row.orderConfirmedAt) : null,
+            version: row.version,
+            createdAt: new Date(row.createdAt),
+            updatedAt: new Date(row.updatedAt)
         })
     }
 

@@ -3,7 +3,7 @@ import {NestFastifyApplication} from '@nestjs/platform-fastify'
 import {IUserRepository, User, UserRole, UserStatus} from '@api/users/domain'
 import {deserializeCookies} from '@common/util'
 
-import type {TestContext} from '../e2e/specs/test-context.e2e'
+import type {TestContext} from '../specs/test-context.e2e'
 import {Api, Session} from './api.util'
 
 export const OTP = '123456'

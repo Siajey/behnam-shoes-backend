@@ -10,7 +10,7 @@ import {
     expectValidationError,
     randomId,
     UserSession,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     archiveProduct,
     createDraftProduct,

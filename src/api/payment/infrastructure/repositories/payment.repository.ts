@@ -27,24 +27,31 @@ export class PaymentRepository implements IPaymentRepository {
     }
 
     async create(payment: Payment): Promise<void> {
-        await this.db.insert(schema.payments).values(PaymentMapper.toPersistence(payment))
+        const row = PaymentMapper.toPersistence(payment)
+        await this.db.insert(schema.payments).values(row)
+        payment.markPersisted(row.version)
     }
 
     async save(payment: Payment): Promise<void> {
         const row = PaymentMapper.toPersistence(payment)
-        const updated = await this.db.update(schema.payments).set({
-            status: row.status,
-            reference: row.reference,
-            trackingCode: row.trackingCode,
-            cardMask: row.cardMask,
-            failureReason: row.failureReason,
-            paidAt: row.paidAt,
-            orderConfirmedAt: row.orderConfirmedAt,
-            version: row.version,
-            updatedAt: row.updatedAt
-        })
-            .where(and(eq(schema.payments.id, payment.id), eq(schema.payments.version, payment.version))).returning({id: schema.payments.id})
+        const updated = await this.db
+            .update(schema.payments)
+            .set({
+                status: row.status,
+                reference: row.reference,
+                trackingCode: row.trackingCode,
+                cardMask: row.cardMask,
+                failureReason: row.failureReason,
+                paidAt: row.paidAt,
+                orderConfirmedAt: row.orderConfirmedAt,
+                version: row.version,
+                updatedAt: row.updatedAt,
+            })
+            .where(and(eq(schema.payments.id, payment.id), eq(schema.payments.version, payment.version)))
+            .returning({id: schema.payments.id})
+
         if (!updated.length) throw new PaymentVersionConflictError()
+        payment.markPersisted(row.version)
     }
 
     async findRedirectedBefore(before: Date, limit: number): Promise<Payment[]> {

@@ -66,13 +66,16 @@ export default class PaymentController {
     private async finishCallback(gateway: string, params: Record<string, string>, reply: FastifyReply) {
         try {
             const outcome = await this.handleCallback.execute({gateway, params})
-            return reply.redirect(this.resultUrl({
+            const url = this.resultUrl({
                 status: outcome.status === 'paid' ? 'paid' : outcome.status === 'redirected' ? 'pending' : 'failed',
                 orderId: outcome.orderId,
-                paymentId: outcome.paymentId
-            }))
+                paymentId: outcome.paymentId,
+            })
+            return reply.code(302).redirect(url)
         } catch (error) {
-            if (error instanceof PaymentNotFoundError || error instanceof PaymentGatewayNotSupportedError) return reply.redirect(this.resultUrl({status: 'invalid'}))
+            if (error instanceof PaymentNotFoundError || error instanceof PaymentGatewayNotSupportedError) {
+                return reply.code(302).redirect(this.resultUrl({status: 'invalid'}))
+            }
             throw error
         }
     }

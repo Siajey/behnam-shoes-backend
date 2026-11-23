@@ -12,7 +12,7 @@ import {
     qs,
     sleep,
     walkPages,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     changeVariant,
     createCategory,
@@ -30,7 +30,7 @@ import {
     resetFavorites,
     storedFavorites,
 } from './favorites-test.util'
-import {cdnUrl} from "../../../util/fake-file-storage";
+import {cdnUrl} from "../../util/fake-file-storage";
 
 describe('Favorites: list and ids (e2e)', () => {
     let ctx: TestContext

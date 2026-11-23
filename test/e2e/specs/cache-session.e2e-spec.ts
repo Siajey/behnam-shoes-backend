@@ -6,7 +6,7 @@ import {TestContext, testContextE2e} from './test-context.e2e'
 import {SESSION_CACHE_SERVICE} from '@common/di'
 import {SessionCacheService} from '@api/session/application'
 import {IUserRepository, User, UserRole, UserStatus} from '@api/users/domain'
-import {createUser, loginWithOtp, requestOtp, verifyOtp, WRONG_OTP} from "../../util/test.util";
+import {createUser, loginWithOtp, requestOtp, verifyOtp, WRONG_OTP} from "../util/test.util";
 
 describe('Session cache (e2e)', () => {
     let ctx: TestContext

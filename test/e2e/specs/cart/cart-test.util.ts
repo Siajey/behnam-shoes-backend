@@ -4,7 +4,7 @@ import {expect} from '@jest/globals'
 import {IClearCartAfterOrder, IGetCheckoutCart} from '@api/cart/application'
 import {CLEAR_CART_AFTER_ORDER, GET_CHECKOUT_CART} from '@common/di'
 
-import {Api} from '../../../util/test.util'
+import {Api} from '../../util/test.util'
 
 /* Cart-only helpers. Shared helpers (Api, sessions, assertions, ids) live in test/util/test.util,
  * catalog helpers (published products, variants, changeVariant) in ../product/product-test.util. */

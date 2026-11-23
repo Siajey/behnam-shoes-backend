@@ -15,8 +15,8 @@ import {
     VARIANT_REPOSITORY,
 } from '@common/di'
 
-import {Api, slug, uid} from '../../../util/test.util'
-import {cdnUrl, fakeFileStorage} from '../../../util/fake-file-storage'
+import {Api, slug, uid} from '../../util/test.util'
+import {cdnUrl, fakeFileStorage} from '../../util/fake-file-storage'
 
 /** Maps an `options` array to {name: sortedValues} so assertions do not depend on DB ordering. */
 export const optionMap = (options: { name: string; values: string[] }[]) =>

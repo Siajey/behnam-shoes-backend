@@ -14,7 +14,7 @@ import {
     expectValidationError,
     randomId,
     uid,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {changeVariant, createBrand, createCategory, createPublishedProduct} from '../product/product-test.util'
 import {
     DAY,

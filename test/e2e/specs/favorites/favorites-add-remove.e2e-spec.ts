@@ -12,7 +12,7 @@ import {
     expectValidationError,
     randomId,
     sleep,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {archiveProduct, createDraftProduct, createPublishedProduct, unpublishProduct} from '../product/product-test.util'
 import {favoriteIds, fillFavorites, listFavorites, putFavorite, resetFavorites, storedFavorites} from './favorites-test.util'
 

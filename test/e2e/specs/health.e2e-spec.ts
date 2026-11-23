@@ -6,7 +6,7 @@ import {TestContext, testContextE2e} from './test-context.e2e'
 import {IUserRepository, UserRole} from '@api/users/domain'
 import {USER_REPOSITORY} from '@common/di'
 import {DatabaseHealthIndicator} from '@api/health/presentation'
-import {createUser, loginWithOtp} from '../../util/test.util'
+import {createUser, loginWithOtp} from '../util/test.util'
 
 describe('HealthController (e2e)', () => {
     let ctx: TestContext

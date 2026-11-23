@@ -10,7 +10,7 @@ import {
     UserRole,
     UserStatus,
 } from '@api/users/domain'
-import {createUser, loginWithOtp, newPhone} from '../../util/test.util'
+import {createUser, loginWithOtp, newPhone} from '../util/test.util'
 import {PROFILE_REPOSITORY} from '@common/di'
 
 describe('ProfileController (e2e)', () => {

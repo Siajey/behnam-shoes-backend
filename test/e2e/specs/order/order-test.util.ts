@@ -15,7 +15,7 @@ import {
 } from '@common/di'
 
 import {TestContext} from '../test-context.e2e'
-import {Api, UserSession, createUserSession, uid} from '../../../util/test.util'
+import {Api, UserSession, createUserSession, uid} from '../../util/test.util'
 import {putInCart} from '../cart/cart-test.util'
 
 /* Order-only helpers. Shared helpers live in test/util/test.util; catalog, cart and discount helpers

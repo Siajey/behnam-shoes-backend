@@ -10,7 +10,7 @@ import {
     createUserSession, Method,
     randomId,
     UserSession,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createPublishedProduct,
 } from '../product/product-test.util'

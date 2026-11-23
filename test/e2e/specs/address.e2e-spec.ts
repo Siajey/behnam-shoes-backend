@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from '@jest/globals'
 
 import { TestContext, testContextE2e } from './test-context.e2e'
 import { IUserRepository, UserRole, UserStatus } from '@api/users/domain'
-import { createUser, loginWithOtp, newPhone } from '../../util/test.util'
+import { createUser, loginWithOtp, newPhone } from '../util/test.util'
 
 describe('AddressController (e2e)', () => {
     let ctx: TestContext

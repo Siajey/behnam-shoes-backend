@@ -6,7 +6,7 @@ import {IUserRepository, User} from '@api/users/domain'
 import {deserializeCookies} from '@common/util'
 import {ITokenService, JwtTokenService} from '@common/security'
 import {JWT_TOKEN_SERVICE} from '@common/di'
-import {createUser, loginWithOtp} from "../../util/test.util";
+import {createUser, loginWithOtp} from "../util/test.util";
 
 describe('Secret Rotation (e2e)', () => {
     let ctx: TestContext

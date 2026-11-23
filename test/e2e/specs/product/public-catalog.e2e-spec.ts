@@ -19,7 +19,7 @@ import {
     sleep,
     uid,
     walkPages,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createBrand,
     createCategory,
@@ -28,7 +28,7 @@ import {
     galleryImages,
     optionMap,
 } from './product-test.util'
-import {cdnUrl} from "../../../util/fake-file-storage";
+import {cdnUrl} from "../../util/fake-file-storage";
 
 describe('Public catalog: list, search, detail (e2e)', () => {
     let ctx: TestContext

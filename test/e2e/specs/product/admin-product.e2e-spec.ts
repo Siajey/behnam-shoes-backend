@@ -19,7 +19,7 @@ import {
     slug,
     uid,
     walkPages,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createBrand,
     createCategory,
@@ -30,7 +30,7 @@ import {
     setGallery,
     shoeBody, stubUploaded,
 } from './product-test.util'
-import {cdnUrl} from "../../../util/fake-file-storage";
+import {cdnUrl} from "../../util/fake-file-storage";
 
 describe('Admin products: create, update, gallery (e2e)', () => {
     let ctx: TestContext

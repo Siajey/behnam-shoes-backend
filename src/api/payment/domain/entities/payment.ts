@@ -165,6 +165,10 @@ export class Payment {
         this.props.updatedAt = this.props.orderConfirmedAt
     }
 
+    markPersisted(nextVersion?: number): void {
+        this.props.version = nextVersion ?? this.props.version + 1
+    }
+
     private transition(to: PaymentStatus): void {
         if (!ALLOWED_TRANSITIONS[this.props.status].includes(to)) throw new InvalidPaymentStatusTransitionError(this.props.status, to)
         this.props.status = to;

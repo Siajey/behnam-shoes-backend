@@ -11,7 +11,7 @@ import {
     expectValidationError,
     randomId,
     sleep,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {changeVariant, createPublishedProduct, imageKeyOf} from '../product/product-test.util'
 import {getCart} from '../cart/cart-test.util'
 import {createCoupon, discountTracker, scope} from '../discount/discount-test.util'
@@ -28,7 +28,7 @@ import {
     placeOrder,
     shippingFeeFor,
 } from './order-test.util'
-import {cdnUrl} from "../../../util/fake-file-storage";
+import {cdnUrl} from "../../util/fake-file-storage";
 
 describe('Orders: placing an order (e2e)', () => {
     let ctx: TestContext

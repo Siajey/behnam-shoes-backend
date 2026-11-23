@@ -3,7 +3,7 @@ import {beforeAll, describe, expect, it} from '@jest/globals'
 import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, anonymousApi, apiWithoutCsrf, createUserSession, randomId, UserSession} from '../../../util/test.util'
+import {Api, anonymousApi, apiWithoutCsrf, createUserSession, randomId, UserSession} from '../../util/test.util'
 import {ALL, couponBody, createCoupon, createDiscount, discountBody} from './discount-test.util'
 
 const REJECTED = [401, 403]

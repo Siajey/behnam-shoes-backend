@@ -4,7 +4,7 @@ import {beforeAll, describe, expect, it} from '@jest/globals'
 import {TestContext, testContextE2e} from './test-context.e2e'
 import {IUserRepository} from '@api/users/domain'
 import {deserializeCookies} from '@common/util'
-import {createUser, loginWithOtp, newPhone, requestOtp, verifyOtp} from "../../util/test.util"
+import {createUser, loginWithOtp, newPhone, requestOtp, verifyOtp} from "../util/test.util"
 
 const OTP = '123456'
 const WRONG_OTP = '00000'

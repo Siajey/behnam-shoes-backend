@@ -9,7 +9,7 @@ import {
     expectError,
     expectValidationError,
     UserSession,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createPublishedProduct,
     VariantSeed,
