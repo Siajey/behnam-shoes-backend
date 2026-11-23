@@ -17,7 +17,7 @@ import {
     sleep,
     uid,
     walkPages,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createBrand,
     createCategory,

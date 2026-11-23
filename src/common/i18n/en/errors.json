@@ -83,14 +83,14 @@
     "invalidStatusTransition": "The product status cannot be changed from \"{from}\" to \"{to}\".",
     "tooManyImages": "The product cannot have more than {max} images."
   },
-    "attribute": {
-      "notFound": "Attribute definition not found.",
-      "keyAlreadyExists": "An attribute with key \"{key}\" already exists.",
-      "invalidDefinition": "The attribute definition is invalid ({reason}).",
-      "invalidValue": "Invalid value for attribute \"{key}\" ({reason}).",
-      "inUse": "This attribute is currently in use by one or more products and cannot be deleted.",
-      "optionInUse": "Attribute options ({optionIds}) are currently in use by products and cannot be removed."
-    },
+  "attribute": {
+    "notFound": "Attribute definition not found.",
+    "keyAlreadyExists": "An attribute with key \"{key}\" already exists.",
+    "invalidDefinition": "The attribute definition is invalid ({reason}).",
+    "invalidValue": "Invalid value for attribute \"{key}\" ({reason}).",
+    "inUse": "This attribute is currently in use by one or more products and cannot be deleted.",
+    "optionInUse": "Attribute options ({optionIds}) are currently in use by products and cannot be removed."
+  },
   "variant": {
     "alreadyAssigned": "The following variants are already assigned to another product: {variantIds}.",
     "invalidAttributes": "The product variant attributes are invalid.",
@@ -149,5 +149,12 @@
   },
   "insights": {
     "refreshInProgress": "A product stats refresh is already in progress. Please try again later."
+  },
+  "payment": {
+    "notFound": "The payment was not found.",
+    "invalidStatusTransition": "This payment status transition is not allowed.",
+    "versionConflict": "The payment was updated by another request. Please retry.",
+    "gatewayFailed": "The payment gateway could not be reached or returned an unexpected response.",
+    "gatewayNotSupported": "The requested payment gateway or currency is not supported."
   }
 }

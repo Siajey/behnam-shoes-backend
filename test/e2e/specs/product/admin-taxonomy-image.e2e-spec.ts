@@ -13,8 +13,8 @@ import {
     expectValidationError,
     slug,
     uid,
-} from '../../../util/test.util'
-import {cdnUrl, fakeFileStorage} from '../../../util/fake-file-storage'
+} from '../../util/test.util'
+import {cdnUrl, fakeFileStorage} from '../../util/fake-file-storage'
 import {createBrand, createCategory, createPublishedProduct, uploadTaxonomyImage} from './product-test.util'
 
 const MB = 1024 * 1024

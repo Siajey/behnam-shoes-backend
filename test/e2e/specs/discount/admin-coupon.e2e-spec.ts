@@ -15,7 +15,7 @@ import {
     sleep,
     uid,
     walkPages,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {ALL, DAY, couponBody, createCoupon, isoFromNow, scope} from './discount-test.util'
 
 describe('Admin coupons (e2e)', () => {

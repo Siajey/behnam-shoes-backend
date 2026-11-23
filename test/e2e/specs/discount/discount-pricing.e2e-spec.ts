@@ -3,7 +3,7 @@ import {afterEach, beforeAll, describe, expect, it} from '@jest/globals'
 import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, createSession, randomId} from '../../../util/test.util'
+import {Api, createSession, randomId} from '../../util/test.util'
 import {ALL, DAY, discountTracker, discountUseCases, isoFromNow, line, scope, TestLine} from './discount-test.util'
 
 describe('Pricing: product discounts (e2e)', () => {

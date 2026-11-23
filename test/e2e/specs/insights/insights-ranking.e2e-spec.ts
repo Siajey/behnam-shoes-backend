@@ -5,7 +5,7 @@ import {UserRole} from '@api/users/domain'
 import {REFRESH_PRODUCT_STATS} from '@common/di'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, UserSession, anonymousApi, createUserSession} from '../../../util/test.util'
+import {Api, UserSession, anonymousApi, createUserSession} from '../../util/test.util'
 import {createCategory, createPublishedProduct} from '../product/product-test.util'
 import {Customer, createCustomer, fillCart, orderSystemUseCases, placeOk} from '../order/order-test.util'
 import {mergeFavorites} from '../favorites/favorites-test.util'

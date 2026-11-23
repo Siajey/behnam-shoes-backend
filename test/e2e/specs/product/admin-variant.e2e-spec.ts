@@ -15,7 +15,7 @@ import {
     randomId,
     sleep,
     walkPages,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createBrand,
     createCategory,

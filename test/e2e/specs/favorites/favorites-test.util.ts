@@ -4,7 +4,7 @@ import {expect} from '@jest/globals'
 import {Favorite, IFavoriteRepository} from '@api/favorites/domain'
 import {FAVORITE_REPOSITORY} from '@common/di'
 
-import {Api, qs, randomId} from '../../../util/test.util'
+import {Api, qs, randomId} from '../../util/test.util'
 
 /* Favorites-only helpers. Shared helpers live in test/util/test.util, catalog helpers in ../product. */
 

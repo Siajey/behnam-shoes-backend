@@ -13,7 +13,7 @@ import {
     randomId,
     sleep,
     walkPages, withNowPlus,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {createPublishedProduct, imageKeyOf} from '../product/product-test.util'
 import {createCoupon} from '../discount/discount-test.util'
 import {
@@ -28,7 +28,7 @@ import {
     shippingFeeFor,
     statusesOf,
 } from './order-test.util'
-import {cdnUrl} from "../../../util/fake-file-storage";
+import {cdnUrl} from "../../util/fake-file-storage";
 
 describe('Orders: my orders (e2e)', () => {
     let ctx: TestContext

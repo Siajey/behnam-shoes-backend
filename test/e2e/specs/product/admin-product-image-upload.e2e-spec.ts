@@ -11,8 +11,8 @@ import {
     expectError,
     expectOk,
     expectValidationError,
-} from '../../../util/test.util'
-import {cdnUrl, fakeFileStorage} from '../../../util/fake-file-storage'
+} from '../../util/test.util'
+import {cdnUrl, fakeFileStorage} from '../../util/fake-file-storage'
 import {
     createCategory,
     createProduct,

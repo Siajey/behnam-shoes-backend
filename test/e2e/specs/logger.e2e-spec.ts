@@ -5,7 +5,7 @@ import { HttpStatus } from '@nestjs/common'
 import { TestContext, testContextE2e } from './test-context.e2e'
 import { IUserRepository, User, UserRole, UserStatus } from '@api/users/domain'
 import { LogMeta } from '@common/logger'
-import { createUser, loginWithOtp } from '../../util/test.util'
+import { createUser, loginWithOtp } from '../util/test.util'
 
 interface CapturedLog extends LogMeta {
   level: 'info' | 'warn' | 'error' | 'debug' | 'verbose'

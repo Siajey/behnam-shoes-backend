@@ -13,7 +13,7 @@ import {
     randomId,
     sleep,
     slug,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createCategory,
     createProduct,

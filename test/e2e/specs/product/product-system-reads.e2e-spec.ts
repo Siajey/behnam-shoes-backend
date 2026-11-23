@@ -5,7 +5,7 @@ import {UserRole} from '@api/users/domain'
 import {GET_PUBLISHED_PRODUCT_IDS, GET_PUBLISHED_PRODUCTS_BY_IDS} from '@common/di'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, createUserSession, randomId} from '../../../util/test.util'
+import {Api, createUserSession, randomId} from '../../util/test.util'
 import {archiveProduct, createCategory, createDraftProduct, createPublishedProduct, unpublishProduct} from './product-test.util'
 
 describe('Product system reads: published products by id (e2e)', () => {

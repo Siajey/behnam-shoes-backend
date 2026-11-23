@@ -5,7 +5,7 @@ import {UserRole} from '@api/users/domain'
 import {GET_PRODUCT_BY_ID, REPLACE_PRODUCT_STATS} from '@common/di'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, anonymousApi, createUserSession, qs, randomId, withNowPlus} from '../../../util/test.util'
+import {Api, anonymousApi, createUserSession, qs, randomId, withNowPlus} from '../../util/test.util'
 import {DAY, HOUR, discountTracker, isoFromNow, scope} from '../discount/discount-test.util'
 import {
     changeVariant,

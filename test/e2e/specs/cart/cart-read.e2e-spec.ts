@@ -9,7 +9,7 @@ import {
     expectOk,
     sleep,
     UserSession,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createPublishedProduct,
     imageKeyOf,
@@ -20,7 +20,7 @@ import {
     putInCart,
     variantIdsInCart,
 } from './cart-test.util'
-import {cdnUrl} from "../../../util/fake-file-storage";
+import {cdnUrl} from "../../util/fake-file-storage";
 
 describe('Cart: GET /cart (e2e)', () => {
     let ctx: TestContext
@@ -77,6 +77,7 @@ describe('Cart: GET /cart (e2e)', () => {
             imageKey: imageKeyOf(product.id),
             imageUrl: cdnUrl(imageKeyOf(product.id))
         }
+        console.log(res.json().data.items[0])
         expect(res.json().data).toEqual({
             items: [
                 {

@@ -26,6 +26,7 @@ export const DummyUser = new User({
     role: UserRole.USER,
     status: UserStatus.ACTIVE,
     createdAt: new Date(),
+    updatedAt: null
 })
 
 export const DummyUserWithProfile = new User({

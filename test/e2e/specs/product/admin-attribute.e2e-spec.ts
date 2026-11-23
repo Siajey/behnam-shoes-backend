@@ -15,7 +15,7 @@ import {
     randomId,
     sleep,
     uid,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {attributeBody, createAttribute, createProduct, opt, setAttributes} from './product-test.util'
 
 describe('Admin attributes: definitions (e2e)', () => {

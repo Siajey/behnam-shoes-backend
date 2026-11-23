@@ -14,7 +14,7 @@ import {
     RESERVE_COUPON,
 } from '@common/di'
 
-import {Api, randomId, uid} from '../../../util/test.util'
+import {Api, randomId, uid} from '../../util/test.util'
 
 /* Discount/coupon helpers. Shared helpers live in test/util/test.util. */
 

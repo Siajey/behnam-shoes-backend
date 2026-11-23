@@ -7,7 +7,7 @@ import {
     Api,
     createUserSession,
     UserSession,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     archiveProduct,
     changeVariant,

@@ -13,7 +13,7 @@ import {
     randomId,
     sleep,
     walkPages, withNowPlus,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {createPublishedProduct, imageKeyOf} from '../product/product-test.util'
 import {createCoupon} from '../discount/discount-test.util'
 import {

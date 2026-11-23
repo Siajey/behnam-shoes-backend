@@ -3,7 +3,7 @@ import {beforeAll, describe, expect, it} from '@jest/globals'
 import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, UserSession, anonymousApi, apiWithoutCsrf, createUserSession, randomId} from '../../../util/test.util'
+import {Api, UserSession, anonymousApi, apiWithoutCsrf, createUserSession, randomId} from '../../util/test.util'
 import {createPublishedProduct} from '../product/product-test.util'
 import {favoriteIds, putFavorite} from './favorites-test.util'
 

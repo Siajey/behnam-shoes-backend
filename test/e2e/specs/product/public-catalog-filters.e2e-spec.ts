@@ -12,14 +12,14 @@ import {
     qs,
     randomId,
     uid,
-} from '../../../util/test.util'
+} from '../../util/test.util'
 import {
     createBrand,
     createCategory,
     createDraftProduct,
     createPublishedProduct, stubUploaded,
 } from './product-test.util'
-import {cdnUrl} from "../../../util/fake-file-storage";
+import {cdnUrl} from "../../util/fake-file-storage";
 
 const byName = <T extends { name: string }>(items: T[]) => [...items].sort((a, b) => a.name.localeCompare(b.name))
 const byValue = <T extends { value: string }>(items: T[]) => [...items].sort((a, b) => a.value.localeCompare(b.value))
