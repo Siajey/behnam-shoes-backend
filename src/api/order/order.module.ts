@@ -1,6 +1,5 @@
 import {Module} from '@nestjs/common'
 
-import {AuthModule} from '@api/auth'
 import {CartModule} from '@api/cart/cart.module'
 import {DiscountModule} from '@api/discount/discount.module'
 import {ProductModule} from '@api/product/product.module'
@@ -35,6 +34,7 @@ import {
 } from './infrastructure'
 import {AdminOrderController, OrderController} from './presentation'
 import {FilesModule} from "@common/files";
+import {ShippingModule} from "@api/shipping/shipping.module";
 
 @Module({
     imports: [
@@ -45,6 +45,7 @@ import {FilesModule} from "@common/files";
         DiscountModule,
         ProductModule,
         UserModule,
+        ShippingModule
     ],
     controllers: [OrderController, AdminOrderController],
     providers: [

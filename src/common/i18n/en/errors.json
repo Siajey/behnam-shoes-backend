@@ -156,5 +156,14 @@
     "versionConflict": "The payment was updated by another request. Please retry.",
     "gatewayFailed": "The payment gateway could not be reached or returned an unexpected response.",
     "gatewayNotSupported": "The requested payment gateway or currency is not supported."
+  },
+  "shipping": {
+    "methodNotFound": "The requested shipping method was not found.",
+    "methodCodeAlreadyExists": "A shipping method with the code '{{code}}' already exists.",
+    "invalidMethod": "The selected shipping method is invalid: {{reason}}.",
+    "quoteUnavailable": "Shipping quote is currently unavailable for method '{{methodCode}}'.",
+    "invalidDestination": "The shipping destination is invalid. Please check the '{{field}}' field.",
+    "carrierNotSupported": "The shipping carrier '{{carrier}}' is not supported.",
+    "carrierFailed": "Failed to communicate with the shipping carrier '{{carrier}}' during the '{{stage}}' stage."
   }
 }

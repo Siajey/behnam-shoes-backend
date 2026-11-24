@@ -113,5 +113,13 @@
     "startSuccess": "پرداخت با موفقیت آغاز شد.",
     "getSuccess": "وضعیت پرداخت با موفقیت دریافت شد.",
     "listSuccess": "پرداخت‌های سفارش با موفقیت دریافت شدند."
+  },
+  "shipping": {
+    "methodListSuccess": "لیست روش‌های ارسال با موفقیت دریافت شد.",
+    "methodGetSuccess": "روش ارسال با موفقیت دریافت شد.",
+    "methodCreateSuccess": "روش ارسال با موفقیت ایجاد شد.",
+    "methodUpdateSuccess": "روش ارسال با موفقیت به‌روزرسانی شد.",
+    "methodDeleteSuccess": "روش ارسال با موفقیت حذف شد.",
+    "optionsSuccess": "گزینه‌های ارسال با موفقیت دریافت شد."
   }
 }
