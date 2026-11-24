@@ -21,7 +21,7 @@
     "test:cov": "jest --config test/e2e/jest-e2e.ts --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "NODE_OPTIONS=--experimental-vm-modules jest --config test/e2e/jest-e2e.ts --detectOpenHandles --runInBand",
-    "test:integration": "jest --config test/integration/jest-integration.ts --detectOpenHandles --runInBand",
+    "test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --config test/integration/jest-integration.ts --detectOpenHandles --runInBand",
     "test:unit": "jest --config test/unit/jest-unit.ts --detectOpenHandles",
     "migrate:prod": "NODE_ENV=production npx drizzle-kit migrate",
     "migrate:dev": "NODE_ENV=development npx drizzle-kit migrate",
