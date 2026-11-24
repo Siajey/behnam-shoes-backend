@@ -1,54 +1,8 @@
 import {afterAll, beforeAll, describe, expect, it, jest} from '@jest/globals'
 import {randomUUID} from 'node:crypto'
 
-jest.mock('@nestjs/common', () => ({
-    Catch: () => () => undefined,
-    Injectable: () => () => undefined,
-    Optional: () => () => undefined,
-    Inject: () => () => undefined,
-    Logger: class Logger {
-        log() {
-        }
-
-        error() {
-        }
-
-        warn() {
-        }
-
-        debug() {
-        }
-
-        verbose() {
-        }
-    },
-    HttpException: class HttpException extends Error {
-        constructor(
-            private readonly response: unknown,
-            private readonly status: number,
-        ) {
-            super(typeof response === 'string' ? response : JSON.stringify(response))
-        }
-
-        getStatus() {
-            return this.status
-        }
-
-        getResponse() {
-            return this.response
-        }
-    },
-    HttpStatus: {
-        BAD_REQUEST: 400,
-        NOT_FOUND: 404,
-        PAYLOAD_TOO_LARGE: 413,
-        UNSUPPORTED_MEDIA_TYPE: 415,
-        INTERNAL_SERVER_ERROR: 500,
-    },
-}))
-
 import {S3FileStorage} from '@common/files/infrastructure/s3-file-storage'
-import {FileNotFoundError, FileTooLargeError, FileTypeNotAllowedError, UploadPolicy} from '@common/storage'
+import {FileNotFoundError, FileTypeNotAllowedError, UploadPolicy} from '@common/storage'
 import {ILogger, LogMeta} from '@common/logger'
 import {DeleteObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 
