@@ -6,7 +6,7 @@ import {
     LIST_MY_ORDERS,
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
-    ORDER_REPOSITORY,
+    ORDER_REPOSITORY, ORDER_SHIPMENTS,
     ORDER_SHIPPING_DETAILS,
     ORDER_SHIPPING_QUOTES,
     ORDER_VARIANT_REFS,
@@ -21,7 +21,7 @@ export const OrderUserUseCaseProviders = [
         ORDER_SHIPPING_DETAILS, ORDER_SHIPPING_QUOTES, CONFIG_PROVIDER,
     ]),
     createProvider<ListMyOrdersUseCase>(LIST_MY_ORDERS, ListMyOrdersUseCase, [ORDER_REPOSITORY]),
-    createProvider<GetMyOrderUseCase>(GET_MY_ORDER, GetMyOrderUseCase, [ORDER_REPOSITORY]),
+    createProvider<GetMyOrderUseCase>(GET_MY_ORDER, GetMyOrderUseCase, [ORDER_REPOSITORY,ORDER_SHIPMENTS]),
     createProvider<CancelMyOrderUseCase>(CANCEL_MY_ORDER, CancelMyOrderUseCase, [
         ORDER_REPOSITORY, ORDER_PROMOTIONS,
     ]),

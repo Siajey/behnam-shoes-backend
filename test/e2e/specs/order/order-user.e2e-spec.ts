@@ -167,7 +167,7 @@ describe('Orders: my orders (e2e)', () => {
             const order = await getOrder(customer.api, placed.id)
 
             expect(order.status).toBe('shipped')
-            expect(order.shipment).toEqual({carrier: 'Post', trackingCode: 'TRK123'})
+            expect(order.shipment).toEqual({carrier: 'rate_table', trackingCode: 'TRK123'})
             expect(statusesOf(order.timeline)).toEqual(['pending_payment', 'paid', 'processing', 'shipped'])
             expect(order.timeline.find((e: any) => e.status === 'processing')).toMatchObject({note: 'Packing'})
             order.timeline.forEach((e: any) => expect(e).not.toHaveProperty('actorId')) // admin-only field

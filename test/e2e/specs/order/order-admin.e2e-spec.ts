@@ -263,8 +263,8 @@ describe('Orders: admin (e2e)', () => {
 
                 const res = await adminStatus(admin(), id, {action: 'ship', carrier: '  Chapar ', trackingCode: ' ABC123 '})
 
-                expect(res.json().data.shipment).toEqual({carrier: 'Chapar', trackingCode: 'ABC123'})
-                expect((await getAdminOrder(admin(), id)).shipment).toEqual({carrier: 'Chapar', trackingCode: 'ABC123'})
+                expect(res.json().data.shipment).toEqual({carrier: 'rate_table', trackingCode: 'ABC123'})
+                expect((await getAdminOrder(admin(), id)).shipment).toEqual({carrier: 'rate_table', trackingCode: 'ABC123'})
             })
 
             it('allows shipping without them', async () => {
@@ -281,7 +281,7 @@ describe('Orders: admin (e2e)', () => {
 
                 const order = (await customer.api.get(`/orders/${id}`)).json().data
 
-                expect(order.shipment).toEqual({carrier: 'Post', trackingCode: 'TRK-CUST'})
+                expect(order.shipment).toEqual({carrier: 'rate_table', trackingCode: 'TRK-CUST'})
             })
         })
 

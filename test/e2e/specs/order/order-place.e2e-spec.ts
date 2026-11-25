@@ -77,6 +77,7 @@ describe('Orders: placing an order (e2e)', () => {
                 previewImageUrl: cdnUrl(imageKeyOf(p.id)),
                 createdAt: expect.any(String),
                 paidAt: null,
+                tracking: null,
                 totals: {
                     subtotal: 2000,
                     productDiscountTotal: 0,

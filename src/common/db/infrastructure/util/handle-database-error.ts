@@ -14,6 +14,7 @@ enum PostgresErrorCode {
     CHECK_VIOLATION = '23514',
     INVALID_TEXT_REPRESENTATION = '22P02',
     UNDEFINED_TABLE = '42P01',
+    STRING_DATA_RIGHT_TRUNCATION = '22001',
 }
 
 interface PgErrorLike {
@@ -34,7 +35,6 @@ export const handleDatabaseError = (
     userId?: string,
 ): ApiResponse => {
     const pgError = extractPostgresError(err);
-
     if (!pgError) {
         logDatabaseError(logger, 'error', 'db.exception', err, undefined, userId);
         return internalErrorResponse(apiRes, i18n, lang);
@@ -81,6 +81,7 @@ export const handleDatabaseError = (
 
         case PostgresErrorCode.NOT_NULL_VIOLATION:
         case PostgresErrorCode.CHECK_VIOLATION:
+        case PostgresErrorCode.STRING_DATA_RIGHT_TRUNCATION:
         case PostgresErrorCode.INVALID_TEXT_REPRESENTATION: {
             logDatabaseError(logger, 'warn', 'db.constraint', err, pgError, userId);
 
