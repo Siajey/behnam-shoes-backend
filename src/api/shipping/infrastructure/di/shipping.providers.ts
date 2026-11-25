@@ -1,12 +1,20 @@
 import {
+    CONFIG_PROVIDER,
     CREATE_SHIPPING_METHOD,
     createProvider,
     DELETE_SHIPPING_METHOD,
     EDIT_SHIPPING_METHOD,
+    GET_SHIPMENTS_BY_ORDER_IDS,
     GET_SHIPPING_METHOD,
+    LIST_DELIVERED_ORDER_IDS,
     LIST_SHIPPING_METHODS,
     LIST_SHIPPING_OPTIONS,
+    POLL_SHIPMENTS,
     QUOTE_SHIPPING,
+    REFRESH_SHIPMENT,
+    REGISTER_SHIPMENT,
+    SHIPMENT_REPOSITORY,
+    SHIPMENT_TRACKER,
     SHIPPING_CARRIER_REGISTRY,
     SHIPPING_CHECKOUT_PARCELS,
     SHIPPING_DESTINATIONS,
@@ -21,10 +29,16 @@ import {
     CreateShippingMethodUseCase,
     DeleteShippingMethodUseCase,
     EditShippingMethodUseCase,
+    GetShipmentsByOrderIdsUseCase,
     GetShippingMethodUseCase,
+    ListDeliveredOrderIdsUseCase,
     ListShippingMethodsUseCase,
     ListShippingOptionsUseCase,
+    PollShipmentsUseCase,
     QuoteShippingUseCase,
+    RefreshShipmentUseCase,
+    RegisterShipmentUseCase,
+    ShipmentTracker,
     ShippingQuoter,
 } from '@api/shipping/application'
 
@@ -53,5 +67,24 @@ export const ShippingUseCaseProviders = [
     ]),
     createProvider<DeleteShippingMethodUseCase>(DELETE_SHIPPING_METHOD, DeleteShippingMethodUseCase, [
         SHIPPING_METHOD_REPOSITORY,
+    ]),
+
+    createProvider(SHIPMENT_TRACKER, ShipmentTracker, [
+        SHIPMENT_REPOSITORY, SHIPPING_CARRIER_REGISTRY, CONFIG_PROVIDER,
+    ]),
+    createProvider(REGISTER_SHIPMENT, RegisterShipmentUseCase, [
+        SHIPPING_METHOD_REPOSITORY, SHIPMENT_REPOSITORY, SHIPPING_CARRIER_REGISTRY,
+    ]),
+    createProvider(GET_SHIPMENTS_BY_ORDER_IDS, GetShipmentsByOrderIdsUseCase, [
+        SHIPMENT_REPOSITORY, SHIPPING_CARRIER_REGISTRY,
+    ]),
+    createProvider(LIST_DELIVERED_ORDER_IDS, ListDeliveredOrderIdsUseCase, [
+        SHIPMENT_REPOSITORY,
+    ]),
+    createProvider(REFRESH_SHIPMENT, RefreshShipmentUseCase, [
+        SHIPMENT_REPOSITORY, SHIPPING_CARRIER_REGISTRY, SHIPMENT_TRACKER,
+    ]),
+    createProvider(POLL_SHIPMENTS, PollShipmentsUseCase, [
+        SHIPMENT_REPOSITORY, SHIPPING_CARRIER_REGISTRY, SHIPMENT_TRACKER, CONFIG_PROVIDER,
     ]),
 ]

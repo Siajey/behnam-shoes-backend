@@ -16,7 +16,13 @@ export const FINAL_TRACKING_STATUSES: readonly TrackingStatus[] = ['delivered', 
 export const normalizeTrackingCode = (raw: string): string => toLatinDigits(raw).replace(/\s+/g, '')
 
 const RANK: Record<TrackingStatus, number> = {
-    created: 0, picked_up: 1, in_transit: 2, out_for_delivery: 3, delivered: 4, returned: 4, failed: 4,
+    created: 0,
+    picked_up: 1,
+    in_transit: 2,
+    out_for_delivery: 3,
+    delivered: 4,
+    returned: 4,
+    failed: 4,
 }
 
 export function advanceStatus(current: TrackingStatus, next: TrackingStatus): TrackingStatus {

@@ -16,7 +16,7 @@ import {
     ORDER_PROMOTIONS,
     ORDER_REPOSITORY, ORDER_SHIPMENTS,
     ORDER_SHIPPING_DETAILS, ORDER_SHIPPING_QUOTES,
-    ORDER_VARIANT_REFS,
+    ORDER_VARIANT_REFS, SYNC_SHIPMENT_STATUSES,
 } from '@common/di'
 
 import {
@@ -54,6 +54,7 @@ import {ShippingModule} from "@api/shipping/shipping.module";
         {provide: ORDER_SHIPPING_DETAILS, useClass: ProfileShippingDetails},
         {provide: ORDER_SHIPPING_QUOTES, useClass: ShippingModuleQuotes},
         { provide: ORDER_SHIPMENTS, useClass: ShippingModuleShipments },
+        {provide: SYNC_SHIPMENT_STATUSES, useClass: SyncShipmentStatusesJob},
         SyncShipmentStatusesJob,
         ...OrderUserUseCaseProviders,
         ...OrderAdminUseCaseProviders,

@@ -89,3 +89,4 @@ export class ShipmentVersionConflictError extends ConflictError {
         super({ message: 'errors.shipping.shipmentVersionConflict', code: 'SHIPMENT_VERSION_CONFLICT' })
     }
 }
+

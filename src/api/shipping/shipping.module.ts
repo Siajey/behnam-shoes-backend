@@ -6,7 +6,9 @@ import {UserModule} from '@api/users'
 import {SessionModule} from '@api/session'
 import {DatabaseModule} from '@common/db'
 import {
-    QUOTE_SHIPPING,
+    GET_SHIPMENTS_BY_ORDER_IDS, LIST_DELIVERED_ORDER_IDS,
+    QUOTE_SHIPPING, REGISTER_SHIPMENT,
+    SHIPMENT_REPOSITORY,
     SHIPPING_CARRIER_REGISTRY,
     SHIPPING_CARRIERS,
     SHIPPING_CHECKOUT_PARCELS,
@@ -24,18 +26,20 @@ import {
     ConfigShippingOrigin,
     InMemoryQuoteCache,
     IranPostCarrier,
+    PollShipmentsJob,
     ProfileShippingDestinations,
     RateTableCarrier,
+    ShipmentRepository,
     ShippingCarrierRegistry,
     ShippingMethodRepository,
     ShippingUseCaseProviders,
     TipaxCarrier,
 } from './infrastructure'
-import {AdminShippingMethodController, ShippingController} from './presentation'
+import {AdminShipmentController, AdminShippingMethodController, ShippingController} from './presentation'
 
 @Module({
     imports: [DatabaseModule, CartModule, UserModule, SessionModule, AuthModule],
-    controllers: [ShippingController, AdminShippingMethodController],
+    controllers: [ShippingController, AdminShippingMethodController, AdminShipmentController],
     providers: [
         RateTableCarrier,
         TipaxCarrier,
@@ -58,9 +62,11 @@ import {AdminShippingMethodController, ShippingController} from './presentation'
         {provide: SHIPPING_PARCEL_ESTIMATOR, useClass: ConfigParcelEstimator},
         {provide: SHIPPING_CHECKOUT_PARCELS, useClass: CartCheckoutParcels},
         {provide: SHIPPING_DESTINATIONS, useClass: ProfileShippingDestinations},
+        {provide: SHIPMENT_REPOSITORY, useClass: ShipmentRepository},
+        PollShipmentsJob,
         ...ShippingUseCaseProviders,
     ],
-    exports: [QUOTE_SHIPPING],
+    exports: [QUOTE_SHIPPING, REGISTER_SHIPMENT, GET_SHIPMENTS_BY_ORDER_IDS, LIST_DELIVERED_ORDER_IDS],
 })
 export class ShippingModule {
 }

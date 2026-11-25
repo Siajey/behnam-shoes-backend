@@ -1,1 +1,6 @@
 export { default as QuoteShippingUseCase } from './quote-shipping.usecase'
+export { default as GetShipmentsByOrderIdsUseCase } from './get-shipments-by-order-ids.usecase'
+export { default as ListDeliveredOrderIdsUseCase } from './list-delivered-order-ids.usecase'
+export { default as PollShipmentsUseCase } from './poll-shipments.usecase'
+export { default as RefreshShipmentUseCase } from './refresh-shipment.usecase'
+export { default as RegisterShipmentUseCase } from './register-shipment.usecase'
