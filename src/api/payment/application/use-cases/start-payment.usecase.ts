@@ -35,7 +35,7 @@ export default class StartPaymentUseCase implements IStartPayment {
             const target = await gateway.requestPayment({
                 paymentId: payment.id,
                 amount: payment.amount,
-                callbackUrl: `${base}/payments/callback/${gateway.name}`,
+                callbackUrl: `${base}/api/${this.config.get('API_VERSION')}/payments/callback/${gateway.name}`,
                 description: createPaymentDescription(order.orderNumber),
             })
 
