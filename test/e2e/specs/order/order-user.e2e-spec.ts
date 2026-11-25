@@ -25,10 +25,10 @@ import {
     getOrder,
     orderSystemUseCases,
     placeOk,
-    shippingFeeFor,
     statusesOf,
 } from './order-test.util'
 import {cdnUrl} from "../../util/fake-file-storage";
+import {ensureShippingMethods, rateFor} from "../shipping/shipping-test.util";
 
 describe('Orders: my orders (e2e)', () => {
     let ctx: TestContext
@@ -38,6 +38,7 @@ describe('Orders: my orders (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         admin = (await createUserSession(ctx, UserRole.ADMIN)).api
+        await ensureShippingMethods(admin)
         uc = orderSystemUseCases(ctx.app)
     })
 
@@ -77,7 +78,7 @@ describe('Orders: my orders (e2e)', () => {
                 orderNumber: second.orderNumber,
                 status: 'pending_payment',
                 itemCount: 1,
-                total: 1000 + shippingFeeFor(1000),
+                total: 1000 + rateFor('post',1),
                 currency: second.currency,
                 previewImageKey: imageKeyOf(p.id),
                 previewImageUrl: cdnUrl(imageKeyOf(p.id)),

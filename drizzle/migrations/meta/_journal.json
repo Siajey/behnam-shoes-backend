@@ -78,6 +78,20 @@
       "when": 1795462857664,
       "tag": "0010_slow_rogue",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795541691829,
+      "tag": "0011_rare_clea",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795598550683,
+      "tag": "0012_nosy_scarlet_witch",
+      "breakpoints": true
     }
   ]
 }

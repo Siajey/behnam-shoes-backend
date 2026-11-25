@@ -3,21 +3,14 @@ import {afterEach, beforeAll, describe, expect, it} from '@jest/globals'
 import {UserRole} from '@api/users/domain'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {
-    Api,
-    anonymousApi,
-    createUserSession,
-    expectValidationError,
-    randomId,
-    withNowPlus,
-    sleep
-} from '../../util/test.util'
+import {anonymousApi, Api, createUserSession, expectValidationError, randomId, withNowPlus} from '../../util/test.util'
 import {fakePaymentGateway as gateway, RESULT_URL} from '../../util/fake-payment-gateway'
 import {createPublishedProduct} from '../product/product-test.util'
 import {getCart} from '../cart/cart-test.util'
 import {createCoupon} from '../discount/discount-test.util'
-import {Customer, createCustomer, getOrder, orderSystemUseCases, statusesOf} from '../order/order-test.util'
+import {createCustomer, Customer, getOrder, orderSystemUseCases, statusesOf} from '../order/order-test.util'
 import {callbackGet, callbackPost, getPayment, orderFor, orderPayments, redirectOf, startOk} from './payment-test.util'
+import {ensureShippingMethods} from "../shipping/shipping-test.util";
 
 describe('Payments: gateway callback and confirmation (e2e)', () => {
     let ctx: TestContext
@@ -29,9 +22,15 @@ describe('Payments: gateway callback and confirmation (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         admin = (await createUserSession(ctx, UserRole.ADMIN)).api
+        await ensureShippingMethods(admin)
         customer = await createCustomer(ctx)
         orders = orderSystemUseCases(ctx.app)
-        variantId = (await createPublishedProduct(ctx.app, admin, {variants: [{price: 1000, stock: 100000}]})).variantIds[0]
+        variantId = (await createPublishedProduct(ctx.app, admin, {
+            variants: [{
+                price: 1000,
+                stock: 100000
+            }]
+        })).variantIds[0]
     })
 
     afterEach(() => gateway.reset())
@@ -61,7 +60,10 @@ describe('Payments: gateway callback and confirmation (e2e)', () => {
 
             await callbackGet(ctx.app, {trackId: reference})
 
-            expect(await getPayment(customer.api, paymentId)).toMatchObject({status: 'paid', paidAt: expect.any(String)})
+            expect(await getPayment(customer.api, paymentId)).toMatchObject({
+                status: 'paid',
+                paidAt: expect.any(String)
+            })
             expect((await orderPayments(admin, order.id))[0]).toMatchObject({
                 status: 'paid',
                 trackingCode: 'TRK-123',
@@ -100,7 +102,10 @@ describe('Payments: gateway callback and confirmation (e2e)', () => {
                 await customer.api.delete('/cart')
                 await customer.api.post('/cart/items', {variantId, quantity: 2})
                 await customer.api.put('/cart/coupon', {code: coupon.code})
-                const res = await customer.api.post('/orders', {addressId: customer.addressId}, {'idempotency-key': `key-${randomId()}`})
+                const res = await customer.api.post('/orders', {
+                    addressId: customer.addressId,
+                    shippingMethod: 'post'
+                }, {'idempotency-key': `key-${randomId()}`})
                 return res.json().data
             })()
             const {reference} = await startOk(customer, order.id)
@@ -195,7 +200,11 @@ describe('Payments: gateway callback and confirmation (e2e)', () => {
             const res = await callbackGet(ctx.app, {trackId: reference})
 
             expect(redirectOf(res).params).toEqual({status: 'failed', orderId: order.id, paymentId})
-            expect((await orderPayments(admin, order.id))[0]).toMatchObject({status: 'failed', failureReason: 'insufficient_funds', paidAt: null})
+            expect((await orderPayments(admin, order.id))[0]).toMatchObject({
+                status: 'failed',
+                failureReason: 'insufficient_funds',
+                paidAt: null
+            })
             expect(await orderStatus(order.id)).toBe('pending_payment')
         })
 
@@ -228,7 +237,10 @@ describe('Payments: gateway callback and confirmation (e2e)', () => {
             const res = await callbackGet(ctx.app, {trackId: reference})
 
             expect(redirectOf(res).params).toEqual({status: 'failed', orderId: order.id, paymentId})
-            expect((await orderPayments(admin, order.id))[0]).toMatchObject({status: 'failed', failureReason: 'amount_mismatch'})
+            expect((await orderPayments(admin, order.id))[0]).toMatchObject({
+                status: 'failed',
+                failureReason: 'amount_mismatch'
+            })
             expect(await orderStatus(order.id)).toBe('pending_payment')
         })
 
@@ -303,7 +315,7 @@ describe('Payments: gateway callback and confirmation (e2e)', () => {
             expect(redirectOf(res).params).toEqual({status: 'paid', orderId: order.id, paymentId})
             const detail = await getOrder(customer.api, order.id)
             expect(detail.status).toBe('paid')
-            expect(statusesOf(detail.timeline)).toEqual(['pending_payment', 'paid','expired'])
+            expect(statusesOf(detail.timeline)).toEqual(['pending_payment', 'paid', 'expired'])
         })
     })
 })

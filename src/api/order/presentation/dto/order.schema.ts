@@ -7,6 +7,7 @@ import {
 
 const invalid = { error: 'errors.validation.invalidFieldValue' }
 
+
 export const IdempotencyKeySchema = z
   .string({ error: 'errors.validation.requiredField' })
   .trim()
@@ -14,9 +15,11 @@ export const IdempotencyKeySchema = z
   .max(100, { error: 'errors.validation.maxLengthString' })
 
 export const PlaceOrderSchema = z.object({
-  addressId: uuidSchema,
-  expectedTotal: z.number(invalid).int(invalid).min(0, invalid).optional(),
+    addressId: uuidSchema,
+    shippingMethod: z.string().trim().regex(/^[a-z][a-z0-9_]{1,29}$/, invalid),
+    expectedTotal: z.number(invalid).int(invalid).min(0, invalid).optional(),
 })
+
 export type PlaceOrderBody = z.infer<typeof PlaceOrderSchema>
 
 export const ListMyOrdersQuerySchema = z.object({

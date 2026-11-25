@@ -7,20 +7,18 @@ import {
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
     ORDER_REPOSITORY,
-    ORDER_SHIPPING_CALCULATOR,
     ORDER_SHIPPING_DETAILS,
+    ORDER_SHIPPING_QUOTES,
     ORDER_VARIANT_REFS,
     PLACE_ORDER,
 } from '@common/di'
 
-import {
-    CancelMyOrderUseCase, GetMyOrderUseCase, ListMyOrdersUseCase, PlaceOrderUseCase,
-} from '@api/order/application'
+import {CancelMyOrderUseCase, GetMyOrderUseCase, ListMyOrdersUseCase, PlaceOrderUseCase,} from '@api/order/application'
 
 export const OrderUserUseCaseProviders = [
     createProvider<PlaceOrderUseCase>(PLACE_ORDER, PlaceOrderUseCase, [
         ORDER_REPOSITORY, ORDER_CART_GATEWAY, ORDER_PROMOTIONS, ORDER_VARIANT_REFS,
-        ORDER_SHIPPING_DETAILS, ORDER_SHIPPING_CALCULATOR, CONFIG_PROVIDER,
+        ORDER_SHIPPING_DETAILS, ORDER_SHIPPING_QUOTES, CONFIG_PROVIDER,
     ]),
     createProvider<ListMyOrdersUseCase>(LIST_MY_ORDERS, ListMyOrdersUseCase, [ORDER_REPOSITORY]),
     createProvider<GetMyOrderUseCase>(GET_MY_ORDER, GetMyOrderUseCase, [ORDER_REPOSITORY]),

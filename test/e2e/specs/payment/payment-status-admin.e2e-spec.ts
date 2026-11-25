@@ -18,6 +18,7 @@ import {fakePaymentGateway as gateway} from '../../util/fake-payment-gateway'
 import {createPublishedProduct} from '../product/product-test.util'
 import {CURRENCY, Customer, createCustomer} from '../order/order-test.util'
 import {callbackGet, orderFor, orderPayments, startOk} from './payment-test.util'
+import {ensureShippingMethods} from "../shipping/shipping-test.util";
 
 describe('Payments: status and admin list (e2e)', () => {
     let ctx: TestContext
@@ -30,6 +31,7 @@ describe('Payments: status and admin list (e2e)', () => {
         ctx = await testContextE2e()
         adminSession = await createUserSession(ctx, UserRole.ADMIN)
         admin = adminSession.api
+        await ensureShippingMethods(admin)
         customer = await createCustomer(ctx)
         variantId = (await createPublishedProduct(ctx.app, admin, {variants: [{price: 1000, stock: 100000}]})).variantIds[0]
     })

@@ -15,14 +15,12 @@ import {
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
     ORDER_REPOSITORY,
-    ORDER_SHIPPING_CALCULATOR,
-    ORDER_SHIPPING_DETAILS,
+    ORDER_SHIPPING_DETAILS, ORDER_SHIPPING_QUOTES,
     ORDER_VARIANT_REFS,
 } from '@common/di'
 
 import {
     CartCheckoutGateway,
-    ConfigShippingCalculator,
     DiscountPromotions,
     ExpireUnpaidOrdersJob,
     OrderAdminUseCaseProviders,
@@ -30,7 +28,7 @@ import {
     OrderSystemUseCaseProviders,
     OrderUserUseCaseProviders,
     ProductVariantRefs,
-    ProfileShippingDetails,
+    ProfileShippingDetails, ShippingModuleQuotes,
 } from './infrastructure'
 import {AdminOrderController, OrderController} from './presentation'
 import {FilesModule} from "@common/files";
@@ -54,7 +52,7 @@ import {ShippingModule} from "@api/shipping/shipping.module";
         {provide: ORDER_PROMOTIONS, useClass: DiscountPromotions},
         {provide: ORDER_VARIANT_REFS, useClass: ProductVariantRefs},
         {provide: ORDER_SHIPPING_DETAILS, useClass: ProfileShippingDetails},
-        {provide: ORDER_SHIPPING_CALCULATOR, useClass: ConfigShippingCalculator},
+        {provide: ORDER_SHIPPING_QUOTES, useClass: ShippingModuleQuotes},
         ...OrderUserUseCaseProviders,
         ...OrderAdminUseCaseProviders,
         ...OrderSystemUseCaseProviders,

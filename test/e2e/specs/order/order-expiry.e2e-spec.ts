@@ -17,6 +17,7 @@ import {
     placeOk,
     statusesOf,
 } from './order-test.util'
+import {ensureShippingMethods} from "../shipping/shipping-test.util";
 
 
 describe('Orders: expiring unpaid orders (e2e)', () => {
@@ -30,6 +31,7 @@ describe('Orders: expiring unpaid orders (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         admin = (await createUserSession(ctx, UserRole.ADMIN)).api
+        await ensureShippingMethods(admin)
         uc = orderSystemUseCases(ctx.app)
         const p = await createPublishedProduct(ctx.app, admin, {variants: [{price: 1000, stock: 500}]})
         customer = await createCustomer(ctx)

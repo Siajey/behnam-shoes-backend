@@ -1,8 +1,9 @@
-import { commonTimestamps } from '@common/db'
 import { sql } from 'drizzle-orm'
 import {
   bigint, boolean, check, index, integer, pgTable, uniqueIndex, uuid, varchar,
 } from 'drizzle-orm/pg-core'
+
+import { commonTimestamps } from '@common/db'
 
 export const shippingMethods = pgTable(
   'shipping_methods',

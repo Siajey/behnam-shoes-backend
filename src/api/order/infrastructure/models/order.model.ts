@@ -25,6 +25,8 @@ export const orders = pgTable(
         recipientFirstName: varchar('recipient_first_name', { length: 100 }).notNull(),
         recipientLastName: varchar('recipient_last_name', { length: 100 }).notNull(),
         recipientPhone: varchar('recipient_phone', { length: 20 }).notNull(),
+        shippingMethodCode: varchar('shipping_method_code', { length: 30 }).notNull().default(''),
+        shippingMethodName: varchar('shipping_method_name', { length: 60 }).notNull().default(''),
         carrier: varchar('carrier', { length: 100 }),
         trackingCode: varchar('tracking_code', { length: 100 }),
         idempotencyKey: varchar('idempotency_key', { length: 100 }).notNull(),

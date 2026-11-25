@@ -1,5 +1,5 @@
 export * from './cart-gateway.port'
 export * from './promotions.port'
-export * from './shipping-calculator.port'
+export * from './shipping-quotes.port'
 export * from './shipping-details-provider.port'
 export * from './variant-ref-provider.port'

@@ -12,7 +12,8 @@ export default class StartPaymentUseCase implements IStartPayment {
         private readonly gateways: IPaymentGatewayRegistry,
         private readonly config: ConfigProvider,
         private readonly logger: ILogger,
-    ) {}
+    ) {
+    }
 
     async execute(command: StartPaymentCommand, userId: string): Promise<StartPaymentResult> {
         const order = await this.orders.getPayable(command.orderId, userId)
@@ -35,7 +36,7 @@ export default class StartPaymentUseCase implements IStartPayment {
             const target = await gateway.requestPayment({
                 paymentId: payment.id,
                 amount: payment.amount,
-                callbackUrl: `${base}/payments/callback/${gateway.name}`,
+                callbackUrl: `${base}/api/${this.config.get('API_VERSION')}/payments/callback/${gateway.name}`,
                 description: createPaymentDescription(order.orderNumber),
             })
 

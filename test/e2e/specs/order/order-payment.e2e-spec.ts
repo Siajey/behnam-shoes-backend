@@ -17,9 +17,9 @@ import {
     getOrder,
     orderSystemUseCases,
     placeOk,
-    shippingFeeFor,
     statusesOf,
 } from './order-test.util'
+import {ensureShippingMethods, rateFor} from "../shipping/shipping-test.util";
 
 describe('Orders: payment use cases (e2e)', () => {
     let ctx: TestContext
@@ -29,6 +29,7 @@ describe('Orders: payment use cases (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         admin = (await createUserSession(ctx, UserRole.ADMIN)).api
+        await ensureShippingMethods(admin)
         uc = orderSystemUseCases(ctx.app)
     })
 
@@ -56,7 +57,7 @@ describe('Orders: payment use cases (e2e)', () => {
                 orderId: order.id,
                 orderNumber: order.orderNumber,
                 userId: customer.userId,
-                amount: 2000 + shippingFeeFor(2000),
+                amount: 2000 + rateFor('post',2),
                 currency: CURRENCY,
                 status: 'pending_payment',
                 canPay: true,
@@ -72,7 +73,7 @@ describe('Orders: payment use cases (e2e)', () => {
             const info = await uc.getPaymentInfo.execute(order.id)
 
             expect(info.amount).toBe(order.total)
-            expect(info.amount).toBe(2000 - 200 + shippingFeeFor(1800))
+            expect(info.amount).toBe(2000 - 200 + rateFor('post',2))
         })
 
         it('works for any order, whoever owns it, and for finished orders', async () => {

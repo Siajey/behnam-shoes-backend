@@ -16,10 +16,11 @@ import {
     randomId,
     withNowPlus,
 } from '../../util/test.util'
-import {fakePaymentGateway as gateway, CALLBACK_BASE} from '../../util/fake-payment-gateway'
+import {fakePaymentGateway as gateway, CALLBACK_BASE, API_VERSION} from '../../util/fake-payment-gateway'
 import {createPublishedProduct} from '../product/product-test.util'
 import {CURRENCY, Customer, createCustomer, orderSystemUseCases} from '../order/order-test.util'
 import {getPayment, orderFor, orderPayments, startOk, startPayment} from './payment-test.util'
+import {ensureShippingMethods} from "../shipping/shipping-test.util";
 
 describe('Payments: starting a payment (e2e)', () => {
     let ctx: TestContext
@@ -30,6 +31,7 @@ describe('Payments: starting a payment (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         admin = (await createUserSession(ctx, UserRole.ADMIN)).api
+        await ensureShippingMethods(admin)
         customer = await createCustomer(ctx)
         variantId = (await createPublishedProduct(ctx.app, admin, {variants: [{price: 1000, stock: 100000}]})).variantIds[0]
     })
@@ -57,7 +59,7 @@ describe('Payments: starting a payment (e2e)', () => {
             expect(gateway.requests[0]).toEqual({
                 paymentId,
                 amount: placed.total, // Toman, shipping included
-                callbackUrl: `${CALLBACK_BASE}/payments/callback/zibal`,
+                callbackUrl: `${CALLBACK_BASE}/api/${API_VERSION}/payments/callback/zibal`,
                 description: expect.any(String),
             })
         })

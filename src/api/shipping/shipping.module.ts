@@ -1,6 +1,7 @@
 import {Module} from '@nestjs/common'
 
 import {AuthModule} from '@api/auth'
+import {CartModule} from '@api/cart/cart.module'
 import {UserModule} from '@api/users'
 import {SessionModule} from '@api/session'
 import {DatabaseModule} from '@common/db'
@@ -15,18 +16,20 @@ import {
     SHIPPING_PARCEL_ESTIMATOR,
     SHIPPING_QUOTE_CACHE,
 } from '@common/di'
-import {CartModule} from '@api/cart/cart.module'
 
+import {IShippingCarrier} from './application'
 import {
     CartCheckoutParcels,
     ConfigParcelEstimator,
     ConfigShippingOrigin,
     InMemoryQuoteCache,
+    IranPostCarrier,
     ProfileShippingDestinations,
     RateTableCarrier,
     ShippingCarrierRegistry,
     ShippingMethodRepository,
     ShippingUseCaseProviders,
+    TipaxCarrier,
 } from './infrastructure'
 import {AdminShippingMethodController, ShippingController} from './presentation'
 
@@ -35,15 +38,19 @@ import {AdminShippingMethodController, ShippingController} from './presentation'
     controllers: [ShippingController, AdminShippingMethodController],
     providers: [
         RateTableCarrier,
+        TipaxCarrier,
+        IranPostCarrier,
         {
             provide: SHIPPING_CARRIERS,
-            inject: [RateTableCarrier],
-            useFactory: (rateTable: RateTableCarrier) => [rateTable],
+            inject: [RateTableCarrier, TipaxCarrier, IranPostCarrier],
+            useFactory: (rateTable: RateTableCarrier, tipax: TipaxCarrier, iranPost: IranPostCarrier) => [
+                rateTable, tipax, iranPost,
+            ],
         },
         {
             provide: SHIPPING_CARRIER_REGISTRY,
             inject: [SHIPPING_CARRIERS],
-            useFactory: (carriers: RateTableCarrier[]) => new ShippingCarrierRegistry(carriers),
+            useFactory: (carriers: IShippingCarrier[]) => new ShippingCarrierRegistry(carriers),
         },
         {provide: SHIPPING_METHOD_REPOSITORY, useClass: ShippingMethodRepository},
         {provide: SHIPPING_QUOTE_CACHE, useClass: InMemoryQuoteCache},

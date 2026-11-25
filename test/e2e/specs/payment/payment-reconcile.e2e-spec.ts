@@ -11,6 +11,7 @@ import {fakePaymentGateway as gateway} from '../../util/fake-payment-gateway'
 import {createPublishedProduct} from '../product/product-test.util'
 import {Customer, createCustomer, getOrder} from '../order/order-test.util'
 import {callbackGet, getPayment, orderFor, orderPayments, startOk} from './payment-test.util'
+import {ensureShippingMethods} from "../shipping/shipping-test.util";
 
 const MIN = 60_000
 const EXPIRY = Number(process.env.PAYMENT_EXPIRY_MINUTES ?? 60)
@@ -34,6 +35,7 @@ describe('Payments: reconciliation job (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         admin = (await createUserSession(ctx, UserRole.ADMIN)).api
+        await ensureShippingMethods(admin)
         customer = await createCustomer(ctx)
         variantId = (await createPublishedProduct(ctx.app, admin, {variants: [{price: 1000, stock: 100000}]})).variantIds[0]
         reconcile = ctx.app.get<IReconcilePayments>(RECONCILE_PAYMENTS, {strict: false})

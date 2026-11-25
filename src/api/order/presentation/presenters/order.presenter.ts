@@ -28,6 +28,7 @@ export class OrderPresenter {
             coupon: order.coupon ? { code: order.coupon.code } : null,
             lines: order.lines.map((l) => OrderPresenter.line(l, urlOf)),
             shippingAddress: order.shippingAddress,
+            shippingMethod: order.shippingMethod,
             recipient: order.recipient,
             shipment: order.shipment,
             canPay: order.canPay(now),

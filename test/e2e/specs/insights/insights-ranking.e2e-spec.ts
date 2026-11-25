@@ -9,6 +9,7 @@ import {Api, UserSession, anonymousApi, createUserSession} from '../../util/test
 import {createCategory, createPublishedProduct} from '../product/product-test.util'
 import {Customer, createCustomer, fillCart, orderSystemUseCases, placeOk} from '../order/order-test.util'
 import {mergeFavorites} from '../favorites/favorites-test.util'
+import {ensureShippingMethods} from "../shipping/shipping-test.util";
 
 const COUNT = 11
 
@@ -37,6 +38,7 @@ describe('Insights: ranking rules (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         admin = (await createUserSession(ctx, UserRole.ADMIN)).api
+        await ensureShippingMethods(admin)
         anonymous = anonymousApi(ctx.app)
         customer = await createCustomer(ctx)
         refresh = ctx.app.get<IRefreshProductStats>(REFRESH_PRODUCT_STATS, {strict: false})

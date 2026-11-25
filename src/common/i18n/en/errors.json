@@ -161,7 +161,7 @@
     "methodNotFound": "The requested shipping method was not found.",
     "methodCodeAlreadyExists": "A shipping method with the code '{{code}}' already exists.",
     "invalidMethod": "The selected shipping method is invalid: {{reason}}.",
-    "quoteUnavailable": "Shipping quote is currently unavailable for method '{{methodCode}}'.",
+    "quoteUnavailable": "Shipping quote is currently unavailable for method {methodCode}.",
     "invalidDestination": "The shipping destination is invalid. Please check the '{{field}}' field.",
     "carrierNotSupported": "The shipping carrier '{{carrier}}' is not supported.",
     "carrierFailed": "Failed to communicate with the shipping carrier '{{carrier}}' during the '{{stage}}' stage."

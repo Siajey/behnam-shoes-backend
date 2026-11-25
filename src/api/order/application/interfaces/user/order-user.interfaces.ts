@@ -2,9 +2,10 @@ import { Order, OrderPage } from '@api/order/domain'
 import { ListQuery } from '@common/dto'
 
 export interface PlaceOrderCommand {
-  addressId: string
-  idempotencyKey: string
-  expectedTotal?: number
+    addressId: string
+    shippingMethod: string
+    idempotencyKey: string
+    expectedTotal?: number
 }
 
 export interface IPlaceOrder {

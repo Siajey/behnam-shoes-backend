@@ -25,9 +25,9 @@ import {
     getAdminOrder,
     orderSystemUseCases,
     placeOk,
-    shippingFeeFor,
     statusesOf,
 } from './order-test.util'
+import {ensureShippingMethods, rateFor} from "../shipping/shipping-test.util";
 
 type Status = 'pending_payment' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'expired'
 
@@ -72,6 +72,7 @@ describe('Orders: admin (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         adminUser = await createUserSession(ctx, UserRole.ADMIN)
+        await ensureShippingMethods(adminUser.api)
         uc = orderSystemUseCases(ctx.app)
         const p = await createPublishedProduct(ctx.app, admin(), {variants: [{price: 1000, stock: 500}]})
         productId = p.id
@@ -106,7 +107,7 @@ describe('Orders: admin (e2e)', () => {
                 orderNumber: expect.any(Number),
                 status: 'cancelled',
                 itemCount: 2,
-                total: 2000 + shippingFeeFor(2000),
+                total: 2000 + rateFor('post',2),
                 currency: expect.any(String),
                 previewImageKey: expect.any(String),
                 previewImageUrl: expect.any(String),

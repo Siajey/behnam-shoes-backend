@@ -14,11 +14,21 @@ import {
 } from '@common/security'
 import {IUserRepository} from '@api/users/domain'
 import {UserRepository} from '@api/users/infrastructure'
-import {CONFIG_PROVIDER, FILE_STORAGE, PAYMENT_GATEWAYS, S3_CLIENT, USER_REPOSITORY} from '@common/di'
+import {
+    CONFIG_PROVIDER,
+    FILE_STORAGE,
+    PAYMENT_GATEWAYS,
+    S3_CLIENT,
+    SHIPPING_CARRIERS,
+    USER_REPOSITORY
+} from '@common/di'
 import {NestConfigProvider} from '@common/configuration'
+import {IranPostCarrier, RateTableCarrier, TipaxCarrier} from "@api/shipping/infrastructure";
+
 import {AppModule} from "../../../src/app.module";
 import {fakeFileStorage} from "../util/fake-file-storage";
 import {fakePaymentGateway} from "../util/fake-payment-gateway";
+import {fakeShippingCarrier, fakeTipax} from "../util/fake-shipping-carrier";
 
 export type TestContext = {
     app: NestFastifyApplication
@@ -36,6 +46,12 @@ export const testContextE2e = async (): Promise<TestContext> => {
         .overrideProvider(S3_CLIENT).useValue({})
         .overrideProvider(FILE_STORAGE).useValue(fakeFileStorage)
         .overrideProvider(PAYMENT_GATEWAYS).useValue([fakePaymentGateway])
+        .overrideProvider(TipaxCarrier).useValue(fakeTipax)
+        .overrideProvider(SHIPPING_CARRIERS)
+        .useFactory({
+            inject: [RateTableCarrier, TipaxCarrier, IranPostCarrier],
+            factory: (rateTable: RateTableCarrier, tipax: TipaxCarrier, iranPost: IranPostCarrier) => [rateTable, tipax, iranPost, fakeShippingCarrier],
+        })
         .compile()
 
 
