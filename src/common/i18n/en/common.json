@@ -121,6 +121,7 @@
     "methodCreateSuccess": "The shipping method created successfully.",
     "methodUpdateSuccess": "The shipping method updated successfully.",
     "methodDeleteSuccess": "The shipping method deleted successfully.",
-    "optionsSuccess": "The shipping options retrieved successfully."
+    "optionsSuccess": "The shipping options retrieved successfully.",
+    "shipmentRefreshSuccess": "Shipment information refreshed successfully."
   }
 }

@@ -14,7 +14,7 @@ import {
     MARK_ORDER_PAID,
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
-    ORDER_REPOSITORY,
+    ORDER_REPOSITORY, ORDER_SHIPMENTS,
     ORDER_SHIPPING_DETAILS, ORDER_SHIPPING_QUOTES,
     ORDER_VARIANT_REFS,
 } from '@common/di'
@@ -28,7 +28,7 @@ import {
     OrderSystemUseCaseProviders,
     OrderUserUseCaseProviders,
     ProductVariantRefs,
-    ProfileShippingDetails, ShippingModuleQuotes,
+    ProfileShippingDetails, ShippingModuleQuotes, ShippingModuleShipments, SyncShipmentStatusesJob,
 } from './infrastructure'
 import {AdminOrderController, OrderController} from './presentation'
 import {FilesModule} from "@common/files";
@@ -53,6 +53,8 @@ import {ShippingModule} from "@api/shipping/shipping.module";
         {provide: ORDER_VARIANT_REFS, useClass: ProductVariantRefs},
         {provide: ORDER_SHIPPING_DETAILS, useClass: ProfileShippingDetails},
         {provide: ORDER_SHIPPING_QUOTES, useClass: ShippingModuleQuotes},
+        { provide: ORDER_SHIPMENTS, useClass: ShippingModuleShipments },
+        SyncShipmentStatusesJob,
         ...OrderUserUseCaseProviders,
         ...OrderAdminUseCaseProviders,
         ...OrderSystemUseCaseProviders,

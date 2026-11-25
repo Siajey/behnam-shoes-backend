@@ -35,3 +35,7 @@ export interface IMarkOrderPaid {
 export interface IGetProductSales {
     execute(since: Date): Promise<ProductSales[]>
 }
+
+export interface ISyncShipmentStatuses {
+    execute(): Promise<{ delivered: number }>
+}

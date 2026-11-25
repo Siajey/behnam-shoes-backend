@@ -3,3 +3,4 @@ export { default as GetOrderPaymentInfoUseCase } from './get-order-payment-info.
 export { default as GetPayableOrderUseCase } from './get-payable-order.usecase'
 export { default as MarkOrderPaidUseCase } from './mark-order-paid.usecase'
 export { default as GetProductSalesUseCase } from './get-product-sales.usecase'
+export { default as SyncShipmentStatusesUseCase } from './sync-shipment-statuses.usecase'

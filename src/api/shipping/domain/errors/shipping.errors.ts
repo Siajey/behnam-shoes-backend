@@ -66,3 +66,26 @@ export class ShippingCarrierError extends AppError {
     })
   }
 }
+export class InvalidTrackingCodeError extends ValidationError {
+    constructor(carrier: string) {
+        super({ message: 'errors.shipping.invalidTrackingCode', code: 'SHIPPING_INVALID_TRACKING_CODE', details: { carrier } })
+    }
+}
+
+export class ShipmentNotFoundError extends NotFoundError {
+    constructor(details?: unknown) {
+        super({ message: 'errors.shipping.shipmentNotFound', code: 'SHIPMENT_NOT_FOUND', details })
+    }
+}
+
+export class ShipmentFinalError extends ConflictError {
+    constructor() {
+        super({ message: 'errors.shipping.shipmentFinal', code: 'SHIPMENT_FINAL' })
+    }
+}
+
+export class ShipmentVersionConflictError extends ConflictError {
+    constructor() {
+        super({ message: 'errors.shipping.shipmentVersionConflict', code: 'SHIPMENT_VERSION_CONFLICT' })
+    }
+}

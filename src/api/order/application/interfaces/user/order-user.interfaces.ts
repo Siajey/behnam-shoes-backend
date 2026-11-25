@@ -1,5 +1,6 @@
 import { Order, OrderPage } from '@api/order/domain'
 import { ListQuery } from '@common/dto'
+import { OrderShipmentInfo } from "../../ports"
 
 export interface PlaceOrderCommand {
     addressId: string
@@ -14,9 +15,14 @@ export interface IPlaceOrder {
 export interface IListMyOrders {
   execute(userId: string, query: ListQuery<never>): Promise<OrderPage>
 }
-export interface IGetMyOrder {
-  execute(orderId: string, userId: string): Promise<Order>
-}
 export interface ICancelMyOrder {
   execute(orderId: string, userId: string): Promise<Order>
+}
+export interface OrderDetail {
+    order: Order
+    shipment: OrderShipmentInfo | null
+}
+
+export interface IGetMyOrder {
+    execute(orderId: string, userId: string): Promise<OrderDetail>
 }

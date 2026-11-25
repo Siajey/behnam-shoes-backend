@@ -46,11 +46,13 @@ export default class AdminOrderController {
     @Get(':id')
     @AdminOnly()
     async getController(@Param('id', idPipe) id: string) {
+        const { order, shipment } = await this.getOrder.execute(id)
+
         return new SuccessResponse({
             messageObj: {message: 'common.order.getSuccess'},
             code: 'ORDER_GET_SUCCESS',
             path: `/admin/orders/${id}`,
-            data: OrderPresenter.adminDetail(await this.getOrder.execute(id),this.urlOf),
+            data: OrderPresenter.adminDetail(order,this.urlOf, {shipment}),
         })
     }
 

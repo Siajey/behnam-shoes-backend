@@ -120,6 +120,7 @@
     "methodCreateSuccess": "روش ارسال با موفقیت ایجاد شد.",
     "methodUpdateSuccess": "روش ارسال با موفقیت به‌روزرسانی شد.",
     "methodDeleteSuccess": "روش ارسال با موفقیت حذف شد.",
-    "optionsSuccess": "گزینه‌های ارسال با موفقیت دریافت شد."
+    "optionsSuccess": "گزینه‌های ارسال با موفقیت دریافت شد.",
+    "shipmentRefreshSuccess": "اطلاعات مرسوله با موفقیت به‌روزرسانی شد."
   }
 }

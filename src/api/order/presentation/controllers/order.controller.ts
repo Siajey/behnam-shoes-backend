@@ -88,12 +88,12 @@ export default class OrderController {
     @Get(':id')
     @UseGuards(JwtSessionGuard)
     async getController(@Param('id', idPipe) id: string, @ReqUser() user: User) {
-        const order = await this.getMyOrder.execute(id, user.id)
+        const {order, shipment} = await this.getMyOrder.execute(id, user.id)
         return new SuccessResponse({
             messageObj: {message: 'common.order.getSuccess'},
             code: 'ORDER_GET_SUCCESS',
             path: `/orders/${id}`,
-            data: OrderPresenter.detail(order,this.urlOf),
+            data: OrderPresenter.detail(order, this.urlOf, {shipment}),
         })
     }
 
@@ -105,7 +105,7 @@ export default class OrderController {
             messageObj: {message: 'common.order.cancelSuccess'},
             code: 'ORDER_CANCEL_SUCCESS',
             path: `/orders/${id}/cancel`,
-            data: OrderPresenter.detail(order,this.urlOf),
+            data: OrderPresenter.detail(order, this.urlOf),
         })
     }
 }

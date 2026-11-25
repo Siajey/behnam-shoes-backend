@@ -288,7 +288,7 @@ export class Order {
         }
     }
 
-    deliver(actorId: string, note: string | null = null): void {
+    deliver(actorId: string | null, note: string | null = null): void {
         this.transition('delivered', actorId, note)
     }
 
@@ -304,5 +304,14 @@ export class Order {
         this.props.status = to
         this.props.events.push(Order.event(to, actorId, note, now))
         this.props.updatedAt = now
+    }
+
+
+    updateShipment(shipment: { carrier: string | null; trackingCode: string | null }): void {
+        if (this.props.status !== 'shipped') {
+            throw new InvalidOrderStatusTransitionError(this.props.status, 'shipped')
+        }
+        this.props.shipment = shipment
+        this.props.updatedAt = new Date()
     }
 }

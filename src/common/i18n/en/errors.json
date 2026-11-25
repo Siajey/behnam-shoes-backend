@@ -164,6 +164,10 @@
     "quoteUnavailable": "Shipping quote is currently unavailable for method {methodCode}.",
     "invalidDestination": "The shipping destination is invalid. Please check the '{{field}}' field.",
     "carrierNotSupported": "The shipping carrier '{{carrier}}' is not supported.",
-    "carrierFailed": "Failed to communicate with the shipping carrier '{{carrier}}' during the '{{stage}}' stage."
+    "carrierFailed": "Failed to communicate with the shipping carrier '{{carrier}}' during the '{{stage}}' stage.",
+    "invalidTrackingCode": "The tracking code is invalid for the selected carrier.",
+    "shipmentNotFound": "Shipment not found.",
+    "shipmentFinal": "This shipment has already reached a final status and cannot be modified.",
+    "shipmentVersionConflict": "The shipment has been modified by another request. Please refresh and try again."
   }
 }
