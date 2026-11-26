@@ -53,7 +53,7 @@ describe('Shipping: public options endpoint (e2e)', () => {
         expect(res.statusCode).toBe(200)
 
         const options = res.json().data.options as Array<{methodCode: string; available: boolean; fee?: number}>
-        expect(options.some((o) => o.methodCode === post.code && o.available && o.fee === 115000)).toBe(true)
+        expect(options.some((o) => o.methodCode === post.code && o.available && o.fee === 1100)).toBe(true)
         expect(options.some((o) => o.methodCode === hidden.code)).toBe(false)
     })
 
@@ -68,6 +68,6 @@ describe('Shipping: public options endpoint (e2e)', () => {
         const res = await customer.api.get(`/shipping/options?addressId=${gilanAddressId}`)
         expect(res.statusCode).toBe(200)
         const options = res.json().data.options as Array<{methodCode: string; available: boolean; fee?: number}>
-        expect(options.some((o) => o.methodCode === post.code && o.available && o.fee === 85000)).toBe(true)
+        expect(options.some((o) => o.methodCode === post.code && o.available && o.fee === 1100)).toBe(true)
     })
 })

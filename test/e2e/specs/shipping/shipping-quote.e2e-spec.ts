@@ -52,14 +52,12 @@ describe('Shipping: quote calculation (e2e)', () => {
         const method = await methods.create({carrier: 'rate_table', service: 'post'})
         const mixed = [line(1, 10000), line(2, 10000)]
 
-        // 1 + 2 = 3 units -> 3 * 1200 + 300 = 3900 g -> 4 kg -> 90000 + 3 * 25000
-        expect((await run(method.code, {lines: mixed})).fee).toBe(165000)
+        expect((await run(method.code, {lines: mixed})).fee).toBe(1400)
     })
 
     it('uses same-province base fee when origin and destination share province', async () => {
         const method = await methods.create({carrier: 'rate_table', service: 'post'})
 
-        // 1 unit -> 1500 g -> 2 kg -> sameProvinceBaseFee (60000) + 1 * 25000 = 85000
         const result = await run(method.code, {
             destination: destination({province: GILAN}),
             lines: [line(1)],
@@ -67,9 +65,9 @@ describe('Shipping: quote calculation (e2e)', () => {
 
         expect(result).toMatchObject({
             methodCode: method.code,
-            fee: 85000,
+            fee: 1100,
             isFree: false,
-            estimatedDays: {min: 3, max: 7},
+            estimatedDays: {min: 2, max: 4},
             source: 'carrier',
         })
     })

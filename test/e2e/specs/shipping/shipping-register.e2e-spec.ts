@@ -1,4 +1,4 @@
-import {afterEach, beforeAll, describe, expect, it} from '@jest/globals'
+import {afterEach, beforeAll, describe, expect, it,beforeEach} from '@jest/globals'
 
 import {
     IGetShipmentsByOrderIds,
@@ -46,6 +46,42 @@ describe('Shipping: registering shipments (e2e)', () => {
         trackingCode
     })
     const stored = async (orderId: string) => (await byOrderIds.execute([orderId]))[0]
+
+    describe('ListDeliveredOrderIds', () => {
+        const deliveredAt = async (when: Date) => {
+            const orderId = randomId()
+            const code = tipaxCode()
+            await reg(orderId, methods.tipax.code, code)
+            fakeTipax.setTracking(code, trackingOf('delivered', [trackingEvent(`d-${code}`, 'delivered', when)]))
+            await refresh.execute(orderId)
+            return orderId
+        }
+
+        it('lists the orders delivered since a date, newest delivery first, and respects the limit', async () => {
+            const mid = await deliveredAt(new Date(Date.now() - 2 * DAY))
+            const old = await deliveredAt(new Date(Date.now() - 20 * DAY))
+            const fresh = await deliveredAt(new Date(Date.now() - 60 * MIN))
+            const inTransit = randomId()
+            await reg(inTransit, methods.tipax.code, tipaxCode())
+
+            const recent = await listDelivered.execute(new Date(Date.now() - 14 * DAY), 100)
+            const ours = [old, mid, fresh, inTransit] as Array<string>
+            expect(recent.filter((id) => ours.includes(id))).toEqual([fresh, mid])
+            expect(await listDelivered.execute(new Date(Date.now() - 30 * DAY), 100)).toEqual(expect.arrayContaining([old, mid, fresh]))
+            const list = await listDelivered.execute(new Date(Date.now() - 30 * DAY), 10)
+            expect((await listDelivered.execute(new Date(Date.now() - 14 * DAY), 1))).toEqual([fresh])
+        })
+
+        it('does not list returned or failed shipments', async () => {
+            const orderId = randomId()
+            const code = tipaxCode()
+            await reg(orderId, methods.tipax.code, code)
+            fakeTipax.setTracking(code, trackingOf('returned'))
+            await refresh.execute(orderId)
+
+            expect(await listDelivered.execute(new Date(Date.now() - 30 * DAY), 1000)).not.toContain(orderId)
+        })
+    })
 
     describe('RegisterShipment', () => {
         it('registers a shipment and describes it', async () => {
@@ -265,38 +301,4 @@ describe('Shipping: registering shipments (e2e)', () => {
         })
     })
 
-    describe('ListDeliveredOrderIds', () => {
-        const deliveredAt = async (when: Date) => {
-            const orderId = randomId()
-            const code = tipaxCode()
-            await reg(orderId, methods.tipax.code, code)
-            fakeTipax.setTracking(code, trackingOf('delivered', [trackingEvent(`d-${code}`, 'delivered', when)]))
-            await refresh.execute(orderId)
-            return orderId
-        }
-
-        it('lists the orders delivered since a date, newest delivery first, and respects the limit', async () => {
-            const old = await deliveredAt(new Date(Date.now() - 20 * DAY))
-            const mid = await deliveredAt(new Date(Date.now() - 2 * DAY))
-            const fresh = await deliveredAt(new Date(Date.now() - 60 * MIN))
-            const inTransit = randomId()
-            await reg(inTransit, methods.tipax.code, tipaxCode())
-
-            const recent = await listDelivered.execute(new Date(Date.now() - 14 * DAY), 100)
-            const ours = [old, mid, fresh, inTransit] as Array<string>
-            expect(recent.filter((id) => ours.includes(id))).toEqual([fresh, mid])
-            expect(await listDelivered.execute(new Date(Date.now() - 30 * DAY), 100)).toEqual(expect.arrayContaining([old, mid, fresh]))
-            expect(await listDelivered.execute(new Date(Date.now() - 14 * DAY), 1)).toEqual([fresh])
-        })
-
-        it('does not list returned or failed shipments', async () => {
-            const orderId = randomId()
-            const code = tipaxCode()
-            await reg(orderId, methods.tipax.code, code)
-            fakeTipax.setTracking(code, trackingOf('returned'))
-            await refresh.execute(orderId)
-
-            expect(await listDelivered.execute(new Date(Date.now() - 30 * DAY), 1000)).not.toContain(orderId)
-        })
-    })
 })

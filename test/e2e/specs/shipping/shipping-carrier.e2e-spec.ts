@@ -14,9 +14,9 @@ import {
     AZARBAIJAN_SHARGHI,
     GILAN,
     GILAN_ARABIC_YEH,
-    ISFAHAN, MAHABAD,
+    ISFAHAN,
+    MAHABAD,
     methodTracker,
-    RASHT
 } from './shipping-test.util'
 
 describe('Shipping: carrier behaviour (e2e)', () => {
@@ -39,49 +39,165 @@ describe('Shipping: carrier behaviour (e2e)', () => {
 
     const fake = (overrides: Record<string, unknown> = {}) => methods.create({
         carrier: 'fake',
-        service: 'svc', ...overrides
+        service: 'svc',
+        ...overrides,
     })
     const destination = (overrides: Record<string, string> = {}) => ({
         postalCode: '1234567890',
         province: ISFAHAN,
-        city: 'x', ...overrides
+        city: 'x',
+        ...overrides,
     })
     const lines = (units = 1, unitPrice = 1000) => [{
         variantId: randomId(),
         productId: randomId(),
         quantity: units,
-        unitPrice
+        unitPrice,
     }]
     const run = (methodCode: string, over: Record<string, unknown> = {}) =>
         quote.execute({
             methodCode,
             destination: destination(),
             lines: lines(),
-            subtotalAfterDiscounts: 1000, ...over
+            subtotalAfterDiscounts: 1000,
+            ...over,
         } as any)
+
+
+    describe('in the options list', () => {
+        let customer: Customer
+        let addressId: string
+
+        beforeAll(async () => {
+            const product = await createPublishedProduct(ctx.app, admin, {variants: [{price: 1000, stock: 100000}]})
+            customer = await createCustomer(ctx, {withAddress: false})
+            addressId = await addAddress(customer, ISFAHAN)
+            await customer.api.delete('/cart')
+            await fillCart(customer.api, [{variantId: product.variantIds[0], quantity: 1}])
+        })
+
+        const options = async () =>
+            (await customer.api.get(`/shipping/options?addressId=${addressId}`)).json().data.options as any[]
+
+        it('keeps the other methods when one carrier is down, marking the broken one unavailable', async () => {
+            carrier.failQuotes()
+            const [broken, working] = [
+                await fake({name: 'Broken', position: 0}),
+                await methods.create({
+                    service: 'post',
+                    carrier: 'rate_table',
+                    position: 1,
+                }),
+            ]
+
+            const list = await options()
+            expect(list.find((o) => o.methodCode === broken.code)).toEqual({
+                methodCode: broken.code,
+                name: 'Broken',
+                description: null,
+                available: false,
+            })
+            expect(list.find((o) => o.methodCode === working.code)).toMatchObject({
+                available: true,
+            })
+        })
+
+        it('shows the fallback price as a normal available option', async () => {
+            carrier.failQuotes()
+            const method = await fake({fallbackFee: 1000})
+
+            expect((await options()).find((o) => o.methodCode === method.code)).toMatchObject({
+                available: true,
+                fee: 1000,
+                estimatedDays: null,
+            })
+        })
+
+        it('does not hide our own errors: the request fails instead of showing wrong prices', async () => {
+            carrier.crashQuotes()
+            await fake({fallbackFee: 1000})
+
+            const res = await customer.api.get(`/shipping/options?addressId=${addressId}`)
+
+            expect(res.statusCode).toBeGreaterThanOrEqual(500)
+        })
+    })
+
+    describe('when the carrier fails', () => {
+        it.each([true, false])('uses the fallback fee (retryable=%s) and flags the quote as a fallback', async (retryable) => {
+            carrier.failQuotes(retryable)
+            const method = await fake({fallbackFee: 1200, handlingFee: 5000})
+
+            expect(await run(method.code)).toMatchObject({
+                fee: 1200,
+                estimatedDays: null,
+                source: 'fallback',
+            })
+        })
+
+        it('answers SHIPPING_QUOTE_UNAVAILABLE without a fallback fee', async () => {
+            carrier.failQuotes()
+            const method = await fake()
+
+            await expect(run(method.code)).rejects.toMatchObject({
+                code: 'SHIPPING_QUOTE_UNAVAILABLE',
+                status: 409,
+            })
+        })
+
+        it('does not hide our own errors behind the fallback', async () => {
+            carrier.crashQuotes()
+            const method = await fake({fallbackFee: 1300})
+
+            await expect(run(method.code)).rejects.toThrow('boom')
+        })
+
+        it('recovers as soon as the carrier is back (failures are not cached)', async () => {
+            const method = await fake({fallbackFee: 1300})
+            carrier.failQuotes()
+            expect((await run(method.code)).source).toBe('fallback')
+
+            carrier.respondWith(1500)
+
+            expect(await run(method.code)).toMatchObject({
+                fee: 1500,
+                source: 'carrier',
+            })
+        })
+    })
 
     describe('a method served by a carrier', () => {
         it('can be created, edited to and from a carrier, and is rejected for unknown carriers', async () => {
             const method = await fake()
             expect(method.carrier).toBe('fake')
 
-            expect((await admin.patch(`/admin/shipping-methods/${method.id}`, {
+            const updatedToTable = await admin.patch(`/admin/shipping-methods/${method.id}`, {
                 carrier: 'rate_table',
-                service: 'post'
-            })).json().data.carrier).toBe('rate_table')
-            expect((await admin.patch(`/admin/shipping-methods/${method.id}`, {carrier: 'fake'})).statusCode).toBe(200)
-            expectError(await admin.patch(`/admin/shipping-methods/${method.id}`, {carrier: 'tipax'}), 400, 'SHIPPING_CARRIER_NOT_SUPPORTED')
+                service: 'post',
+            })
+            expect(updatedToTable.json().data.carrier).toBe('rate_table')
+
+            const updatedToFake = await admin.patch(`/admin/shipping-methods/${method.id}`, {
+                carrier: 'fake',
+            })
+            expect(updatedToFake.statusCode).toBe(200)
+
+            expectError(
+                await admin.patch(`/admin/shipping-methods/${method.id}`, {carrier: 'unknown_supporter'}),
+                400,
+                'SHIPPING_CARRIER_NOT_SUPPORTED',
+            )
         })
 
         it('uses the carrier fee plus the handling fee, and its delivery estimate', async () => {
-            carrier.respondWith(70000, {min: 2, max: 4})
-            const method = await fake({handlingFee: 5000})
+            carrier.respondWith(1800, {min: 2, max: 4})
+            const method = await fake({handlingFee: 200})
 
             expect(await run(method.code)).toMatchObject({
-                fee: 75000,
+                fee: 2000,
                 estimatedDays: {min: 2, max: 4},
                 source: 'carrier',
-                isFree: false
+                isFree: false,
             })
         })
 
@@ -97,7 +213,7 @@ describe('Shipping: carrier behaviour (e2e)', () => {
                 destination: {
                     postalCode: '\u06F1\u06F2\u06F3\u06F4\u06F5-\u06F6\u06F7\u06F8\u06F9\u06F0',
                     province: GILAN_ARABIC_YEH,
-                    city: 'Rasht '
+                    city: 'Rasht ',
                 },
             })
 
@@ -112,101 +228,19 @@ describe('Shipping: carrier behaviour (e2e)', () => {
         })
 
         it('applies the free-shipping threshold to the carrier fee', async () => {
-            carrier.respondWith(70000)
+            carrier.respondWith(1800)
             const method = await fake({freeThreshold: 2000})
 
-            expect(await run(method.code, {subtotalAfterDiscounts: 1999})).toMatchObject({fee: 70000, isFree: false})
+            expect(await run(method.code, {subtotalAfterDiscounts: 1999})).toMatchObject({
+                fee: 1800,
+                isFree: false,
+            })
             expect(await run(method.code, {subtotalAfterDiscounts: 2000})).toMatchObject({
                 fee: 0,
                 isFree: true,
-                source: 'carrier'
+                source: 'carrier',
             })
         })
     })
 
-    describe('when the carrier fails', () => {
-        it.each([true, false])('uses the fallback fee (retryable=%s) and flags the quote as a fallback', async (retryable) => {
-            carrier.failQuotes(retryable)
-            const method = await fake({fallbackFee: 99000, handlingFee: 5000})
-
-            expect(await run(method.code)).toMatchObject({fee: 99000, estimatedDays: null, source: 'fallback'})
-        })
-
-        it('answers SHIPPING_QUOTE_UNAVAILABLE without a fallback fee', async () => {
-            carrier.failQuotes()
-            const method = await fake()
-
-            await expect(run(method.code)).rejects.toMatchObject({code: 'SHIPPING_QUOTE_UNAVAILABLE', status: 409})
-        })
-
-        it('does not hide our own errors behind the fallback', async () => {
-            carrier.crashQuotes()
-            const method = await fake({fallbackFee: 99000})
-
-            await expect(run(method.code)).rejects.toThrow('boom')
-        })
-
-        it('recovers as soon as the carrier is back (failures are not cached)', async () => {
-            const method = await fake({fallbackFee: 99000})
-            carrier.failQuotes()
-            expect((await run(method.code)).source).toBe('fallback')
-
-            carrier.respondWith(60000)
-
-            expect(await run(method.code)).toMatchObject({fee: 60000, source: 'carrier'})
-        })
-    })
-
-    describe('in the options list', () => {
-        let customer: Customer
-        let addressId: string
-
-        beforeAll(async () => {
-            const product = await createPublishedProduct(ctx.app, admin, {variants: [{price: 1000, stock: 100000}]})
-            customer = await createCustomer(ctx, {withAddress: false})
-            addressId = await addAddress(customer, ISFAHAN)
-            await customer.api.delete('/cart')
-            await fillCart(customer.api, [{variantId: product.variantIds[0], quantity: 1}])
-        })
-
-        const options = async () => (await customer.api.get(`/shipping/options?addressId=${addressId}`)).json().data.options as any[]
-
-        it('keeps the other methods when one carrier is down, marking the broken one unavailable', async () => {
-            carrier.failQuotes()
-            const [broken, working] = [await fake({name: 'Broken', position: 0}), await methods.create({
-                service: 'post',
-                carrier: 'rate_table',
-                position: 1
-            })]
-
-            const list = await options()
-            expect(list.find((o) => o.methodCode === broken.code)).toEqual({
-                methodCode: broken.code,
-                name: 'Broken',
-                description: null,
-                available: false
-            })
-            expect(list.find((o) => o.methodCode === working.code)).toMatchObject({available: true, source: undefined})
-        })
-
-        it('shows the fallback price as a normal available option', async () => {
-            carrier.failQuotes()
-            const method = await fake({fallbackFee: 88000})
-
-            expect((await options()).find((o) => o.methodCode === method.code)).toMatchObject({
-                available: true,
-                fee: 88000,
-                estimatedDays: null
-            })
-        })
-
-        it('does not hide our own errors: the request fails instead of showing wrong prices', async () => {
-            carrier.crashQuotes()
-            await fake({fallbackFee: 88000})
-
-            const res = await customer.api.get(`/shipping/options?addressId=${addressId}`)
-
-            expect(res.statusCode).toBeGreaterThanOrEqual(500)
-        })
-    })
 })

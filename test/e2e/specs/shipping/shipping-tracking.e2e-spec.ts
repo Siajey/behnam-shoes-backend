@@ -254,7 +254,7 @@ describe('Shipping: tracking jobs and refresh (e2e)', () => {
 
         it('checks the carrier now, ignoring the schedule, and returns the updated shipment', async () => {
             const s = await shipment()
-            await poll.execute() // just checked: not due for 30 minutes
+            await poll.execute()
             fakeTipax.setTracking(s.code, trackingOf('in_transit', [trackingEvent('a', 'in_transit', '2030-01-01T10:00:00Z', 'Hub', 'Tehran')]))
 
             const res = await refresh(s.orderId)

@@ -20,6 +20,7 @@ import {
     PAYMENT_GATEWAYS,
     S3_CLIENT,
     SHIPPING_CARRIERS,
+    SHIPPING_QUOTE_CACHE,
     USER_REPOSITORY
 } from '@common/di'
 import {NestConfigProvider} from '@common/configuration'
@@ -52,6 +53,8 @@ export const testContextE2e = async (): Promise<TestContext> => {
             inject: [RateTableCarrier, TipaxCarrier, IranPostCarrier],
             factory: (rateTable: RateTableCarrier, tipax: TipaxCarrier, iranPost: IranPostCarrier) => [rateTable, tipax, iranPost, fakeShippingCarrier],
         })
+        .overrideProvider(SHIPPING_QUOTE_CACHE)
+        .useValue({getOrLoad: (_key: string, loader: () => Promise<unknown>) => loader()})
         .compile()
 
 
