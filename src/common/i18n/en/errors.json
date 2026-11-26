@@ -175,8 +175,7 @@
     "alreadyExists": "You have already submitted a review for this product.",
     "purchaseRequired": "You must purchase this product before you can review it.",
     "productNotFound": "Product not found.",
-    "invalid": "The review is invalid.",
-    "replyNotFound": "The review reply not found.",
+    "invalid": "The review is invalid: {reason}",    "replyNotFound": "The review reply not found.",
     "versionConflict": "The review has been modified by another request. Please refresh and try again."
   }
 }

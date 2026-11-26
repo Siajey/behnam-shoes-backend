@@ -1,3 +1,5 @@
+import {ProductRating} from "@api/product/domain";
+
 export const PRODUCT_TAGS = ['newest', 'best_seller', 'popular'] as const
 export type ProductTag = (typeof PRODUCT_TAGS)[number]
 
@@ -13,6 +15,7 @@ export interface ProductPricingMeta {
 export interface ProductMeta {
     tags: ProductTag[]
     pricing: ProductPricingMeta
+    rating: ProductRating
 }
 
 export interface ProductTagFlags {

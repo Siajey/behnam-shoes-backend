@@ -1,6 +1,11 @@
 import {
-    IAttributeDefinitionRepository, IProductAttributeRepository,
-    IProductQueryRepository, IProductStatsRepository, ProductNotFoundError, ProductWithMeta,
+    IAttributeDefinitionRepository,
+    IProductAttributeRepository,
+    IProductQueryRepository,
+    IProductRatingRepository,
+    IProductStatsRepository,
+    ProductNotFoundError,
+    ProductWithMeta,
 } from '@api/product/domain'
 
 import {PUBLIC_PRODUCT_STATUSES} from '../../constants'
@@ -15,6 +20,7 @@ export default class GetProductByIdUseCase implements IGetProductById {
         private readonly stats: IProductStatsRepository,
         private readonly definitions: IAttributeDefinitionRepository,
         private readonly attributeValues: IProductAttributeRepository,
+        private readonly ratings: IProductRatingRepository
     ) {
     }
 
@@ -22,7 +28,7 @@ export default class GetProductByIdUseCase implements IGetProductById {
         const view = await this.productQuery.findDetailsById(id, PUBLIC_PRODUCT_STATUSES)
         if (!view) throw new ProductNotFoundError({id})
 
-        const [[item], attributes] = await Promise.all([enrichWithMeta(this.pricing, this.stats, [view]), resolveProductAttributes(this.definitions, this.attributeValues, id, true)])
+        const [[item], attributes] = await Promise.all([enrichWithMeta(this.pricing, this.stats, this.ratings, [view]), resolveProductAttributes(this.definitions, this.attributeValues, id, true)])
         return {...item, attributes}
     }
 }

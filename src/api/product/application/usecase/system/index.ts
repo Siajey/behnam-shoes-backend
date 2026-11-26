@@ -4,3 +4,4 @@ export { default as GetVariantsByIdsUseCase } from './get-variants-by-ids.usecas
 export { default as GetPublishedProductsByIdsUseCase } from './get-published-products-by-id.usecase'
 export { default as GetPublishedProductIdsUseCase } from './get-published-product-ids.usecase'
 export { default as ReplaceProductStatsUseCase } from './replace-product-stats.usecase'
+export { default as UpsertProductRatingUseCase } from './upsert-product-rating.usecase'

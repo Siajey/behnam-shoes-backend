@@ -39,3 +39,7 @@ export interface IGetProductSales {
 export interface ISyncShipmentStatuses {
     execute(): Promise<{ delivered: number }>
 }
+
+export interface IHasPurchasedProduct {
+    execute(userId: string, productId: string): Promise<boolean>
+}

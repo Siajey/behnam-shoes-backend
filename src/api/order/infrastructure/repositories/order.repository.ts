@@ -2,7 +2,12 @@ import {Inject, Injectable} from '@nestjs/common'
 import {and, asc, eq, gte, inArray, lt, lte, sql, SQL} from 'drizzle-orm'
 
 import {
-    AdminOrderListCriteria, IOrderRepository, Order, OrderPage, OrderVersionConflictError, ProductUnitsSold,
+    AdminOrderListCriteria,
+    IOrderRepository,
+    Order,
+    OrderPage,
+    OrderVersionConflictError,
+    ProductUnitsSold,
 } from '@api/order/domain'
 import {Database, DrizzleGetItemsQueryBuilder} from '@common/db'
 import {DATABASE} from '@common/di'
@@ -12,6 +17,8 @@ import * as schema from '../models'
 import {OrderMapper} from '../mappers'
 
 type OrderRow = typeof schema.orders.$inferSelect
+
+const PURCHASE_STATUSES = ['paid', 'shipped', 'delivered'] as const
 
 @Injectable()
 export class OrderRepository implements IOrderRepository {
@@ -98,7 +105,9 @@ export class OrderRepository implements IOrderRepository {
         return this.db
             .select({
                 productId: l.productId,
-                unitsSold: sql<number>`sum(${l.quantity})`.mapWith(Number),
+                unitsSold: sql<number>`sum(
+                ${l.quantity}
+                )`.mapWith(Number),
             })
             .from(l)
             .innerJoin(o, eq(l.orderId, o.id))
@@ -128,6 +137,22 @@ export class OrderRepository implements IOrderRepository {
             .from(schema.orders)
             .where(and(inArray(schema.orders.id, ids), eq(schema.orders.status, 'shipped')))
         return this.hydrate(rows, false)
+    }
+
+    async hasPurchasedProduct(userId: string, productId: string): Promise<boolean> {
+        const [row] = await this.db
+            .select({id: schema.orders.id})
+            .from(schema.orders)
+            .innerJoin(schema.orderLines, eq(schema.orderLines.orderId, schema.orders.id))
+            .where(
+                and(
+                    eq(schema.orders.userId, userId),
+                    inArray(schema.orders.status, [...PURCHASE_STATUSES]),
+                    eq(schema.orderLines.productId, productId),
+                ),
+            )
+            .limit(1)
+        return !!row
     }
 
     private async page(

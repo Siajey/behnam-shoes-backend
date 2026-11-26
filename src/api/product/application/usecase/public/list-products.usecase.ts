@@ -1,4 +1,4 @@
-import { IProductQueryRepository, IProductStatsRepository } from '@api/product/domain'
+import {IProductQueryRepository, IProductRatingRepository, IProductStatsRepository} from '@api/product/domain'
 
 import { PUBLIC_PRODUCT_STATUSES } from '../../constants'
 import { enrichWithMeta } from '../../helpers'
@@ -10,12 +10,13 @@ export default class ListProductsUseCase implements IListProducts {
         private readonly productQuery: IProductQueryRepository,
         private readonly pricing: IProductPricing,
         private readonly stats: IProductStatsRepository,
+        private readonly ratings: IProductRatingRepository
     ) {}
 
     async execute(query: PublicProductListQuery): Promise<ProductMetaPage> {
         const page = await this.productQuery.findAll({ ...query, statuses: PUBLIC_PRODUCT_STATUSES })
         return {
-            products: await enrichWithMeta(this.pricing, this.stats, page.products),
+            products: await enrichWithMeta(this.pricing, this.stats,this.ratings, page.products),
             nextCursor: page.nextCursor,
         }
     }
