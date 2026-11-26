@@ -123,5 +123,17 @@
     "methodDeleteSuccess": "The shipping method deleted successfully.",
     "optionsSuccess": "The shipping options retrieved successfully.",
     "shipmentRefreshSuccess": "Shipment information refreshed successfully."
+  },
+  "review": {
+    "listSuccess": "The product reviews retrieved successfully.",
+    "meSuccess": "Your review information retrieved successfully.",
+    "createSuccess": "The review submitted successfully.",
+    "editSuccess": "The review updated successfully.",
+    "deleteSuccess": "The review deleted successfully.",
+    "adminListSuccess": "The reviews retrieved successfully.",
+    "recalculateSuccess": "The product ratings recalculated successfully.",
+    "replySuccess": "The reply to review submitted successfully.",
+    "replyDeleteSuccess": "The review reply deleted successfully.",
+    "adminDeleteSuccess": "The review deleted successfully."
   }
 }
