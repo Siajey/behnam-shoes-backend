@@ -1,6 +1,5 @@
 import {Module} from '@nestjs/common'
 
-import {AuthModule} from '@api/auth'
 import {CartModule} from '@api/cart/cart.module'
 import {DiscountModule} from '@api/discount/discount.module'
 import {ProductModule} from '@api/product/product.module'
@@ -15,15 +14,13 @@ import {
     MARK_ORDER_PAID,
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
-    ORDER_REPOSITORY,
-    ORDER_SHIPPING_CALCULATOR,
-    ORDER_SHIPPING_DETAILS,
-    ORDER_VARIANT_REFS,
+    ORDER_REPOSITORY, ORDER_SHIPMENTS,
+    ORDER_SHIPPING_DETAILS, ORDER_SHIPPING_QUOTES,
+    ORDER_VARIANT_REFS, SYNC_SHIPMENT_STATUSES,
 } from '@common/di'
 
 import {
     CartCheckoutGateway,
-    ConfigShippingCalculator,
     DiscountPromotions,
     ExpireUnpaidOrdersJob,
     OrderAdminUseCaseProviders,
@@ -31,10 +28,11 @@ import {
     OrderSystemUseCaseProviders,
     OrderUserUseCaseProviders,
     ProductVariantRefs,
-    ProfileShippingDetails,
+    ProfileShippingDetails, ShippingModuleQuotes, ShippingModuleShipments, SyncShipmentStatusesJob,
 } from './infrastructure'
 import {AdminOrderController, OrderController} from './presentation'
 import {FilesModule} from "@common/files";
+import {ShippingModule} from "@api/shipping/shipping.module";
 
 @Module({
     imports: [
@@ -45,6 +43,7 @@ import {FilesModule} from "@common/files";
         DiscountModule,
         ProductModule,
         UserModule,
+        ShippingModule
     ],
     controllers: [OrderController, AdminOrderController],
     providers: [
@@ -53,7 +52,10 @@ import {FilesModule} from "@common/files";
         {provide: ORDER_PROMOTIONS, useClass: DiscountPromotions},
         {provide: ORDER_VARIANT_REFS, useClass: ProductVariantRefs},
         {provide: ORDER_SHIPPING_DETAILS, useClass: ProfileShippingDetails},
-        {provide: ORDER_SHIPPING_CALCULATOR, useClass: ConfigShippingCalculator},
+        {provide: ORDER_SHIPPING_QUOTES, useClass: ShippingModuleQuotes},
+        { provide: ORDER_SHIPMENTS, useClass: ShippingModuleShipments },
+        {provide: SYNC_SHIPMENT_STATUSES, useClass: SyncShipmentStatusesJob},
+        SyncShipmentStatusesJob,
         ...OrderUserUseCaseProviders,
         ...OrderAdminUseCaseProviders,
         ...OrderSystemUseCaseProviders,

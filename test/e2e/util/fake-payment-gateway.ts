@@ -7,6 +7,7 @@ import {PaymentGatewayError} from '@api/payment/domain'
 process.env.PAYMENT_CALLBACK_BASE_URL ??= 'https://api.test'
 process.env.PAYMENT_RESULT_URL ??= 'https://shop.test/payment/result'
 export const CALLBACK_BASE = process.env.PAYMENT_CALLBACK_BASE_URL.replace(/\/+$/, '')
+export const API_VERSION = process.env.API_VERSION ?? '1'
 export const RESULT_URL = process.env.PAYMENT_RESULT_URL
 
 const PENDING: GatewayVerification = {status: 'pending', amount: null, trackingCode: null, cardMask: null, paidAt: null, failureCode: null}

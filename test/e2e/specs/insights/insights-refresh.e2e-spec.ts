@@ -18,6 +18,7 @@ import {
 import {createPublishedProduct} from '../product/product-test.util'
 import {Customer, adminStatus, createCustomer, fillCart, orderSystemUseCases, placeOk} from '../order/order-test.util'
 import {putFavorite} from '../favorites/favorites-test.util'
+import {ensureShippingMethods} from "../shipping/shipping-test.util";
 
 const DAY = 24 * 60 * 60 * 1000
 const REFRESH_URL = '/admin/insights/product-stats/refresh'
@@ -35,6 +36,7 @@ describe('Insights: refreshing product stats (e2e)', () => {
         ctx = await testContextE2e()
         adminSession = await createUserSession(ctx, UserRole.ADMIN)
         admin = adminSession.api
+        await ensureShippingMethods(admin)
         anonymous = anonymousApi(ctx.app)
         customer = await createCustomer(ctx)
         refresh = ctx.app.get<IRefreshProductStats>(REFRESH_PRODUCT_STATS, {strict: false})

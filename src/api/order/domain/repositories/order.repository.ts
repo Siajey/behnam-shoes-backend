@@ -34,4 +34,6 @@ export interface IOrderRepository {
     findExpirable(now: Date, limit: number): Promise<Order[]>
 
     unitsSoldByProduct(since: Date): Promise<ProductUnitsSold[]>
+
+    findShippedByIds(ids: string[]): Promise<Order[]>
 }

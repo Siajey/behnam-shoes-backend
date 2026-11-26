@@ -1,5 +1,6 @@
 export * from './cart-checkout.adapter'
-export * from './config-shipping-calculator.adapter'
 export * from './discount-promotions.adapter'
 export * from './product-variant-refs.adapter'
 export * from './profile-shipping-details.adapter'
+export * from './shipping-module-quotes.adapter'
+export * from './order-shipment.adapter'

@@ -1,0 +1,1 @@
+export const RATE_TABLE_CARRIER = 'rate_table'

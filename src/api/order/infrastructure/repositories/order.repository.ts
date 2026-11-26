@@ -121,6 +121,15 @@ export class OrderRepository implements IOrderRepository {
         return this.hydrate(rows, false)
     }
 
+    async findShippedByIds(ids: string[]): Promise<Order[]> {
+        if (ids.length === 0) return []
+        const rows = await this.db
+            .select()
+            .from(schema.orders)
+            .where(and(inArray(schema.orders.id, ids), eq(schema.orders.status, 'shipped')))
+        return this.hydrate(rows, false)
+    }
+
     private async page(
         criteria: ListQuery<never>,
         ...conditions: (SQL | undefined)[]

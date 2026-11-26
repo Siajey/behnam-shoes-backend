@@ -12,7 +12,8 @@ export default class StartPaymentUseCase implements IStartPayment {
         private readonly gateways: IPaymentGatewayRegistry,
         private readonly config: ConfigProvider,
         private readonly logger: ILogger,
-    ) {}
+    ) {
+    }
 
     async execute(command: StartPaymentCommand, userId: string): Promise<StartPaymentResult> {
         const order = await this.orders.getPayable(command.orderId, userId)

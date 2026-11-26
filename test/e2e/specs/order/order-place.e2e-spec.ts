@@ -17,18 +17,18 @@ import {getCart} from '../cart/cart-test.util'
 import {createCoupon, discountTracker, scope} from '../discount/discount-test.util'
 import {
     ADDRESS,
-    CURRENCY,
-    PAYMENT_WINDOW_MS,
-    PROFILE,
     createCustomer,
+    CURRENCY,
     fillCart,
     getOrder,
     newKey,
+    PAYMENT_WINDOW_MS,
     placeOk,
     placeOrder,
-    shippingFeeFor,
+    PROFILE,
 } from './order-test.util'
 import {cdnUrl} from "../../util/fake-file-storage";
+import {ensureShippingMethods, rateFor} from "../shipping/shipping-test.util";
 
 describe('Orders: placing an order (e2e)', () => {
     let ctx: TestContext
@@ -38,6 +38,7 @@ describe('Orders: placing an order (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         admin = (await createUserSession(ctx, UserRole.ADMIN)).api
+        await ensureShippingMethods(admin)
         discounts = discountTracker(admin)
     })
 
@@ -63,9 +64,8 @@ describe('Orders: placing an order (e2e)', () => {
             const {p, customer} = await shopper(1000, 2)
 
             const res = await placeOrder(customer)
-
             expectOk(res, 201, 'ORDER_PLACE_SUCCESS')
-            const fee = shippingFeeFor(2000)
+            const fee = rateFor('post', 2)
             expect(res.json().data).toEqual({
                 id: expect.any(String),
                 orderNumber: expect.any(Number),
@@ -77,7 +77,14 @@ describe('Orders: placing an order (e2e)', () => {
                 previewImageUrl: cdnUrl(imageKeyOf(p.id)),
                 createdAt: expect.any(String),
                 paidAt: null,
-                totals: {subtotal: 2000, productDiscountTotal: 0, couponDiscount: 0, shippingFee: fee, total: 2000 + fee},
+                tracking: null,
+                totals: {
+                    subtotal: 2000,
+                    productDiscountTotal: 0,
+                    couponDiscount: 0,
+                    shippingFee: fee,
+                    total: 2000 + fee
+                },
                 coupon: null,
                 lines: [
                     {
@@ -103,6 +110,10 @@ describe('Orders: placing an order (e2e)', () => {
                 shipment: {carrier: null, trackingCode: null},
                 canPay: true,
                 expiresAt: expect.any(String),
+                shippingMethod: {
+                    code: "post",
+                    name: "Post",
+                },
                 timeline: [{status: 'pending_payment', note: null, at: expect.any(String)}],
             })
         })
@@ -193,7 +204,7 @@ describe('Orders: placing an order (e2e)', () => {
 
             const order = await placeOk(customer)
 
-            const fee = shippingFeeFor(1620)
+            const fee = rateFor('post', 2)
             expect(order.totals).toEqual({
                 subtotal: 2000,
                 productDiscountTotal: 200,
@@ -202,7 +213,12 @@ describe('Orders: placing an order (e2e)', () => {
                 total: 2000 - 200 - 180 + fee,
             })
             expect(order.coupon).toEqual({code: coupon.code})
-            expect(order.lines[0]).toMatchObject({originalUnitPrice: 1000, unitPrice: 900, couponAllocation: 180, lineTotal: 1620})
+            expect(order.lines[0]).toMatchObject({
+                originalUnitPrice: 1000,
+                unitPrice: 900,
+                couponAllocation: 180,
+                lineTotal: 1620
+            })
             await discounts.cleanup()
         })
 
@@ -244,29 +260,6 @@ describe('Orders: placing an order (e2e)', () => {
             expect(['COUPON_LIMIT_REACHED', 'CART_CHECKOUT_BLOCKED']).toContain(failed.json().code)
             expect((await couponUsage(coupon.id)).reserved).toBe(1)
             expect((await ordersOf(one)).length + (await ordersOf(two)).length).toBe(1)
-        })
-    })
-
-    describe('shipping', () => {
-        it('adds the configured shipping fee to the total', async () => {
-            const {customer} = await shopper(1000, 1)
-
-            const order = await placeOk(customer)
-
-            expect(order.totals.shippingFee).toBe(shippingFeeFor(1000))
-            expect(order.total).toBe(1000 + shippingFeeFor(1000))
-        })
-
-        it('computes the fee on the subtotal after all discounts', async () => {
-            const p = await product(10_000_000)
-            const coupon = await createCoupon(admin, {kind: 'fixed', value: 9_999_000})
-            const customer = await createCustomer(ctx)
-            await fillCart(customer.api, [{variantId: p.variantIds[0]}])
-            await customer.api.put('/cart/coupon', {code: coupon.code})
-
-            const order = await placeOk(customer)
-
-            expect(order.totals.shippingFee).toBe(shippingFeeFor(1000))
         })
     })
 
@@ -383,7 +376,7 @@ describe('Orders: placing an order (e2e)', () => {
             const {customer} = await shopper(1000, 2)
             const cart = await getCart(customer.api)
 
-            const res = await placeOrder(customer, {expectedTotal: cart.totals.total + shippingFeeFor(cart.totals.total)})
+            const res = await placeOrder(customer, {expectedTotal: cart.totals.total + rateFor('post', 2)})
 
             expect(res.statusCode).toBe(201)
         })
@@ -392,7 +385,7 @@ describe('Orders: placing an order (e2e)', () => {
             const {p, customer} = await shopper(1000, 1)
             const coupon = await createCoupon(admin)
             await customer.api.put('/cart/coupon', {code: coupon.code})
-            const seen = (await getCart(customer.api)).totals.total + shippingFeeFor(900)
+            const seen = (await getCart(customer.api)).totals.total + rateFor('post', 1)
             await changeVariant(ctx.app, p.variants[0], {price: 2000})
 
             expectError(await placeOrder(customer, {expectedTotal: seen}), 409, 'ORDER_PRICE_CHANGED')

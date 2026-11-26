@@ -21,18 +21,10 @@ import {putInCart} from '../cart/cart-test.util'
 /* Order-only helpers. Shared helpers live in test/util/test.util; catalog, cart and discount helpers
  * next to their specs (../product, ../cart, ../discount). */
 
-export const ADDRESS = {street: 'Valiasr St 12', city: 'Tehran', province: 'Tehran', postalCode: '1234567890'}
+export const ADDRESS = {street: 'Valiasr St 12', city: 'Tehran', province: 'Tehran', postalCode: '1234567899'}
 export const PROFILE = {firstName: 'Sara', lastName: 'Ahmadi'}
 export const CURRENCY = process.env.SHOP_CURRENCY ?? 'IRT'
 export const PAYMENT_WINDOW_MS = 30 * 60_000
-
-/* Shipping and currency come from configuration (SHIPPING_FLAT_FEE, SHIPPING_FREE_THRESHOLD, SHOP_CURRENCY).
- * These mirror ConfigShippingCalculator and read the same variables from process.env; if the e2e config does
- * not set them the fee is 0 and the assertions still hold. */
-const FLAT_FEE = Number(process.env.SHIPPING_FLAT_FEE ?? 0)
-const FREE_FROM = Number(process.env.SHIPPING_FREE_THRESHOLD ?? 0)
-export const shippingFeeFor = (subtotalAfterDiscounts: number) =>
-    FREE_FROM > 0 && subtotalAfterDiscounts >= FREE_FROM ? 0 : Number.isFinite(FLAT_FEE) && FLAT_FEE > 0 ? Math.floor(FLAT_FEE) : 0
 
 /* ------------------------------------------------------------------ */
 /* Customers and placing orders                                        */
@@ -65,14 +57,10 @@ export const newKey = () => `key-${uid()}-${uid()}`
 export const fillCart = async (api: Api, items: { variantId: string; quantity?: number }[]) => {
     for (const item of items) await putInCart(api, item.variantId, item.quantity)
 }
-export const placeOrder = (
-    customer: Customer,
-    body: Record<string, unknown> = {},
-    key: string | null = newKey(),
-) =>
+export const placeOrder = (customer: Customer, body: Record<string, unknown> = {}, key: string | null = newKey()) =>
     customer.api.post(
         '/orders',
-        {addressId: customer.addressId, ...body},
+        {addressId: customer.addressId, shippingMethod: 'post', ...body},
         key === null ? undefined : {'idempotency-key': key},
     )
 

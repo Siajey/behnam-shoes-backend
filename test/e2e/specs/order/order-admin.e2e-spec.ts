@@ -25,9 +25,9 @@ import {
     getAdminOrder,
     orderSystemUseCases,
     placeOk,
-    shippingFeeFor,
     statusesOf,
 } from './order-test.util'
+import {ensureShippingMethods, rateFor} from "../shipping/shipping-test.util";
 
 type Status = 'pending_payment' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'expired'
 
@@ -72,6 +72,7 @@ describe('Orders: admin (e2e)', () => {
     beforeAll(async () => {
         ctx = await testContextE2e()
         adminUser = await createUserSession(ctx, UserRole.ADMIN)
+        await ensureShippingMethods(adminUser.api)
         uc = orderSystemUseCases(ctx.app)
         const p = await createPublishedProduct(ctx.app, admin(), {variants: [{price: 1000, stock: 500}]})
         productId = p.id
@@ -106,7 +107,7 @@ describe('Orders: admin (e2e)', () => {
                 orderNumber: expect.any(Number),
                 status: 'cancelled',
                 itemCount: 2,
-                total: 2000 + shippingFeeFor(2000),
+                total: 2000 + rateFor('post',2),
                 currency: expect.any(String),
                 previewImageKey: expect.any(String),
                 previewImageUrl: expect.any(String),
@@ -262,8 +263,8 @@ describe('Orders: admin (e2e)', () => {
 
                 const res = await adminStatus(admin(), id, {action: 'ship', carrier: '  Chapar ', trackingCode: ' ABC123 '})
 
-                expect(res.json().data.shipment).toEqual({carrier: 'Chapar', trackingCode: 'ABC123'})
-                expect((await getAdminOrder(admin(), id)).shipment).toEqual({carrier: 'Chapar', trackingCode: 'ABC123'})
+                expect(res.json().data.shipment).toEqual({carrier: 'rate_table', trackingCode: 'ABC123'})
+                expect((await getAdminOrder(admin(), id)).shipment).toEqual({carrier: 'rate_table', trackingCode: 'ABC123'})
             })
 
             it('allows shipping without them', async () => {
@@ -280,7 +281,7 @@ describe('Orders: admin (e2e)', () => {
 
                 const order = (await customer.api.get(`/orders/${id}`)).json().data
 
-                expect(order.shipment).toEqual({carrier: 'Post', trackingCode: 'TRK-CUST'})
+                expect(order.shipment).toEqual({carrier: 'rate_table', trackingCode: 'TRK-CUST'})
             })
         })
 

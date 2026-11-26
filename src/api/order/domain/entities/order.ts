@@ -40,6 +40,10 @@ export interface OrderLine {
     unitPrice: number
     couponAllocation: number
 }
+export interface ShippingMethodSnapshot {
+    code: string
+    name: string
+}
 
 export interface ShippingAddress {
     province: string
@@ -80,6 +84,7 @@ export interface OrderProps {
     lines: OrderLine[]
     coupon: OrderCoupon | null
     shippingFee: number
+    shippingMethod: ShippingMethodSnapshot
     currency: string
     shippingAddress: ShippingAddress
     recipient: Recipient
@@ -99,6 +104,7 @@ export interface PlaceOrderInput {
     lines: OrderLine[]
     coupon: OrderCoupon | null
     shippingFee: number
+    shippingMethod: ShippingMethodSnapshot
     currency: string
     shippingAddress: ShippingAddress
     recipient: Recipient
@@ -123,6 +129,7 @@ export class Order {
             lines: input.lines,
             coupon: input.coupon,
             shippingFee: input.shippingFee,
+            shippingMethod: input.shippingMethod,
             currency: input.currency,
             shippingAddress: input.shippingAddress,
             recipient: input.recipient,
@@ -246,6 +253,7 @@ export class Order {
     get hasBeenPaid(): boolean {
         return this.props.paidAt !== null
     }
+    get shippingMethod() { return this.props.shippingMethod }
 
     canPay(now: Date): boolean {
         return this.props.status === 'pending_payment' && now < this.props.expiresAt
@@ -280,7 +288,7 @@ export class Order {
         }
     }
 
-    deliver(actorId: string, note: string | null = null): void {
+    deliver(actorId: string | null, note: string | null = null): void {
         this.transition('delivered', actorId, note)
     }
 
@@ -296,5 +304,14 @@ export class Order {
         this.props.status = to
         this.props.events.push(Order.event(to, actorId, note, now))
         this.props.updatedAt = now
+    }
+
+
+    updateShipment(shipment: { carrier: string | null; trackingCode: string | null }): void {
+        if (this.props.status !== 'shipped') {
+            throw new InvalidOrderStatusTransitionError(this.props.status, 'shipped')
+        }
+        this.props.shipment = shipment
+        this.props.updatedAt = new Date()
     }
 }

@@ -6,12 +6,12 @@ import {
     MARK_ORDER_PAID,
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
-    ORDER_REPOSITORY,
+    ORDER_REPOSITORY, ORDER_SHIPMENTS, SYNC_SHIPMENT_STATUSES,
 } from '@common/di'
 
 import {
     ExpireUnpaidOrdersUseCase, GetOrderPaymentInfoUseCase, GetPayableOrderUseCase, GetProductSalesUseCase,
-    MarkOrderPaidUseCase,
+    MarkOrderPaidUseCase, SyncShipmentStatusesUseCase,
 } from '@api/order/application'
 
 export const OrderSystemUseCaseProviders = [
@@ -26,4 +26,5 @@ export const OrderSystemUseCaseProviders = [
         ORDER_REPOSITORY, ORDER_PROMOTIONS, ORDER_CART_GATEWAY,
     ]),
     createProvider<GetProductSalesUseCase>(GET_PRODUCT_SALES, GetProductSalesUseCase, [ORDER_REPOSITORY]),
+    createProvider<SyncShipmentStatusesUseCase>(SYNC_SHIPMENT_STATUSES, SyncShipmentStatusesUseCase, [ORDER_REPOSITORY,ORDER_SHIPMENTS]),
 ]

@@ -114,5 +114,14 @@
     "startSuccess": "The payment has been started successfully.",
     "getSuccess": "The payment status retrieved successfully.",
     "listSuccess": "The order payments retrieved successfully."
+  },
+  "shipping": {
+    "methodListSuccess": "The shipping methods retrieved successfully.",
+    "methodGetSuccess": "The shipping method retrieved successfully.",
+    "methodCreateSuccess": "The shipping method created successfully.",
+    "methodUpdateSuccess": "The shipping method updated successfully.",
+    "methodDeleteSuccess": "The shipping method deleted successfully.",
+    "optionsSuccess": "The shipping options retrieved successfully.",
+    "shipmentRefreshSuccess": "Shipment information refreshed successfully."
   }
 }
