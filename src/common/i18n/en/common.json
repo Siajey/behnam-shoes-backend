@@ -135,5 +135,12 @@
     "replySuccess": "The reply to review submitted successfully.",
     "replyDeleteSuccess": "The review reply deleted successfully.",
     "adminDeleteSuccess": "The review deleted successfully."
+  },
+  "settings": {
+    "adminGetSuccess": "The settings retrieved successfully.",
+    "uploadUrlSuccess": "The image upload URL generated successfully.",
+    "heroUpdateSuccess": "The hero section updated successfully.",
+    "heroImageRemoveSuccess": "The hero image removed successfully.",
+    "getSuccess": "The settings retrieved successfully."
   }
 }

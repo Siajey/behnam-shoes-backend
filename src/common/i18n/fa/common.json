@@ -134,5 +134,12 @@
     "replySuccess": "پاسخ به دیدگاه با موفقیت ثبت شد.",
     "replyDeleteSuccess": "پاسخ دیدگاه با موفقیت حذف شد.",
     "adminDeleteSuccess": "دیدگاه با موفقیت حذف شد."
+  },
+  "settings": {
+    "adminGetSuccess": "تنظیمات با موفقیت دریافت شدند.",
+    "uploadUrlSuccess": "آدرس بارگذاری تصویر با موفقیت ایجاد شد.",
+    "heroUpdateSuccess": "بخش هیرو با موفقیت به‌روزرسانی شد.",
+    "heroImageRemoveSuccess": "تصویر بخش هیرو با موفقیت حذف شد.",
+    "getSuccess": "تنظیمات با موفقیت دریافت شدند."
   }
 }

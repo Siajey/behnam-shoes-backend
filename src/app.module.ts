@@ -24,6 +24,7 @@ import {OrderModule} from "@api/order/order.module";
 import {InsightsModule} from "@api/insights/insights.module";
 import {PaymentModule} from "@api/payment/payment.module";
 import {ReviewModule} from "@api/review/review.module";
+import {SettingsModule} from "@api/settings";
 
 @Module({
     imports: [
@@ -59,7 +60,8 @@ import {ReviewModule} from "@api/review/review.module";
         OrderModule,
         InsightsModule,
         PaymentModule,
-        ReviewModule
+        ReviewModule,
+        SettingsModule
     ],
     providers: [GlobalExceptionFilter, ApiResponseInterceptor],
 })

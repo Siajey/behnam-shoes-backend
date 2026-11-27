@@ -177,5 +177,8 @@
     "productNotFound": "Product not found.",
     "invalid": "The review is invalid: {reason}",    "replyNotFound": "The review reply not found.",
     "versionConflict": "The review has been modified by another request. Please refresh and try again."
+  },
+  "settings": {
+    "invalid": "Invalid setting: {reason}"
   }
 }
