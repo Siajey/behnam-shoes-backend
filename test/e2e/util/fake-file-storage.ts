@@ -5,6 +5,7 @@ export const cdnUrl = (key: string) => `${FAKE_CDN}/${key}`
 
 export class FakeFileStorage extends FileStorage {
     readonly objects = new Map<string, StoredObjectInfo>()
+    failDeletes: Error | null = null
 
     protected async presignUpload(
         key: string,
@@ -24,6 +25,7 @@ export class FakeFileStorage extends FileStorage {
     }
 
     async delete(keys: string | string[]) {
+        if (this.failDeletes) throw this.failDeletes
         for (const key of ([] as string[]).concat(keys)) this.objects.delete(key)
     }
 
