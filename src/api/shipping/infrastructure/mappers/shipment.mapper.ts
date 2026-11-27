@@ -20,16 +20,16 @@ export class ShipmentMapper {
           status: e.status,
           description: e.description,
           location: e.location,
-          occurredAt: new Date(e.occurredAt),
+          occurredAt: e.occurredAt,
         }))
         .sort((a, b) => a.occurredAt.getTime() - b.occurredAt.getTime()),
-      deliveredAt: row.deliveredAt ? new Date(row.deliveredAt) : null,
-      lastCheckedAt: row.lastCheckedAt ? new Date(row.lastCheckedAt) : null,
-      nextCheckAt: new Date(row.nextCheckAt),
+      deliveredAt: row.deliveredAt,
+      lastCheckedAt: row.lastCheckedAt,
+      nextCheckAt: row.nextCheckAt,
       failureCount: row.failureCount,
       version: row.version,
-      createdAt: new Date(row.createdAt),
-      updatedAt: new Date(row.updatedAt),
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
     })
   }
 

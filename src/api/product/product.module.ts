@@ -7,8 +7,8 @@ import {
     CATEGORY_REPOSITORY,
     DEACTIVATE_MISSING_VARIANTS, GET_PUBLISHED_PRODUCT_IDS, GET_PUBLISHED_PRODUCTS_BY_IDS,
     GET_VARIANTS_BY_IDS, PRODUCT_ATTRIBUTE_REPOSITORY, PRODUCT_PRICING,
-    PRODUCT_QUERY_REPOSITORY,
-    PRODUCT_REPOSITORY, PRODUCT_STATS_REPOSITORY, REPLACE_PRODUCT_STATS,
+    PRODUCT_QUERY_REPOSITORY, PRODUCT_RATING_REPOSITORY,
+    PRODUCT_REPOSITORY, PRODUCT_STATS_REPOSITORY, REPLACE_PRODUCT_STATS, UPSERT_PRODUCT_RATING,
     UPSERT_VARIANTS_FROM_EXTERNAL,
     VARIANT_REPOSITORY,
 } from '@common/di'
@@ -38,6 +38,7 @@ import {
 import {SessionModule} from "@api/session";
 import {FilesModule} from "@common/files";
 import {DiscountModule} from "@api/discount/discount.module";
+import {ProductRatingRepository} from "@api/product/infrastructure/repositories/product-rating.repository";
 
 @Module({
     imports: [DatabaseModule, SessionModule, FilesModule,DiscountModule],
@@ -62,6 +63,7 @@ import {DiscountModule} from "@api/discount/discount.module";
         { provide: PRODUCT_PRICING, useClass: DiscountProductPricing },
         { provide: ATTRIBUTE_DEFINITION_REPOSITORY, useClass: AttributeDefinitionRepository },
         { provide: PRODUCT_ATTRIBUTE_REPOSITORY, useClass: ProductAttributeRepository },
+        { provide: PRODUCT_RATING_REPOSITORY, useClass: ProductRatingRepository },
         ...ProductAttributeUseCaseProviders,
         ...ProductReadUseCaseProviders,
         ...ProductAdminUseCaseProviders,
@@ -74,6 +76,7 @@ import {DiscountModule} from "@api/discount/discount.module";
         GET_PUBLISHED_PRODUCTS_BY_IDS,
         GET_PUBLISHED_PRODUCT_IDS,
         REPLACE_PRODUCT_STATS,
+        UPSERT_PRODUCT_RATING
     ],
 })
 export class ProductModule {

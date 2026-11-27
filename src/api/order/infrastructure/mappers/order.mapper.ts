@@ -50,20 +50,20 @@ export class OrderMapper {
             },
             shipment: {carrier: row.carrier, trackingCode: row.trackingCode},
             idempotencyKey: row.idempotencyKey,
-            expiresAt: new Date(row.expiresAt),
-            paidAt: row.paidAt ? new Date(row.paidAt) : null,
+            expiresAt: row.expiresAt,
+            paidAt: row.paidAt,
             events: [...events]
                 .map((e) => ({
                     id: e.id,
                     status: e.status,
                     note: e.note,
                     actorId: e.actorId,
-                    createdAt: new Date(e.createdAt),
+                    createdAt: e.createdAt,
                 }))
                 .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()),
             version: row.version,
-            createdAt: new Date(row.createdAt),
-            updatedAt: new Date(row.updatedAt),
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         })
     }
 

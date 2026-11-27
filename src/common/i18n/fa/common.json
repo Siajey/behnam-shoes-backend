@@ -122,5 +122,17 @@
     "methodDeleteSuccess": "روش ارسال با موفقیت حذف شد.",
     "optionsSuccess": "گزینه‌های ارسال با موفقیت دریافت شد.",
     "shipmentRefreshSuccess": "اطلاعات مرسوله با موفقیت به‌روزرسانی شد."
+  },
+  "review": {
+    "listSuccess": "دیدگاه‌های محصول با موفقیت دریافت شدند.",
+    "meSuccess": "اطلاعات دیدگاه شما با موفقیت دریافت شد.",
+    "createSuccess": "دیدگاه با موفقیت ثبت شد.",
+    "editSuccess": "دیدگاه با موفقیت ویرایش شد.",
+    "deleteSuccess": "دیدگاه با موفقیت حذف شد.",
+    "adminListSuccess": "دیدگاه‌ها با موفقیت دریافت شدند.",
+    "recalculateSuccess": "امتیازهای محصولات با موفقیت محاسبه شدند.",
+    "replySuccess": "پاسخ به دیدگاه با موفقیت ثبت شد.",
+    "replyDeleteSuccess": "پاسخ دیدگاه با موفقیت حذف شد.",
+    "adminDeleteSuccess": "دیدگاه با موفقیت حذف شد."
   }
 }

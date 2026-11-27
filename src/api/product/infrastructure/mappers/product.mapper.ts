@@ -20,9 +20,9 @@ export class ProductMapper {
             images: images
                 .map((i) => ({ id: i.id, fileKey: i.fileKey, altText: i.altText, position: i.position }))
                 .sort((a, b) => a.position - b.position),
-            publishedAt: row.publishedAt ? new Date(row.publishedAt) : null,
-            createdAt: new Date(row.createdAt),
-            updatedAt: new Date(row.updatedAt),
+            publishedAt: row.publishedAt,
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         }
 
         switch (row.type) {

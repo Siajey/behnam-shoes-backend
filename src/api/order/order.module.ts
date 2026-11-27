@@ -11,12 +11,16 @@ import {
     GET_ORDER_PAYMENT_INFO,
     GET_PAYABLE_ORDER,
     GET_PRODUCT_SALES,
+    HAS_PURCHASED_PRODUCT,
     MARK_ORDER_PAID,
     ORDER_CART_GATEWAY,
     ORDER_PROMOTIONS,
-    ORDER_REPOSITORY, ORDER_SHIPMENTS,
-    ORDER_SHIPPING_DETAILS, ORDER_SHIPPING_QUOTES,
-    ORDER_VARIANT_REFS, SYNC_SHIPMENT_STATUSES,
+    ORDER_REPOSITORY,
+    ORDER_SHIPMENTS,
+    ORDER_SHIPPING_DETAILS,
+    ORDER_SHIPPING_QUOTES,
+    ORDER_VARIANT_REFS,
+    SYNC_SHIPMENT_STATUSES,
 } from '@common/di'
 
 import {
@@ -28,7 +32,10 @@ import {
     OrderSystemUseCaseProviders,
     OrderUserUseCaseProviders,
     ProductVariantRefs,
-    ProfileShippingDetails, ShippingModuleQuotes, ShippingModuleShipments, SyncShipmentStatusesJob,
+    ProfileShippingDetails,
+    ShippingModuleQuotes,
+    ShippingModuleShipments,
+    SyncShipmentStatusesJob,
 } from './infrastructure'
 import {AdminOrderController, OrderController} from './presentation'
 import {FilesModule} from "@common/files";
@@ -53,7 +60,7 @@ import {ShippingModule} from "@api/shipping/shipping.module";
         {provide: ORDER_VARIANT_REFS, useClass: ProductVariantRefs},
         {provide: ORDER_SHIPPING_DETAILS, useClass: ProfileShippingDetails},
         {provide: ORDER_SHIPPING_QUOTES, useClass: ShippingModuleQuotes},
-        { provide: ORDER_SHIPMENTS, useClass: ShippingModuleShipments },
+        {provide: ORDER_SHIPMENTS, useClass: ShippingModuleShipments},
         {provide: SYNC_SHIPMENT_STATUSES, useClass: SyncShipmentStatusesJob},
         SyncShipmentStatusesJob,
         ...OrderUserUseCaseProviders,
@@ -61,7 +68,7 @@ import {ShippingModule} from "@api/shipping/shipping.module";
         ...OrderSystemUseCaseProviders,
         ExpireUnpaidOrdersJob,
     ],
-    exports: [EXPIRE_UNPAID_ORDERS, GET_ORDER_PAYMENT_INFO, GET_PAYABLE_ORDER, MARK_ORDER_PAID, GET_PRODUCT_SALES],
+    exports: [EXPIRE_UNPAID_ORDERS, GET_ORDER_PAYMENT_INFO, GET_PAYABLE_ORDER, MARK_ORDER_PAID, GET_PRODUCT_SALES, HAS_PURCHASED_PRODUCT],
 })
 export class OrderModule {
 }

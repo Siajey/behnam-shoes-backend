@@ -165,7 +165,6 @@ describe('Public catalog: list, search, detail (e2e)', () => {
                 inStock: true,
                 details: {gender: 'men', material: null},
                 meta: {
-                    tags: ['newest'],
                     pricing: {
                         minPrice: 1000,
                         maxPrice: 1500,
@@ -174,6 +173,11 @@ describe('Public catalog: list, search, detail (e2e)', () => {
                         hasDiscount: false,
                         maxDiscountPercent: 0
                     },
+                    rating: {
+                        average: 0,
+                        count: 0
+                    },
+                    tags: ['newest'],
                 },
             })
         })
@@ -341,7 +345,6 @@ describe('Public catalog: list, search, detail (e2e)', () => {
 
     describe('GET /products/search', () => {
         it('matches the name case-insensitively and only returns published products', async () => {
-            // two hidden products (draft + archived) also contain "alpha"
             expect(sortedIds(await search('alpha'))).toEqual(ids(p1))
             expect(sortedIds(await search('ALPHA RUNNER'))).toEqual(ids(p1))
         })
@@ -411,7 +414,6 @@ describe('Public catalog: list, search, detail (e2e)', () => {
                     altText: 'image 0'
                 },
                 meta: {
-                    tags: ['newest'],
                     pricing: {
                         minPrice: 1000,
                         maxPrice: 1500,
@@ -420,6 +422,12 @@ describe('Public catalog: list, search, detail (e2e)', () => {
                         hasDiscount: false,
                         maxDiscountPercent: 0
                     },
+                    rating: {
+                        average: 0,
+                        count: 0
+                    } ,
+                    tags: ['newest'],
+
                 },
                 minPrice: 1000,
                 maxPrice: 1500,

@@ -14,7 +14,7 @@ import {
     ensureShippingMethods,
     methodTracker,
     rateFor,
-    AZARBAIJAN_SHARGHI, MAHABAD
+    AZARBAIJAN_GHARBI, MAHABAD
 } from '../shipping/shipping-test.util'
 
 describe('Orders: shipping method and fee (e2e)', () => {
@@ -34,7 +34,7 @@ describe('Orders: shipping method and fee (e2e)', () => {
         await ensureShippingMethods(admin)
         variantId = (await createPublishedProduct(ctx.app, admin, {variants: [{price: 1000, stock: 100000}]})).variantIds[0]
         customer = await createCustomer(ctx)
-        azerbaijanAddress = await addAddress(customer, AZARBAIJAN_SHARGHI, MAHABAD)
+        azerbaijanAddress = await addAddress(customer, AZARBAIJAN_GHARBI, MAHABAD)
     })
 
     afterEach(async () => {
@@ -70,7 +70,7 @@ describe('Orders: shipping method and fee (e2e)', () => {
             expect(far.totals.shippingFee).toBe(rateFor('post', 1))
             expect(near.totals.shippingFee).toBe(rateFor('post', 1, true))
             expect(near.totals.shippingFee).toBeLessThan(far.totals.shippingFee)
-            expect(near.shippingAddress).toMatchObject({province: AZARBAIJAN_SHARGHI})
+            expect(near.shippingAddress).toMatchObject({province: AZARBAIJAN_GHARBI})
         })
 
         it('adds the handling fee of the method', async () => {
@@ -218,7 +218,7 @@ describe('Orders: shipping method and fee (e2e)', () => {
             expect(carrier.quoteRequests).toEqual([
                 {
                     service: 'svc',
-                    origin: {postalCode: '1234567890', province: AZARBAIJAN_SHARGHI, city: MAHABAD},
+                    origin: {postalCode: '1234567890', province: AZARBAIJAN_GHARBI, city: MAHABAD},
                     destination: {postalCode: '1234567899', province: 'Tehran', city: 'Tehran'},
                     parcel: {weightGrams: 2 * 1500 + 500, declaredValue: 2000},
                 },

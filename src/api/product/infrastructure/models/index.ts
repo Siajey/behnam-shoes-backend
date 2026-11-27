@@ -3,3 +3,4 @@ export * from "./product.model";
 export * from "./variant.model";
 export * from "./category.model";
 export * from "./attribute.model";
+export * from "./product-rating.model";

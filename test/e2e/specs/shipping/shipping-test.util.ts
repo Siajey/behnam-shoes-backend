@@ -4,9 +4,8 @@ import {Customer} from '../order/order-test.util'
 export const GILAN = '\u06AF\u06CC\u0644\u0627\u0646'
 export const GILAN_ARABIC_YEH = '\u06AF\u064A\u0644\u0627\u0646'
 export const ISFAHAN = '\u0627\u0635\u0641\u0647\u0627\u0646'
-export const RASHT = '\u0631\u0634\u062A'
-export const AZARBAIJAN_SHARGHI = '\u0622\u0630\u0631\u0628\u0627\u06CC\u062C\u0627\u0646 \u0634\u0631\u0642\u06CC'
 export const MAHABAD = '\u0645\u0647\u0627\u0628\u0627\u062F'
+export const AZARBAIJAN_GHARBI = '\u0622\u0630\u0631\u0628\u0627\u06CC\u062C\u0627\u0646 \u063A\u0631\u0628\u06CC'
 
 export const RATE_TABLE = {
     post: {

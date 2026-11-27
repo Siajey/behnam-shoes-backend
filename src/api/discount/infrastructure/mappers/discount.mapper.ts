@@ -2,8 +2,6 @@ import { Coupon, Discount } from '@api/discount/domain'
 
 import { couponTargets, coupons, discounts, discountTargets } from '../models'
 
-const toDate = (value: Date | null): Date | null => (value ? new Date(value) : null)
-
 export class DiscountMapper {
     static toDomain(row: typeof discounts.$inferSelect, targetIds: string[]): Discount {
         return Discount.restore({
@@ -13,11 +11,11 @@ export class DiscountMapper {
             value: row.value,
             maxDiscountPerUnit: row.maxDiscountPerUnit,
             scope: { type: row.scopeType, targetIds },
-            startsAt: toDate(row.startsAt),
-            endsAt: toDate(row.endsAt),
+            startsAt: row.startsAt,
+            endsAt: row.endsAt,
             isActive: row.isActive,
-            createdAt: new Date(row.createdAt),
-            updatedAt: new Date(row.updatedAt),
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         })
     }
 
@@ -56,13 +54,13 @@ export class CouponMapper {
             minOrderAmount: row.minOrderAmount,
             scope: { type: row.scopeType, targetIds },
             applyToDiscountedItems: row.applyToDiscountedItems,
-            startsAt: toDate(row.startsAt),
-            endsAt: toDate(row.endsAt),
+            startsAt: row.startsAt,
+            endsAt: row.endsAt,
             usageLimitTotal: row.usageLimitTotal,
             usageLimitPerUser: row.usageLimitPerUser,
             isActive: row.isActive,
-            createdAt: new Date(row.createdAt),
-            updatedAt: new Date(row.updatedAt),
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         })
     }
 

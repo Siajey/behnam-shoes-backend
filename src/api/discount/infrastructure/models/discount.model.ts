@@ -38,7 +38,7 @@ export const discountTargets = pgTable(
         discountId: uuid('discount_id')
             .notNull()
             .references(() => discounts.id, { onDelete: 'cascade' }),
-        targetId: uuid('target_id').notNull(), // a category, brand, product or variant id, no FK on purpose
+        targetId: uuid('target_id').notNull(),
     },
     (t) => [
         primaryKey({ columns: [t.discountId, t.targetId] }),

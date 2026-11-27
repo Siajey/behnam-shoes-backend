@@ -36,4 +36,6 @@ export interface IOrderRepository {
     unitsSoldByProduct(since: Date): Promise<ProductUnitsSold[]>
 
     findShippedByIds(ids: string[]): Promise<Order[]>
+
+    hasPurchasedProduct(userId: string, productId: string): Promise<boolean>
 }

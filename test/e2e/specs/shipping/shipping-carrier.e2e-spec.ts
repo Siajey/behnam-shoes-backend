@@ -11,7 +11,7 @@ import {createPublishedProduct} from '../product/product-test.util'
 import {createCustomer, Customer, fillCart} from '../order/order-test.util'
 import {
     addAddress,
-    AZARBAIJAN_SHARGHI,
+    AZARBAIJAN_GHARBI,
     GILAN,
     GILAN_ARABIC_YEH,
     ISFAHAN,
@@ -220,7 +220,7 @@ describe('Shipping: carrier behaviour (e2e)', () => {
             expect(carrier.quoteRequests).toEqual([
                 {
                     service: 'express_plus',
-                    origin: {postalCode: '1234567890', province: AZARBAIJAN_SHARGHI, city: MAHABAD},
+                    origin: {postalCode: '1234567890', province: AZARBAIJAN_GHARBI, city: MAHABAD},
                     destination: {postalCode: '1234567890', province: GILAN, city: 'Rasht'},
                     parcel: {weightGrams: 3 * 1500 + 500, declaredValue: 4000},
                 },

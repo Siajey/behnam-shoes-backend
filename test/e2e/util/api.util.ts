@@ -17,7 +17,8 @@ export class Api {
         private readonly app: NestFastifyApplication,
         private readonly session?: Session,
         private readonly sendCsrf = true,
-    ) {}
+    ) {
+    }
 
     request(
         method: Method,
@@ -72,7 +73,7 @@ export const qs = (params: Record<string, string | number | boolean | undefined 
 export const walkPages = async (api: Api, path: string, params: Record<string, any> = {}, maxPages = 50) => {
     const pages: any[] = []
     let nextCursor: string | undefined
-    for (let i = 0; i < maxPages; i++) {
+    for (let i = 0; i < 1000; i++) {
         const res = await api.get(`${path}${qs({...params, nextCursor})}`)
         expect(res.statusCode).toBe(200)
         const data = res.json().data

@@ -12,8 +12,8 @@ export class CategoryMapper {
             parentId: row.parentId,
             sortOrder: row.sortOrder,
             imageKey: row.imageKey,
-            createdAt: new Date(row.createdAt),
-            updatedAt: new Date(row.updatedAt),
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         })
     }
 
@@ -39,8 +39,8 @@ export class BrandMapper {
             slug: row.slug,
             logoKey: row.logoKey,
             imageKey: row.imageKey,
-            createdAt: new Date(row.createdAt),
-            updatedAt: new Date(row.updatedAt),
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         })
     }
 

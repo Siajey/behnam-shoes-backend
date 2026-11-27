@@ -1,6 +1,6 @@
 import {Cart} from "@api/cart/domain";
 
-import { cartItems, carts } from '../models'
+import {cartItems, carts} from '../models'
 
 export class CartMapper {
     static toDomain(row: typeof carts.$inferSelect, items: (typeof cartItems.$inferSelect)[]): Cart {
@@ -10,10 +10,10 @@ export class CartMapper {
             couponCode: row.couponCode,
             version: row.version,
             items: items
-                .map((i) => ({ variantId: i.variantId, quantity: i.quantity, addedAt: new Date(i.addedAt) }))
+                .map((i) => ({variantId: i.variantId, quantity: i.quantity, addedAt: i.addedAt}))
                 .sort((a, b) => a.addedAt.getTime() - b.addedAt.getTime()),
-            createdAt: new Date(row.createdAt),
-            updatedAt: new Date(row.updatedAt),
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         })
     }
 
