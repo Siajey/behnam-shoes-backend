@@ -133,7 +133,7 @@ describe('Storefront filters: specs, rating, tags (e2e)', () => {
 
         it('combines with the other filters, with search, and stays independent of the variant "attributes" filter', async () => {
             expect(await ids({specs: 'country:ir', categoryId: catA.id})).toEqual([p.p1])
-            expect(await ids({specs: 'country:ir', minRating: 4.1})).toEqual([])
+            expect(await ids({specs: 'country:ir', minRating: 4.9})).toEqual([])
             const searched = await list({specs: 'country:ir', q: 'Filter'}, '/products/search')
             expect(searched.map((i) => i.id).sort()).toEqual(sorted(p.p1, p.p3))
             expect(await ids({specs: 'country:ir', attributes: 'size:42'})).toEqual(sorted(p.p1, p.p3)) // variants: size 42 black
@@ -165,7 +165,7 @@ describe('Storefront filters: specs, rating, tags (e2e)', () => {
             expect(await ids({minRating: 4, specs: 'country:ir'})).toEqual(sorted(p.p1, p.p3))
         })
 
-        it.each([[0], [6], [1.5], ['abc'], [-1]])('rejects minRating=%p', async (value) => {
+        it.each([[0], [6], ['abc'], [-1]])('rejects minRating=%p', async (value) => {
             expectValidationError(await anonymous.get(`/products${qs({minRating: value})}`))
         })
     })

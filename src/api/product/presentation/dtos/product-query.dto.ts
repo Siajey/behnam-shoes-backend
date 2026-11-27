@@ -39,6 +39,9 @@ export const ListProductsQuerySchema = z.object({
     maxPrice: priceSchema.optional(),
     inStock: booleanQuery.optional(),
     attributes: attributesSchema.optional(),
+    specs: attributesSchema.optional(),
+    minRating: z.coerce.number(invalid).min(1, invalid).max(5, invalid).optional(),
+    tag: z.enum(['newest', 'best_seller', 'popular'], invalid).optional(),
 })
 export type ListProductsQuery = z.infer<typeof ListProductsQuerySchema>
 

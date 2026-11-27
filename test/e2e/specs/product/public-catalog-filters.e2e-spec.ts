@@ -17,7 +17,8 @@ import {
     createBrand,
     createCategory,
     createDraftProduct,
-    createPublishedProduct, stubUploaded,
+    createPublishedProduct,
+    stubUploaded,
 } from './product-test.util'
 import {cdnUrl} from "../../util/fake-file-storage";
 
@@ -43,7 +44,13 @@ describe('Public catalog: filters, brands, category tree (e2e)', () => {
             const res = await anonymous.get('/products/filters')
 
             expectOk(res, 200, 'PRODUCT_FILTERS_SUCCESS')
-            expect(res.json().data).toEqual({categories: [], brands: [], priceRange: null, attributes: []})
+            expect(res.json().data).toEqual({
+                categories: [],
+                brands: [],
+                priceRange: null,
+                attributes: [],
+                specs: []
+            })
         })
 
         it('GET /brands and GET /categories return empty lists', async () => {
@@ -207,12 +214,14 @@ describe('Public catalog: filters, brands, category tree (e2e)', () => {
                 brands: [],
                 priceRange: null,
                 attributes: [],
+                specs: []
             })
             expect(await filters({categoryId: randomId()})).toEqual({
                 categories: [],
                 brands: [],
                 priceRange: null,
                 attributes: [],
+                specs: []
             })
         })
 
