@@ -6,7 +6,7 @@ const config: Config = {
   rootDir: '../..',
   // testRegex: 'auth.e2e-spec.ts$',
   //   testRegex: 'review.*\\.e2e-spec\\.ts$',
-    testRegex: 'review/review-user.e2e-spec.ts$',
+    testRegex: 'product/public-catalog-filters.e2e-spec.ts$',
     transform: {
     '^.+\\.ts$': [
       'ts-jest',

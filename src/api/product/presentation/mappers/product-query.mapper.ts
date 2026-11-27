@@ -17,6 +17,9 @@ export function toProductListQuery(q: ListProductsQuery): PublicProductListQuery
         maxPrice: q.maxPrice,
         inStock: q.inStock,
         attributes: q.attributes,
+        specs: q.specs,
+        minRating: q.minRating,
+        tag: q.tag,
     }
 }
 

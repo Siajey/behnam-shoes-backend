@@ -1,10 +1,12 @@
 import {ListQuery} from "@common/dto";
 
-import { ProductStatus } from '../value-objects'
-import { ProductWithVariants } from '../views'
+import {ProductStatus, ProductTag} from '../value-objects'
+import {ProductWithVariants} from '../views'
 
 export const PRODUCT_FILTER_FIELDS = ['type', 'brandId'] as const
-export const PRODUCT_SORT_FIELDS = ['createdAt', 'name', 'minPrice', 'maxPrice'] as const
+export const PRODUCT_SORT_FIELDS = [
+    'createdAt', 'name', 'minPrice', 'maxPrice', 'rating', 'reviewCount',
+] as const
 export type ProductFilterFields = (typeof PRODUCT_FILTER_FIELDS)[number]
 export type ProductSortField = (typeof PRODUCT_SORT_FIELDS)[number]
 
@@ -15,6 +17,9 @@ export interface ProductListCriteria extends ListQuery<ProductFilterFields> {
     maxPrice?: number
     inStock?: boolean
     attributes?: Record<string, string[]>
+    specs?: Record<string, string[]>
+    minRating?: number
+    tag?: ProductTag
 }
 
 export interface ProductSearchCriteria extends ProductListCriteria {
@@ -31,14 +36,35 @@ export interface CatalogFilters {
     brands: { id: string; name: string; slug: string; count: number }[]
     priceRange: { min: number; max: number } | null
     attributes: { name: string; values: { value: string; count: number }[] }[]
+    specs: CatalogSpecFilter[]
+}
+
+export interface CatalogSpecOption {
+    value: string
+    label: string | null
+    count: number
+}
+
+export interface CatalogSpecFilter {
+    key: string
+    name: string
+    type: 'select' | 'multi_select' | 'boolean'
+    unit: string | null
+    options: CatalogSpecOption[]
 }
 
 export interface IProductQueryRepository {
     findAll(criteria: ProductListCriteria): Promise<ProductPage>
+
     search(criteria: ProductSearchCriteria): Promise<ProductPage>
+
     findDetailsById(id: string, statuses: ProductStatus[]): Promise<ProductWithVariants | null>
+
     findDetailsBySlug(slug: string, statuses: ProductStatus[]): Promise<ProductWithVariants | null>
+
     getFilters(criteria: Pick<ProductListCriteria, 'statuses' | 'categoryId'>): Promise<CatalogFilters>
+
     findDetailsByIds(ids: string[], statuses: ProductStatus[]): Promise<ProductWithVariants[]>
+
     findPublishedIds(ids: string[]): Promise<string[]>
 }

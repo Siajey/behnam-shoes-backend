@@ -1,30 +1,18 @@
 import {Inject, Injectable} from '@nestjs/common'
-import {
-    and,
-    eq,
-    exists,
-    getTableColumns,
-    gte,
-    ilike,
-    inArray,
-    isNotNull,
-    lte,
-    or,
-    SQL,
-    sql,
-} from 'drizzle-orm'
+import {and, eq, exists, getTableColumns, gte, ilike, inArray, isNotNull, lte, or, SQL, sql,} from 'drizzle-orm'
 
 import {Database, DrizzleGetItemsQueryBuilder} from '@common/db'
 import {DATABASE} from '@common/di'
 import {
     CatalogFilters,
+    CatalogSpecFilter, DEFAULT_TAG_RULES,
     IProductQueryRepository,
     PRODUCT_FILTER_FIELDS,
     PRODUCT_SORT_FIELDS,
     ProductListCriteria,
     ProductPage,
     ProductSearchCriteria,
-    ProductStatus,
+    ProductStatus, ProductTag,
     ProductWithVariants
 } from '@api/product/domain'
 import {hydrateProducts, loadVariantsByProductIds} from './product-hydration'
@@ -56,7 +44,7 @@ export class ProductQueryRepository implements IProductQueryRepository {
     async findPublishedIds(ids: string[]): Promise<string[]> {
         if (ids.length === 0) return []
         const rows = await this.db
-            .select({ id: schema.products.id })
+            .select({id: schema.products.id})
             .from(schema.products)
             .where(and(inArray(schema.products.id, ids), eq(schema.products.status, 'published')))
         return rows.map((r) => r.id)
@@ -75,13 +63,16 @@ export class ProductQueryRepository implements IProductQueryRepository {
         criteria: Pick<ProductListCriteria, 'statuses' | 'categoryId'>,
     ): Promise<CatalogFilters> {
         const p = schema.products
+        const pav = schema.productAttributeValues
+        const def = schema.attributeDefinitions
+        const opt = schema.attributeOptions
         const scope = await this.scope(criteria.statuses, criteria.categoryId)
         const agg = this.variantAggregates()
         const count = sql<number>`count(distinct
         ${p.id}
         )`.mapWith(Number)
 
-        const [categoryRows, brandRows, [range], attributeRows] = await Promise.all([
+        const [categoryRows, brandRows, [range], attributeRows,specRows] = await Promise.all([
             this.db
                 .select({id: schema.categories.id, name: schema.categories.name, slug: schema.categories.slug, count})
                 .from(p)
@@ -119,6 +110,28 @@ export class ProductQueryRepository implements IProductQueryRepository {
                 .innerJoin(p, eq(schema.variants.productId, p.id))
                 .where(and(eq(schema.variants.isActive, true), scope))
                 .groupBy(schema.variantAttributes.name, schema.variantAttributes.value),
+            this.db
+                .select({
+                    definitionId: def.id,
+                    key: def.key,
+                    name: def.name,
+                    type: def.type,
+                    unit: def.unit,
+                    definitionPosition: def.position,
+                    value: opt.value,
+                    label: opt.label,
+                    optionPosition: opt.position,
+                    booleanValue: pav.booleanValue,
+                    count: sql<number>`count(distinct ${pav.productId})`.mapWith(Number),
+                })
+                .from(pav)
+                .innerJoin(def, eq(def.id, pav.definitionId))
+                .innerJoin(p, eq(p.id, pav.productId))
+                .leftJoin(opt, eq(opt.id, pav.optionId))
+                .where(
+                    and(eq(def.isFilterable, true), inArray(def.type, ['select', 'multi_select', 'boolean']), scope),
+                )
+                .groupBy(def.id, opt.id, pav.booleanValue),
         ])
 
         const attributes = new Map<string, { value: string; count: number }[]>()
@@ -126,11 +139,43 @@ export class ProductQueryRepository implements IProductQueryRepository {
             attributes.set(r.name, [...(attributes.get(r.name) ?? []), {value: r.value, count: r.count}])
         }
 
+        const specs = new Map<string, CatalogSpecFilter & { position: number }>()
+        for (const r of specRows) {
+            const value = r.type === 'boolean' ? (r.booleanValue === null ? null : String(r.booleanValue)) : r.value
+            if (value === null) continue
+
+            const entry = specs.get(r.definitionId) ?? {
+                key: r.key,
+                name: r.name,
+                type: r.type as CatalogSpecFilter['type'],
+                unit: r.unit,
+                options: [],
+                position: r.definitionPosition,
+            }
+            entry.options.push({
+                value,
+                label: r.type === 'boolean' ? null : r.label,
+                count: r.count,
+                position: r.optionPosition ?? 0,
+            } as CatalogSpecFilter['options'][number] & { position: number })
+            specs.set(r.definitionId, entry)
+        }
+
+        const specFilters: CatalogSpecFilter[] = [...specs.values()]
+            .sort((a, b) => a.position - b.position || a.name.localeCompare(b.name))
+            .map(({position: _position, options, ...spec}) => ({
+                ...spec,
+                options: (options as (CatalogSpecFilter['options'][number] & { position: number })[])
+                    .sort((a, b) => a.position - b.position || (a.label ?? a.value).localeCompare(b.label ?? b.value))
+                    .map(({position: _p, ...option}) => option),
+            }))
+
         return {
             categories: categoryRows,
             brands: brandRows,
             priceRange: range?.min != null && range?.max != null ? {min: range.min, max: range.max} : null,
             attributes: [...attributes].map(([name, values]) => ({name, values})),
+            specs: specFilters
         }
     }
 
@@ -144,6 +189,14 @@ export class ProductQueryRepository implements IProductQueryRepository {
         ${agg.maxPrice},
         0
         )`.mapWith(Number)
+        const rating = sql<number>`coalesce(
+        ${schema.productRatings.average},
+        0
+        )`.mapWith(Number)
+        const reviewCount = sql<number>`coalesce(
+        ${schema.productRatings.count},
+        0
+        )`.mapWith(Number)
 
         const builder = new DrizzleGetItemsQueryBuilder(
             criteria,
@@ -154,6 +207,8 @@ export class ProductQueryRepository implements IProductQueryRepository {
             .withVirtualColumns({
                 minPrice: {expr: minPrice, dataType: 'number'},
                 maxPrice: {expr: maxPrice, dataType: 'number'},
+                rating: {expr: rating, dataType: 'number'},
+                reviewCount: {expr: reviewCount, dataType: 'number'},
             })
             .filter()
             .sort()
@@ -170,14 +225,18 @@ export class ProductQueryRepository implements IProductQueryRepository {
                     false
                     )`, criteria.inStock)
                 : undefined,
+            criteria.minRating !== undefined ? gte(rating, criteria.minRating) : undefined,
             this.attributeCondition(criteria.attributes),
+            this.specCondition(criteria.specs),
+            this.tagCondition(criteria.tag),
             q ? this.searchCondition(q) : undefined,
         ]
 
         const rows = await this.db
-            .select({...getTableColumns(schema.products), minPrice, maxPrice})
+            .select({...getTableColumns(schema.products), minPrice, maxPrice, rating, reviewCount})
             .from(schema.products)
             .leftJoin(agg, eq(agg.productId, schema.products.id))
+            .leftJoin(schema.productRatings, eq(schema.productRatings.productId, schema.products.id))
             .where(and(builder.buildWhere(), ...extra))
             .orderBy(...builder.orderBy)
             .limit(builder.pageSize + 1)
@@ -307,5 +366,57 @@ export class ProductQueryRepository implements IProductQueryRepository {
         const escaped = normalizePersianLetters(q.trim()).replace(/[\\%_]/g, '\\$&')
         const pattern = `%${escaped}%`
         return or(ilike(schema.products.name, pattern), ilike(schema.products.slug, pattern))
+    }
+
+    private specCondition(specs?: Record<string, string[]>): SQL | undefined {
+        const entries = Object.entries(specs ?? {}).filter(([, values]) => values.length > 0)
+        if (entries.length === 0) return undefined
+
+        const pav = schema.productAttributeValues
+        const def = schema.attributeDefinitions
+        const opt = schema.attributeOptions
+
+        return and(
+            ...entries.map(([key, values]) =>
+                exists(
+                    this.db
+                        .select({ one: sql`1` })
+                        .from(pav)
+                        .innerJoin(def, eq(def.id, pav.definitionId))
+                        .leftJoin(opt, eq(opt.id, pav.optionId))
+                        .where(
+                            and(
+                                eq(pav.productId, schema.products.id),
+                                eq(def.key, key.toLowerCase()),
+                                eq(def.isFilterable, true),
+                                or(
+                                    inArray(opt.value, values), // select and multi-select: the option value
+                                    and(
+                                        eq(def.type, 'boolean'), // yes/no: "true" or "false"
+                                        inArray(sql`${pav.booleanValue}::text`, values.map((v) => v.toLowerCase())),
+                                    ),
+                                ),
+                            ),
+                        ),
+                ),
+            ),
+        )
+    }
+
+    private tagCondition(tag?: ProductTag): SQL | undefined {
+        if (!tag) return undefined
+
+        if (tag === 'newest') {
+            const since = new Date(Date.now() - DEFAULT_TAG_RULES.newestWindowDays * 24 * 60 * 60 * 1000)
+            return gte(schema.products.publishedAt, since)
+        }
+
+        const flag = tag === 'best_seller' ? schema.productStats.isBestSeller : schema.productStats.isPopular
+        return exists(
+            this.db
+                .select({ one: sql`1` })
+                .from(schema.productStats)
+                .where(and(eq(schema.productStats.productId, schema.products.id), eq(flag, true))),
+        )
     }
 }
