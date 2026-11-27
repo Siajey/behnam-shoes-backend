@@ -6,7 +6,7 @@ import { VariantPresenter } from './variant.presenter'
 import { AttributePresenter } from "./attribute.presenter"
 
 export type UrlOf = (fileKey: string) => string
-const metaOf = (m: ProductMeta) => ({ tags: m.tags, pricing: m.pricing })
+const metaOf = (m: ProductMeta) => ({ tags: m.tags, pricing: m.pricing,rating: m.rating })
 
 const typeDetails = (p: Product) =>
     p instanceof ShoeProduct ? { gender: p.gender, material: p.material } : null

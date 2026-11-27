@@ -38,6 +38,7 @@ export async function enrichWithMeta(
         ]
     )
 
+
     return views.map((view) => ({
         view,
         meta: {

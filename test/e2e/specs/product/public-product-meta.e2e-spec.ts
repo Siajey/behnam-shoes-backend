@@ -5,15 +5,9 @@ import {UserRole} from '@api/users/domain'
 import {GET_PRODUCT_BY_ID, REPLACE_PRODUCT_STATS} from '@common/di'
 
 import {TestContext, testContextE2e} from '../test-context.e2e'
-import {Api, anonymousApi, createUserSession, qs, randomId, withNowPlus} from '../../util/test.util'
-import {DAY, HOUR, discountTracker, isoFromNow, scope} from '../discount/discount-test.util'
-import {
-    changeVariant,
-    createBrand,
-    createCategory,
-    createPublishedProduct,
-    VariantSeed,
-} from './product-test.util'
+import {anonymousApi, Api, createUserSession, qs, randomId, withNowPlus} from '../../util/test.util'
+import {DAY, discountTracker, HOUR, isoFromNow, scope} from '../discount/discount-test.util'
+import {changeVariant, createBrand, createCategory, createPublishedProduct, VariantSeed,} from './product-test.util'
 
 describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
     let ctx: TestContext
@@ -64,7 +58,11 @@ describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
             const listed = (await anonymous.get(`/products${qs({pageSize: 100})}`)).json().data.items.find((i: any) => i.id === p.id)
             const searched = (await anonymous.get(`/products/search${qs({q: p.name})}`)).json().data.items[0]
 
-            expect(byId).toEqual({tags: ['newest'], pricing: NO_DISCOUNT(1000, 1000)})
+            expect(byId).toEqual({
+                tags: ['newest'],
+                rating: {average: 0, count: 0},
+                pricing: NO_DISCOUNT(1000, 1000)
+            })
             expect(bySlug).toEqual(byId)
             expect(listed.meta).toEqual(byId)
             expect(searched.meta).toEqual(byId)
@@ -98,7 +96,12 @@ describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
 
             expect(items.find((i) => i.id === cheap.id).meta.pricing).toEqual(NO_DISCOUNT(500, 500))
             expect(items.find((i) => i.id === discounted.id).meta.pricing).toEqual({
-                minPrice: 2000, maxPrice: 2000, finalMinPrice: 1000, finalMaxPrice: 1000, hasDiscount: true, maxDiscountPercent: 50,
+                minPrice: 2000,
+                maxPrice: 2000,
+                finalMinPrice: 1000,
+                finalMaxPrice: 1000,
+                hasDiscount: true,
+                maxDiscountPercent: 50,
             })
         })
     })
@@ -115,7 +118,12 @@ describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
             await discounts.create({value: 20, scope: scope('product', p.id)})
 
             expect(await pricingOf(p.id)).toEqual({
-                minPrice: 1000, maxPrice: 2000, finalMinPrice: 800, finalMaxPrice: 1600, hasDiscount: true, maxDiscountPercent: 20,
+                minPrice: 1000,
+                maxPrice: 2000,
+                finalMinPrice: 800,
+                finalMaxPrice: 1600,
+                hasDiscount: true,
+                maxDiscountPercent: 20,
             })
         })
 
@@ -125,7 +133,12 @@ describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
 
             // 300 off 1000 = 30%, 300 off 2000 = 15%
             expect(await pricingOf(p.id)).toEqual({
-                minPrice: 1000, maxPrice: 2000, finalMinPrice: 700, finalMaxPrice: 1700, hasDiscount: true, maxDiscountPercent: 30,
+                minPrice: 1000,
+                maxPrice: 2000,
+                finalMinPrice: 700,
+                finalMaxPrice: 1700,
+                hasDiscount: true,
+                maxDiscountPercent: 30,
             })
         })
 
@@ -135,8 +148,16 @@ describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
             await discounts.create({kind: 'fixed', value: 1, scope: scope('product', pricey.id)})
             await discounts.create({value: 100, scope: scope('product', free.id)})
 
-            expect(await pricingOf(pricey.id)).toMatchObject({finalMinPrice: 999_999, hasDiscount: true, maxDiscountPercent: 1})
-            expect(await pricingOf(free.id)).toMatchObject({finalMinPrice: 0, finalMaxPrice: 0, maxDiscountPercent: 100})
+            expect(await pricingOf(pricey.id)).toMatchObject({
+                finalMinPrice: 999_999,
+                hasDiscount: true,
+                maxDiscountPercent: 1
+            })
+            expect(await pricingOf(free.id)).toMatchObject({
+                finalMinPrice: 0,
+                finalMaxPrice: 0,
+                maxDiscountPercent: 100
+            })
         })
 
         it('handles a discount that only applies to some variants', async () => {
@@ -144,7 +165,12 @@ describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
             await discounts.create({value: 50, scope: scope('variant', p.variantIds[0])})
 
             expect(await pricingOf(p.id)).toEqual({
-                minPrice: 1000, maxPrice: 2000, finalMinPrice: 500, finalMaxPrice: 2000, hasDiscount: true, maxDiscountPercent: 50,
+                minPrice: 1000,
+                maxPrice: 2000,
+                finalMinPrice: 500,
+                finalMaxPrice: 2000,
+                hasDiscount: true,
+                maxDiscountPercent: 50,
             })
         })
 
@@ -179,7 +205,12 @@ describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
             const p = await product([{price: 1000}])
             await discounts.create({value: 50, isActive: false, scope: scope('product', p.id)})
             await discounts.create({value: 50, startsAt: isoFromNow(DAY), scope: scope('product', p.id)})
-            await discounts.create({value: 50, startsAt: isoFromNow(-2 * DAY), endsAt: isoFromNow(-DAY), scope: scope('product', p.id)})
+            await discounts.create({
+                value: 50,
+                startsAt: isoFromNow(-2 * DAY),
+                endsAt: isoFromNow(-DAY),
+                scope: scope('product', p.id)
+            })
 
             expect(await pricingOf(p.id)).toEqual(NO_DISCOUNT(1000, 1000))
         })
@@ -224,7 +255,11 @@ describe('Public products: meta (pricing, discounts, tags) (e2e)', () => {
     })
 
     describe('best_seller and popular tags (stats pushed by the insights module)', () => {
-        const stat = (productId: string, unitsSold: number, favoritesAdded: number) => ({productId, unitsSold, favoritesAdded})
+        const stat = (productId: string, unitsSold: number, favoritesAdded: number) => ({
+            productId,
+            unitsSold,
+            favoritesAdded
+        })
         const tagsOf = async (id: string) => ((await metaOf(id)).tags as string[]).filter((t) => t !== 'newest')
 
         it('flags products above the minimums and reports the counts', async () => {

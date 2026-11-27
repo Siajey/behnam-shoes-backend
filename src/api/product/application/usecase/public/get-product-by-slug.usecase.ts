@@ -18,9 +18,9 @@ export default class GetProductByIdUseCase implements IGetProductById {
         private readonly productQuery: IProductQueryRepository,
         private readonly pricing: IProductPricing,
         private readonly stats: IProductStatsRepository,
+        private readonly ratings: IProductRatingRepository,
         private readonly definitions: IAttributeDefinitionRepository,
         private readonly attributeValues: IProductAttributeRepository,
-        private readonly ratings: IProductRatingRepository
     ) {
     }
 
