@@ -7,7 +7,7 @@ const rating = z.number(invalid).int(invalid).min(1, invalid).max(5, invalid)
 
 const pagination = {
   pageSize: z.coerce.number(invalid).int(invalid).min(1, invalid).max(50, invalid).default(20),
-  cursor: z.string().trim().min(1, invalid).max(200, invalid).optional(),
+  nextCursor: z.string().trim().min(1, invalid).max(200, invalid).optional(),
 }
 
 export const ProductIdParamSchema = uuidSchema

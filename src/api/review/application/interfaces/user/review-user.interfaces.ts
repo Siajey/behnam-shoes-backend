@@ -1,4 +1,4 @@
-import { RatingSummary, Review } from '@api/review/domain'
+import {RatingSummary, Review, ReviewPageRow} from '@api/review/domain'
 
 export interface CreateReviewCommand {
   productId: string
@@ -17,7 +17,7 @@ export interface EditReviewCommand {
 export interface ListProductReviewsCommand {
   productId: string
   rating?: number
-  cursor?: string
+  nextCursor?: string
   pageSize: number
 }
 

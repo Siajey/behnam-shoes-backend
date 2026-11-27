@@ -5,8 +5,13 @@ export interface ReviewListQuery {
   productId?: string
   rating?: number
   hasReply?: boolean
-  cursor?: { createdAt: Date; id: string } | null
+  nextCursor?: { createdAt: string; id: string } | null
   limit: number
+}
+
+export interface ReviewPageRow {
+    review: Review
+    createdAtRaw: string
 }
 
 export interface IReviewRepository {
@@ -15,7 +20,7 @@ export interface IReviewRepository {
   create(review: Review): Promise<boolean>
   save(review: Review): Promise<void>
   delete(id: string): Promise<void>
-  list(query: ReviewListQuery): Promise<Review[]>
+  list(query: ReviewListQuery): Promise<ReviewPageRow[]>
   summary(productId: string): Promise<RatingSummary>
   allSummaries(): Promise<{ productId: string; average: number; count: number }[]>
 }

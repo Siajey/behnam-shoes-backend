@@ -14,11 +14,11 @@ export class ReviewMapper {
       isVerifiedPurchase: row.isVerifiedPurchase,
       reply:
         row.replyText && row.repliedAt && row.repliedBy
-          ? { text: row.replyText, repliedAt: new Date(row.repliedAt), repliedBy: row.repliedBy }
+          ? { text: row.replyText, repliedAt: row.repliedAt, repliedBy: row.repliedBy }
           : null,
       version: row.version,
-      createdAt: new Date(row.createdAt),
-      updatedAt: new Date(row.updatedAt),
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
     })
   }
 

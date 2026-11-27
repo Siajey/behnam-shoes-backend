@@ -18,7 +18,7 @@ import {OrderMapper} from '../mappers'
 
 type OrderRow = typeof schema.orders.$inferSelect
 
-const PURCHASE_STATUSES = ['paid', 'shipped', 'delivered'] as const
+const PURCHASE_STATUSES = ['shipped', 'delivered'] as const
 
 @Injectable()
 export class OrderRepository implements IOrderRepository {

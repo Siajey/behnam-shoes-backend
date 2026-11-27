@@ -4,7 +4,7 @@ export interface AdminListReviewsCommand {
   productId?: string
   rating?: number
   hasReply?: boolean
-  cursor?: string
+  nextCursor?: string
   pageSize: number
 }
 

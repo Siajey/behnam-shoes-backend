@@ -29,8 +29,8 @@ export class AttributeMapper {
       options: options
         .map((o) => ({ id: o.id, value: o.value, label: o.label, position: o.position }))
         .sort((a, b) => a.position - b.position),
-      createdAt: new Date(row.createdAt),
-      updatedAt: new Date(row.updatedAt),
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
     })
   }
 

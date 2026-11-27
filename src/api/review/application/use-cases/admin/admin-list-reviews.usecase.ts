@@ -11,7 +11,7 @@ export default class AdminListReviewsUseCase implements IAdminListReviews {
       productId: command.productId,
       rating: command.rating,
       hasReply: command.hasReply,
-      cursor: decodeReviewCursor(command.cursor),
+      nextCursor: decodeReviewCursor(command.nextCursor),
       limit: command.pageSize + 1,
     })
     return toPage(rows, command.pageSize)

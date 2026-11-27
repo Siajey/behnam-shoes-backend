@@ -23,6 +23,7 @@ import {FavoritesModule} from "@api/favorites/favorite.module";
 import {OrderModule} from "@api/order/order.module";
 import {InsightsModule} from "@api/insights/insights.module";
 import {PaymentModule} from "@api/payment/payment.module";
+import {ReviewModule} from "@api/review/review.module";
 
 @Module({
     imports: [
@@ -57,7 +58,8 @@ import {PaymentModule} from "@api/payment/payment.module";
         FavoritesModule,
         OrderModule,
         InsightsModule,
-        PaymentModule
+        PaymentModule,
+        ReviewModule
     ],
     providers: [GlobalExceptionFilter, ApiResponseInterceptor],
 })

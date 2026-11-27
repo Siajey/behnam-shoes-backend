@@ -66,7 +66,7 @@ export default class AuthController {
     @Throttle({
         default: {
             ttl: 30000,
-            limit: process.env.NODE_ENV === 'production' ? 5 : 100,
+            limit: process.env.NODE_ENV === 'production' ? 5 : 1000,
         },
     })
     @Post('login')
@@ -97,7 +97,7 @@ export default class AuthController {
     @Throttle({
         default: {
             ttl: 60000,
-            limit: process.env.NODE_ENV === 'production' ? 5 : 100,
+            limit: process.env.NODE_ENV === 'production' ? 5 : 1000,
         },
     })
     @Post('verify-login-otp')

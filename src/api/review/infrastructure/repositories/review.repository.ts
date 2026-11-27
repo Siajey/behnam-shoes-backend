@@ -6,7 +6,7 @@ import {
     IReviewRepository,
     RatingSummary,
     Review,
-    ReviewListQuery,
+    ReviewListQuery, ReviewPageRow,
     ReviewVersionConflictError,
     roundAverage,
 } from '@api/review/domain'
@@ -58,30 +58,33 @@ export class ReviewRepository implements IReviewRepository {
         await this.db.delete(schema.reviews).where(eq(schema.reviews.id, id))
     }
 
-    async list(query: ReviewListQuery): Promise<Review[]> {
+    async list(query: ReviewListQuery): Promise<ReviewPageRow[]> {
         const conditions = [
             query.productId ? eq(schema.reviews.productId, query.productId) : undefined,
             query.rating ? eq(schema.reviews.rating, query.rating) : undefined,
             query.hasReply === true ? isNotNull(schema.reviews.replyText) : undefined,
             query.hasReply === false ? isNull(schema.reviews.replyText) : undefined,
-            query.cursor
+            query.nextCursor
                 ? or(
-                    lt(schema.reviews.createdAt, query.cursor.createdAt),
-                    and(
-                        eq(schema.reviews.createdAt, query.cursor.createdAt),
-                        lt(schema.reviews.id, query.cursor.id),
-                    ),
+                    lt(schema.reviews.createdAt, new Date(query.nextCursor.createdAt)),
+                    and(eq(schema.reviews.createdAt, new Date(query.nextCursor.createdAt)), lt(schema.reviews.id, query.nextCursor.id)),
                 )
                 : undefined,
         ]
-
+        const createdAtRawExpr = sql<string>`to_char((${schema.reviews.createdAt} AT TIME ZONE 'UTC'), 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`
         const rows = await this.db
-            .select()
+            .select({
+                review: schema.reviews,
+                createdAtRaw: createdAtRawExpr,
+            })
             .from(schema.reviews)
             .where(and(...conditions))
             .orderBy(desc(schema.reviews.createdAt), desc(schema.reviews.id))
             .limit(query.limit)
-        return rows.map(ReviewMapper.toDomain)
+        return rows.map((row) => ({
+            review: ReviewMapper.toDomain(row.review),
+            createdAtRaw: row.createdAtRaw,
+        }))
     }
 
     async summary(productId: string): Promise<RatingSummary> {

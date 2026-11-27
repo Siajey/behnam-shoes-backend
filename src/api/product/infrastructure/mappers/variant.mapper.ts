@@ -18,8 +18,8 @@ export class VariantMapper {
             isActive: row.isActive,
             productId: row.productId,
             attributes: attributes.map((a) => ({ name: a.name, value: a.value })),
-            createdAt: new Date(row.createdAt),
-            updatedAt: new Date(row.updatedAt),
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
         })
     }
 

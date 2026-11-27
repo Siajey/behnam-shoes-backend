@@ -8,7 +8,7 @@ export class FavoriteMapper {
             id: row.id,
             userId: row.userId,
             productId: row.productId,
-            createdAt: new Date(row.createdAt),
+            createdAt: row.createdAt,
         })
     }
 
