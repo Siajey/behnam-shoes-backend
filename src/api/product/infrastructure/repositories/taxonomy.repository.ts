@@ -2,15 +2,20 @@ import {Inject, Injectable} from '@nestjs/common'
 import {asc, eq} from 'drizzle-orm'
 
 import {Database} from '@common/db'
-import {DATABASE} from '@common/di'
-import {IBrandRepository, ICategoryRepository, Brand, Category} from '@api/product/domain'
+import {CATALOG_CACHE, DATABASE} from '@common/di'
+import {Brand, Category, IBrandRepository, ICategoryRepository} from '@api/product/domain'
 
 import {BrandMapper, CategoryMapper} from '../mappers/taxonomy.mapper'
 import * as schema from '../models'
+import {CatalogCache} from "../cache";
+
 
 @Injectable()
 export class CategoryRepository implements ICategoryRepository {
-    constructor(@Inject(DATABASE) private readonly db: Database<typeof schema>) {
+    constructor(
+        @Inject(DATABASE) private readonly db: Database<typeof schema>,
+        @Inject(CATALOG_CACHE) private readonly catalogCache: CatalogCache,
+    ) {
     }
 
     async findById(id: string): Promise<Category | null> {
@@ -55,16 +60,21 @@ export class CategoryRepository implements ICategoryRepository {
             .insert(schema.categories)
             .values({id, ...rest})
             .onConflictDoUpdate({target: schema.categories.id, set: rest})
+        await this.catalogCache.invalidate()
     }
 
     async delete(id: string): Promise<void> {
         await this.db.delete(schema.categories).where(eq(schema.categories.id, id))
+        await this.catalogCache.invalidate()
     }
 }
 
 @Injectable()
 export class BrandRepository implements IBrandRepository {
-    constructor(@Inject(DATABASE) private readonly db: Database<typeof schema>) {
+    constructor(
+        @Inject(DATABASE) private readonly db: Database<typeof schema>,
+        @Inject(CATALOG_CACHE) private readonly catalogCache: CatalogCache,
+    ) {
     }
 
     async findById(id: string): Promise<Brand | null> {
@@ -97,9 +107,12 @@ export class BrandRepository implements IBrandRepository {
             .insert(schema.brands)
             .values({id, ...rest})
             .onConflictDoUpdate({target: schema.brands.id, set: rest})
+        await this.catalogCache.invalidate()
+
     }
 
     async delete(id: string): Promise<void> {
         await this.db.delete(schema.brands).where(eq(schema.brands.id, id))
+        await this.catalogCache.invalidate()
     }
 }

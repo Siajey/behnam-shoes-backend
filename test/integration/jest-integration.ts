@@ -3,7 +3,7 @@ import { Config } from 'jest'
 const config: Config = {
     moduleFileExtensions: ['js', 'json', 'ts'],
     rootDir: '../..',
-    testRegex: 'keyv-cache.integration-spec.ts',
+    testRegex: 'cache/cached-product-query-repository.integration-spec.ts',
 
     setupFiles: [
         '<rootDir>/test/integration/setup/setup-env.ts',

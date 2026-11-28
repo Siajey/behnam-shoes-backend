@@ -2,27 +2,33 @@ import {Inject, Injectable} from '@nestjs/common'
 import {and, eq, exists, getTableColumns, gte, ilike, inArray, isNotNull, lte, or, SQL, sql,} from 'drizzle-orm'
 
 import {Database, DrizzleGetItemsQueryBuilder} from '@common/db'
-import {DATABASE} from '@common/di'
+import {CATALOG_CACHE, DATABASE} from '@common/di'
 import {
     CatalogFilters,
-    CatalogSpecFilter, DEFAULT_TAG_RULES,
+    CatalogSpecFilter,
+    DEFAULT_TAG_RULES,
     IProductQueryRepository,
     PRODUCT_FILTER_FIELDS,
     PRODUCT_SORT_FIELDS,
     ProductListCriteria,
     ProductPage,
     ProductSearchCriteria,
-    ProductStatus, ProductTag,
+    ProductStatus,
+    ProductTag,
     ProductWithVariants
 } from '@api/product/domain'
 import {hydrateProducts, loadVariantsByProductIds} from './product-hydration'
+import {normalizePersianLetters, normalizeText} from "@common/util"
 
 import * as schema from '../models'
-import {normalizePersianLetters, normalizeText} from "@common/util"
+import {CATALOG_CACHE_TTL, CatalogCache} from "../cache"
 
 @Injectable()
 export class ProductQueryRepository implements IProductQueryRepository {
-    constructor(@Inject(DATABASE) private readonly db: Database<typeof schema>) {
+    constructor(
+        @Inject(DATABASE) private readonly db: Database<typeof schema>,
+        @Inject(CATALOG_CACHE) private readonly catalogCache: CatalogCache,
+    ) {
     }
 
     findAll(criteria: ProductListCriteria): Promise<ProductPage> {
@@ -72,7 +78,7 @@ export class ProductQueryRepository implements IProductQueryRepository {
         ${p.id}
         )`.mapWith(Number)
 
-        const [categoryRows, brandRows, [range], attributeRows,specRows] = await Promise.all([
+        const [categoryRows, brandRows, [range], attributeRows, specRows] = await Promise.all([
             this.db
                 .select({id: schema.categories.id, name: schema.categories.name, slug: schema.categories.slug, count})
                 .from(p)
@@ -122,7 +128,9 @@ export class ProductQueryRepository implements IProductQueryRepository {
                     label: opt.label,
                     optionPosition: opt.position,
                     booleanValue: pav.booleanValue,
-                    count: sql<number>`count(distinct ${pav.productId})`.mapWith(Number),
+                    count: sql<number>`count(distinct
+                    ${pav.productId}
+                    )`.mapWith(Number),
                 })
                 .from(pav)
                 .innerJoin(def, eq(def.id, pav.definitionId))
@@ -315,9 +323,11 @@ export class ProductQueryRepository implements IProductQueryRepository {
     }
 
     private async categoryWithDescendants(id: string): Promise<string[]> {
-        const rows = await this.db
-            .select({id: schema.categories.id, parentId: schema.categories.parentId})
-            .from(schema.categories)
+        const rows = await this.catalogCache.remember(CATALOG_CACHE_TTL.categoryTree, ['category-tree'], () =>
+            this.db
+                .select({id: schema.categories.id, parentId: schema.categories.parentId})
+                .from(schema.categories),
+        )
 
         const children = new Map<string, string[]>()
         for (const r of rows) {
@@ -380,7 +390,7 @@ export class ProductQueryRepository implements IProductQueryRepository {
             ...entries.map(([key, values]) =>
                 exists(
                     this.db
-                        .select({ one: sql`1` })
+                        .select({one: sql`1`})
                         .from(pav)
                         .innerJoin(def, eq(def.id, pav.definitionId))
                         .leftJoin(opt, eq(opt.id, pav.optionId))
@@ -393,7 +403,8 @@ export class ProductQueryRepository implements IProductQueryRepository {
                                     inArray(opt.value, values), // select and multi-select: the option value
                                     and(
                                         eq(def.type, 'boolean'), // yes/no: "true" or "false"
-                                        inArray(sql`${pav.booleanValue}::text`, values.map((v) => v.toLowerCase())),
+                                        inArray(sql`${pav.booleanValue}
+                                        ::text`, values.map((v) => v.toLowerCase())),
                                     ),
                                 ),
                             ),
@@ -414,7 +425,7 @@ export class ProductQueryRepository implements IProductQueryRepository {
         const flag = tag === 'best_seller' ? schema.productStats.isBestSeller : schema.productStats.isPopular
         return exists(
             this.db
-                .select({ one: sql`1` })
+                .select({one: sql`1`})
                 .from(schema.productStats)
                 .where(and(eq(schema.productStats.productId, schema.products.id), eq(flag, true))),
         )
