@@ -15,6 +15,7 @@ import {
 import {IUserRepository} from '@api/users/domain'
 import {UserRepository} from '@api/users/infrastructure'
 import {
+    CACHE_SERVICE,
     CONFIG_PROVIDER,
     FILE_STORAGE,
     PAYMENT_GATEWAYS,
@@ -30,6 +31,7 @@ import {AppModule} from "../../../src/app.module";
 import {fakeFileStorage} from "../util/fake-file-storage";
 import {fakePaymentGateway} from "../util/fake-payment-gateway";
 import {fakeShippingCarrier, fakeTipax} from "../util/fake-shipping-carrier";
+import {NoopCache} from "@common/cache";
 
 export type TestContext = {
     app: NestFastifyApplication
@@ -55,6 +57,7 @@ export const testContextE2e = async (): Promise<TestContext> => {
         })
         .overrideProvider(SHIPPING_QUOTE_CACHE)
         .useValue({getOrLoad: (_key: string, loader: () => Promise<unknown>) => loader()})
+        .overrideProvider(CACHE_SERVICE).useClass(NoopCache)
         .compile()
 
 
