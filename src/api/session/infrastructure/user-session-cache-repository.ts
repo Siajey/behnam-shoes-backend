@@ -1,5 +1,4 @@
-import { User } from '@api/users/domain'
-import { ISessionCacheRepository } from '@api/session/domain'
+import {ISessionCacheRepository, UserSessionState} from '@api/session/domain'
 
 import { ICache } from '@common/cache'
 
@@ -8,18 +7,18 @@ const USER_SESSION_TTL_SECONDS = 60 * 60
 export class UserSessionCacheRepository implements ISessionCacheRepository {
     constructor(private readonly cache: ICache) {}
 
-    async getUserSession(userId: string): Promise<User | undefined> {
-        return this.cache.get<User>(this.getKey(userId))
+    async getUserSession(userId: string): Promise<UserSessionState | undefined> {
+        return this.cache.get<UserSessionState>(this.getKey(userId))
     }
 
-    async setUserSession(userId: string, data: User): Promise<void> {
-        await this.cache.set<User>(
+    async setUserSession(userId: string, data: UserSessionState): Promise<void> {
+        await this.cache.set<UserSessionState>(
             this.getKey(userId),
             {
                 updatedAt: data.updatedAt,
                 status: data.status,
                 role: data.role,
-            } as User,
+            },
             USER_SESSION_TTL_SECONDS,
         )
     }

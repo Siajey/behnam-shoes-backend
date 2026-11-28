@@ -79,7 +79,7 @@ describe('SessionCacheService (integration)', () => {
             const result = await sessionCache.getUserSession(user.id)
 
             expect(result).toEqual({
-                updatedAt: user.updatedAt,
+                updatedAt: user.updatedAt?.toISOString(),
                 status: user.status,
                 role: user.role,
             })
