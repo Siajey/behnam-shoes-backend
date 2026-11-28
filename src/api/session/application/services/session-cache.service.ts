@@ -23,7 +23,10 @@ export class SessionCacheService {
 
   async setUserSession(userId: string, data: User): Promise<void> {
     try {
-      await this.cache.setUserSession(userId, data)
+      await this.cache.setUserSession(userId, {
+          ...data,
+          updatedAt: data.updatedAt?.toISOString() || new Date().toISOString()
+      })
     } catch (error) {
       this.logger.warn('Failed to cache user session', {
         module: 'SessionCacheService',

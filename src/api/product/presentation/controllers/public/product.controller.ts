@@ -62,6 +62,9 @@ export default class ProductController {
                 items: page.products.map((item) => ProductPresenter.publicListItem(item, this.urlOf)),
                 nextCursor: page.nextCursor,
             },
+            headers: {
+                'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120'
+            }
         })
     }
 
@@ -78,6 +81,9 @@ export default class ProductController {
                 items: page.products.map((item) => ProductPresenter.publicListItem(item, this.urlOf)),
                 nextCursor: page.nextCursor,
             },
+            headers: {
+                'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120'
+            }
         })
     }
 
@@ -90,6 +96,9 @@ export default class ProductController {
             code: 'PRODUCT_FILTERS_SUCCESS',
             path: '/products/filters',
             data: await this.getFilters.execute(query),
+            headers: {
+                'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120'
+            }
         })
     }
 
@@ -101,6 +110,9 @@ export default class ProductController {
             code: 'PRODUCT_GET_SUCCESS',
             path: `/products/slug/${slug}`,
             data: ProductPresenter.publicDetail(view, this.urlOf),
+            headers: {
+                'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120'
+            }
         })
     }
 
@@ -112,6 +124,9 @@ export default class ProductController {
             code: 'PRODUCT_GET_SUCCESS',
             path: `/products/${id}`,
             data: ProductPresenter.publicDetail(view, this.urlOf),
+            headers: {
+                'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120'
+            }
         })
     }
 }

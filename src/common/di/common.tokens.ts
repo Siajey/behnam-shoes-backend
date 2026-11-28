@@ -5,6 +5,7 @@ export const HASH_GENERATOR = Symbol('HASH_GENERATOR')
 export const APP_LOGGER_SERVICE = Symbol('APP_LOGGER_SERVICE')
 export const CACHE_MANAGER = Symbol('CACHE_MANAGER')
 export const FILE_SERVICE = Symbol('FILE_SERVICE')
+export const CACHE_SERVICE = Symbol('CACHE_SERVICE')
 
 export const DATABASE = Symbol('DATABASE')
 export const DATABASE_CLIENT = Symbol('DATABASE_CLIENT')

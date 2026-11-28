@@ -1,32 +1,10 @@
 import {afterAll, beforeAll} from '@jest/globals'
-import {Cache} from 'cache-manager'
 import {PGlite} from '@electric-sql/pglite'
 import {sql} from 'drizzle-orm'
 
 import {destroyTestContext, testContextE2e} from '../specs/test-context.e2e'
-import {CACHE_MANAGER, DATABASE, DATABASE_CLIENT} from '@common/di'
+import { DATABASE, DATABASE_CLIENT} from '@common/di'
 import {Database} from '@common/db'
-import {profiles, users, addresses} from '@api/users/infrastructure'
-import {otpCodes} from '@otp/infrastructure'
-import {
-    attributeDefinitions, attributeOptions,
-    brands,
-    categories, productAttributeValues,
-    productImages,
-    products, productStats,
-    shoeProductDetails,
-    variantAttributes, variants
-} from "@api/product/infrastructure/models"
-import {cartItems, carts} from "@api/cart/infrastructure/models";
-import {favorites} from "@api/favorites/infrastructure/models";
-import {
-    couponRedemptions,
-    coupons,
-    couponTargets,
-    discounts,
-    discountTargets
-} from "@api/discount/infrastructure/models";
-import {orderLines, orders, orderStatusEvents} from "@api/order/infrastructure";
 
 let db: Database<any>
 let dbClient: PGlite
@@ -39,11 +17,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
     try {
-        const ctx = await testContextE2e()
-
-        const cacheManager = ctx.app.get<Cache>(CACHE_MANAGER)
-        await cacheManager.clear()
-
         if (db) {
             await clearDb()
         }
@@ -62,10 +35,10 @@ const clearDb = async (exclude: readonly string[] = []) => {
     const excluded = new Set(exclude)
 
     const result = await db.execute<{ tablename: string }>(sql`
-    SELECT tablename
-    FROM pg_tables
-    WHERE schemaname = 'public'
-  `)
+        SELECT tablename
+        FROM pg_tables
+        WHERE schemaname = 'public'
+    `)
     const rows = Array.isArray(result) ? result : result?.['rows']
     const tables = rows
         .map((r) => r.tablename)

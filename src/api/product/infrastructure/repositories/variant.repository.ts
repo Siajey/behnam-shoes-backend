@@ -1,19 +1,23 @@
-import { Inject, Injectable } from '@nestjs/common'
-import { and, eq, inArray, isNull } from 'drizzle-orm'
+import {Inject, Injectable} from '@nestjs/common'
+import {and, eq, inArray, isNull} from 'drizzle-orm'
 
 import {Database, DrizzleGetItemsQueryBuilder} from '@common/db'
-import { DATABASE } from '@common/di'
-import {
-    IVariantRepository, UnassignedVariantsCriteria,Variant
-} from '@api/product/domain'
+import {CATALOG_CACHE, DATABASE} from '@common/di'
+import {IVariantRepository, UnassignedVariantsCriteria, Variant} from '@api/product/domain'
 
-import { Executor, hydrateVariants } from './product-hydration'
+import {Executor, hydrateVariants} from './product-hydration'
 import * as schema from '../models'
-import { persistVariant } from "./product-persistence"
+import {persistVariant} from "./product-persistence"
+import {CatalogCache} from "../cache";
+
 
 @Injectable()
 export class VariantRepository implements IVariantRepository {
-    constructor(@Inject(DATABASE) private readonly db: Database<typeof schema>) {}
+    constructor(
+        @Inject(DATABASE) private readonly db: Database<typeof schema>,
+        @Inject(CATALOG_CACHE) private readonly catalogCache: CatalogCache,
+    ) {
+    }
 
     async findById(id: string): Promise<Variant | null> {
         return (await this.findMany(eq(schema.variants.id, id)))[0] ?? null
@@ -76,14 +80,16 @@ export class VariantRepository implements IVariantRepository {
         return hydrateVariants(this.db as Executor, rows)
     }
 
-    save(variant: Variant): Promise<void> {
-        return this.db.transaction((tx) => persistVariant(tx, variant))
+    async save(variant: Variant): Promise<void> {
+        await this.db.transaction((tx) => persistVariant(tx, variant))
+        await this.catalogCache.invalidate()
     }
 
-    saveMany(variants: Variant[]): Promise<void> {
-        return this.db.transaction(async (tx) => {
+    async saveMany(variants: Variant[]): Promise<void> {
+        await this.db.transaction(async (tx) => {
             for (const v of variants) await persistVariant(tx, v)
         })
+        await this.catalogCache.invalidate()
     }
 
     findByExternalIds(source: string, externalIds: string[]): Promise<Variant[]> {
