@@ -4,9 +4,13 @@ import Keyv from 'keyv'
 import { readFileSync } from 'fs'
 import { Cache } from 'cache-manager'
 
-import { APP_LOGGER_SERVICE, CACHE_MANAGER, CONFIG_PROVIDER } from '@common/di'
+import {APP_LOGGER_SERVICE, CACHE_MANAGER, CACHE_SERVICE, CONFIG_PROVIDER} from '@common/di'
 import { ConfigProvider, CustomConfigModule } from '@common/configuration'
 import { ILogger } from '@common/logger'
+
+import {ICache} from "./cache.interface";
+import {NoopCache} from "./noop-cache";
+import {KeyvCache} from "./keyv-cache";
 
 @Module({
   imports: [CustomConfigModule],
@@ -67,8 +71,14 @@ import { ILogger } from '@common/logger'
         })
       },
     },
+      {
+          provide: CACHE_SERVICE,
+          inject: [CACHE_MANAGER, CONFIG_PROVIDER, APP_LOGGER_SERVICE],
+          useFactory: (keyv: Keyv, config: ConfigProvider, logger: ILogger): ICache =>
+              config.getOptional('CACHE_ENABLED') === 'false' ? new NoopCache() : new KeyvCache(keyv, logger),
+      },
   ],
-  exports: [CACHE_MANAGER],
+  exports: [CACHE_MANAGER,CACHE_SERVICE],
 })
 export default class CustomCacheModule implements OnModuleInit {
   constructor(
